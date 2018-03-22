@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include "tags.h"
+#include "dictionary_generator.h"
 #include "../lib/hashmap.h"
-
 #define KEY_MAX_LENGTH (256)
 #define KEY_PREFIX ("somekey")
 #define KEY_COUNT (1024*1024)
@@ -61,348 +61,311 @@ map_t generate_dictionary(char *filepath)
         
         strcpy(newword, word);
         strcpy(newtag, tag);
-       
-      
-        
-        
+
         //Get the current tagset
-
         if(hashmap_get(mymap, word, (void **)&tags) == MAP_MISSING){
-            
             struct tagset *newtags = malloc (sizeof (struct tagset));
-
             memset(newtags, 0, sizeof(struct tagset));
-            updateTasks(newword, newtags, newtag);
-            
-           // printf("The word being put into the map is: %s\nThe tag is: %s\nThe hash of the key is %lu\n", newword, newtag, hash(word));
+            updateTags(newword, newtags, newtag);
             hashmap_put(mymap, newword, newtags);
-           // printf("Here is the value of APPGE: %d\n", newtags.APPGE);
-
         }
         else{
             struct tagset *curtags = malloc (sizeof (struct tagset));
-
             hashmap_get(mymap, newword, (void **)&curtags);
-           // printf("The word being updated in the map is: %s\nThe tag is: %s\nThe hash of it is %lu\n", newword, newtag, hash(tag));
-         //   printf("The value of the ZZ2 before updating is: %d\n", curtags->ZZ2);
-            updateTasks(newword,curtags, newtag);
-       //     printf("The value of the APPGE after updating is: %d\n", curtags->APPGE);
+            updateTags(newword,curtags, newtag);
             hashmap_remove(mymap, newword);
             hashmap_put(mymap, newword, curtags);
         }
 
     }
-    
-    printf("Size of map is: %d\n",hashmap_length(mymap) );
- //   tagset* finalval;
-  //  printf("Trying to find value James with hash %lu\n", hash("James"));
-    
-        printMap(mymap, "James");
-        printMap(mymap, "Uni");
-        printMap(mymap, "Gary");
-        printMap(mymap, "Paul");
-
-    
-    
-    
-    
-    
-    /* Now, destroy the map */
-    hashmap_free(mymap);
-    //free(newword);
-    //free(newtag);
-
-    return 1;
+    return mymap;
 }
 
-
-void updateTasks(char* word, struct tagset *val, char* tag){
-    
+void updateTags(char* word, struct tagset *val, char* tag){
     unsigned long hash_value = hash(tag);
     switch(hash_value){
-        case 210667599090: val->APPGE
-            +=1; break;
-        case 193450564: val->AT
-            +=1; break;
-        case 6383869909: val->AT1
-            +=1; break;
-        case 6383888224: val->BCL
-            +=1; break;
-        case 193452181: val->CC
-            +=1; break;
-        case 6383923831: val->CCB
-            +=1; break;
-        case 193452709: val->CS
-            +=1; break;
-        case 6383941222: val->CSA
-            +=1; break;
-        case 6383941651: val->CSN
-            +=1; break;
-        case 6383941849: val->CST
-            +=1; break;
-        case 6383941948: val->CSW
-            +=1; break;
-        case 193453204: val->DA
-            +=1; break;
-        case 6383957029: val->DA1
-            +=1; break;
-        case 6383957062: val->DA2
-            +=1; break;
-        case 6383958118: val->DAR
-            +=1; break;
-        case 6383958184: val->DAT
-            +=1; break;
-        case 193453237: val->DB
-            +=1; break;
-        case 6383958151: val->DB2
-            +=1; break;
-        case 193453303: val->DD
-            +=1; break;
-        case 6383960296: val->DD1
-            +=1; break;
-        case 6383960329: val->DD2
-            +=1; break;
-        case 6383961352: val->DDQ
-            +=1; break;
-        case 6952133981044: val->DDQGE
-            +=1; break;
-        case 210670727134: val->DDQV
-            +=1; break;
-        case 193455052: val->EX
-            +=1; break;
-        case 193455844: val->FO
-            +=1; break;
-        case 193456042: val->FU
-            +=1; break;
-        case 193456108: val->FW
-            +=1; break;
-        case 193456603: val->GE
-            +=1; break;
-        case 193458814: val->IF
-            +=1; break;
-        case 193458913: val->II
-            +=1; break;
-        case 193459111: val->IO
-            +=1; break;
-        case 193459375: val->IW
-            +=1; break;
-        case 193460035: val->JJ
-            +=1; break;
-        case 6384183541: val->JJR
-            +=1; break;
-        case 6384183607: val->JJT
-            +=1; break;
-        case 193460068: val->JK
-            +=1; break;
-        case 193463071: val->MC
-            +=1; break;
-        case 6384282640: val->MC1
-            +=1; break;
-        case 6384282673: val->MC2
-            +=1; break;
-        case 210681353035: val->MCGE
-            +=1; break;
-        case 210681359503: val->MCMC
-            +=1; break;
-        case 193463104: val->MD
-            +=1; break;
-        case 193463170: val->MF
-            +=1; break;
-        case 6384319666: val->ND1
-            +=1; break;
-        case 193464523: val->NN
-            +=1; break;
-        case 6384330556: val->NN1
-            +=1; break;
-        case 6384330589: val->NN2
-            +=1; break;
-        case 6384331084: val->NNA
-            +=1; break;
-        case 6384331117: val->NNB
-            +=1; break;
-        case 210682939048: val->NNL1
-            +=1; break;
-        case 210682939081: val->NNL2
-            +=1; break;
-        case 6384331546: val->NNO
-            +=1; break;
-        case 210682942348: val->NNO2
-            +=1; break;
-        case 210682947760: val->NNT1
-            +=1; break;
-        case 210682947793: val->NNT2
-            +=1; break;
-        case 6384331744: val->NNU
-            +=1; break;
-        case 210682948849: val->NNU1
-            +=1; break;
-        case 210682948882: val->NNU2
-            +=1; break;
-        case 193464589: val->NP
-            +=1; break;
-        case 6384332734: val->NP1
-            +=1; break;
-        case 6384332767: val->NP2
-            +=1; break;
-        case 210683002210: val->NPD1
-            +=1; break;
-        case 210683002243: val->NPD2
-            +=1; break;
-        case 210683012011: val->NPM1
-            +=1; break;
-        case 210683012044: val->NPM2
-            +=1; break;
-        case 193466701: val->PN
-            +=1; break;
-        case 6384402430: val->PN1
-            +=1; break;
-        case 210685317325: val->PNQO
-            +=1; break;
-        case 210685317457: val->PNQS
-            +=1; break;
-        case 210685317556: val->PNQV
-            +=1; break;
-        case 210685323958: val->PNX1
-            +=1; break;
-        case 210685377979: val->PPGE
-            +=1; break;
-        case 210685378408: val->PPH1
-            +=1; break;
-        case 6952617521431: val->PPHO1
-            +=1; break;
-        case 6952617521464: val->PPHO2
-            +=1; break;
-        case 6952617525787: val->PPHS1
-            +=1; break;
-        case 6952617525820: val->PPHS2
-            +=1; break;
-        case 6952617557368: val->PPIO1
-            +=1; break;
-        case 6952617557401: val->PPIO2
-            +=1; break;
-        case 6952617561724: val->PPIS1
-            +=1; break;
-        case 6952617561757: val->PPIS2
-            +=1; break;
-        case 210685395832: val->PPX1
-            +=1; break;
-        case 210685395865: val->PPX2
-            +=1; break;
-        case 6384405928: val->PPY
-            +=1; break;
-        case 193468450: val->RA
-            +=1; break;
-        case 6384465790: val->REX
-            +=1; break;
-        case 193468648: val->RG
-            +=1; break;
-        case 6384467737: val->RGQ
-            +=1; break;
-        case 210687437839: val->RGQV
-            +=1; break;
-        case 6384467770: val->RGR
-            +=1; break;
-        case 6384467836: val->RGT
-            +=1; break;
-        case 193468813: val->RL
-            +=1; break;
-        case 193468945: val->RP
-            +=1; break;
-        case 6384477340: val->RPK
-            +=1; break;
-        case 193469011: val->RR
-            +=1; break;
-        case 6384479716: val->RRQ
-            +=1; break;
-        case 210687833146: val->RRQV
-            +=1; break;
-        case 6384479749: val->RRR
-            +=1; break;
-        case 6384479815: val->RRT
-            +=1; break;
-        case 193469077: val->RT
-            +=1; break;
-        case 193471090: val->TO
-            +=1; break;
-        case 193471948: val->UH
-            +=1; break;
-        case 6384604951: val->VB0
-            +=1; break;
-        case 210691987549: val->VBDR
-            +=1; break;
-        case 210691987813: val->VBDZ
-            +=1; break;
-        case 6384605710: val->VBG
-            +=1; break;
-        case 6384605776: val->VBI
-            +=1; break;
-        case 6384605908: val->VBM
-            +=1; break;
-        case 6384605941: val->VBN
-            +=1; break;
-        case 6384606073: val->VBR
-            +=1; break;
-        case 6384606337: val->VBZ
-            +=1; break;
-        case 6384607129: val->VD0
-            +=1; break;
-        case 6384607789: val->VDD
-            +=1; break;
-        case 6384607888: val->VDG
-            +=1; break;
-        case 6384607954: val->VDI
-            +=1; break;
-        case 6384608119: val->VDN
-            +=1; break;
-        case 6384608515: val->VDZ
-            +=1; break;
-        case 6384611485: val->VH0
-            +=1; break;
-        case 6384612145: val->VHD
-            +=1; break;
-        case 6384612244: val->VHG
-            +=1; break;
-        case 6384612310: val->VHI
-            +=1; break;
-        case 6384612475: val->VHN
-            +=1; break;
-        case 6384612871: val->VHZ
-            +=1; break;
-        case 193473202: val->VM
-            +=1; break;
-        case 6384617821: val->VMK
-            +=1; break;
-        case 6384626731: val->VV0
-            +=1; break;
-        case 6384627391: val->VVD
-            +=1; break;
-        case 6384627490: val->VVG
-            +=1; break;
-        case 210692709325: val->VVGK
-            +=1; break;
-        case 6384627556: val->VVI
-            +=1; break;
-        case 6384627721: val->VVN
-            +=1; break;
-        case 210692716948: val->VVNK
-            +=1; break;
-        case 6384628117: val->VVZ
-            +=1; break;
-        case 193475743: val->XX
-            +=1; break;
-        case 193478026: val->ZZ1
-            +=1; break;
-        case 193478027: val->ZZ2+=1; break;
+        case APPGE: val->APPGE++; 
+            break;
+        case AT: val->AT++; 
+            break;
+        case AT1: val->AT1++; 
+            break;
+        case BCL: val->BCL++; 
+            break;
+        case CC: val->CC++; 
+            break;
+        case CCB: val->CCB++; 
+            break;
+        case CS: val->CS++; 
+            break;
+        case CSA: val->CSA++; 
+            break;
+        case CSN: val->CSN++; 
+            break;
+        case CST: val->CST++; 
+            break;
+        case CSW: val->CSW++; 
+            break;
+        case DA: val->DA++; 
+            break;
+        case DA1: val->DA1++; 
+            break;
+        case DA2: val->DA2++; 
+            break;
+        case DAR: val->DAR++; 
+            break;
+        case DAT: val->DAT++; 
+            break;
+        case DB: val->DB++; 
+            break;
+        case DB2: val->DB2++; 
+            break;
+        case DD: val->DD++; 
+            break;
+        case DD1: val->DD1++; 
+            break;
+        case DD2: val->DD2++; 
+            break;
+        case DDQ: val->DDQ++; 
+            break;
+        case DDQGE: val->DDQGE++; 
+            break;
+        case DDQV: val->DDQV++; 
+            break;
+        case EX: val->EX++; 
+            break;
+        case FO: val->FO++; 
+            break;
+        case FU: val->FU++; 
+            break;
+        case FW: val->FW++; 
+            break;
+        case GE: val->GE++; 
+            break;
+        case IF: val->IF++; 
+            break;
+        case II: val->II++; 
+            break;
+        case IO: val->IO++; 
+            break;
+        case IW: val->IW++; 
+            break;
+        case JJ: val->JJ++; 
+            break;
+        case JJR: val->JJR++; 
+            break;
+        case JJT: val->JJT++; 
+            break;
+        case JK: val->JK++; 
+            break;
+        case MC: val->MC++; 
+            break;
+        case MC1: val->MC1++; 
+            break;
+        case MC2: val->MC2++; 
+            break;
+        case MCGE: val->MCGE++; 
+            break;
+        case MCMC: val->MCMC++; 
+            break;
+        case MD: val->MD++; 
+            break;
+        case MF: val->MF++; 
+            break;
+        case ND1: val->ND1++; 
+            break;
+        case NN: val->NN++; 
+            break;
+        case NN1: val->NN1++; 
+            break;
+        case NN2: val->NN2++; 
+            break;
+        case NNA: val->NNA++; 
+            break;
+        case NNB: val->NNB++; 
+            break;
+        case NNL1: val->NNL1++; 
+            break;
+        case NNL2: val->NNL2++; 
+            break;
+        case NNO: val->NNO++; 
+            break;
+        case NNO2: val->NNO2++; 
+            break;
+        case NNT1: val->NNT1++; 
+            break;
+        case NNT2: val->NNT2++; 
+            break;
+        case NNU: val->NNU++; 
+            break;
+        case NNU1: val->NNU1++; 
+            break;
+        case NNU2: val->NNU2++; 
+            break;
+        case NP: val->NP++; 
+            break;
+        case NP1: val->NP1++; 
+            break;
+        case NP2: val->NP2++; 
+            break;
+        case NPD1: val->NPD1++; 
+            break;
+        case NPD2: val->NPD2++; 
+            break;
+        case NPM1: val->NPM1++; 
+            break;
+        case NPM2: val->NPM2++; 
+            break;
+        case PN: val->PN++; 
+            break;
+        case PN1: val->PN1++; 
+            break;
+        case PNQO: val->PNQO++; 
+            break;
+        case PNQS: val->PNQS++; 
+            break;
+        case PNQV: val->PNQV++; 
+            break;
+        case PNX1: val->PNX1++; 
+            break;
+        case PPGE: val->PPGE++; 
+            break;
+        case PPH1: val->PPH1++; 
+            break;
+        case PPHO1: val->PPHO1++; 
+            break;
+        case PPHO2: val->PPHO2++; 
+            break;
+        case PPHS1: val->PPHS1++; 
+            break;
+        case PPHS2: val->PPHS2++; 
+            break;
+        case PPIO1: val->PPIO1++; 
+            break;
+        case PPIO2: val->PPIO2++; 
+            break;
+        case PPIS1: val->PPIS1++; 
+            break;
+        case PPIS2: val->PPIS2++; 
+            break;
+        case PPX1: val->PPX1++; 
+            break;
+        case PPX2: val->PPX2++; 
+            break;
+        case PPY: val->PPY++; 
+            break;
+        case RA: val->RA++; 
+            break;
+        case REX: val->REX++; 
+            break;
+        case RG: val->RG++; 
+            break;
+        case RGQ: val->RGQ++; 
+            break;
+        case RGQV: val->RGQV++; 
+            break;
+        case RGR: val->RGR++; 
+            break;
+        case RGT: val->RGT++; 
+            break;
+        case RL: val->RL++; 
+            break;
+        case RP: val->RP++; 
+            break;
+        case RPK: val->RPK++; 
+            break;
+        case RR: val->RR++; 
+            break;
+        case RRQ: val->RRQ++; 
+            break;
+        case RRQV: val->RRQV++; 
+            break;
+        case RRR: val->RRR++; 
+            break;
+        case RRT: val->RRT++; 
+            break;
+        case RT: val->RT++; 
+            break;
+        case TO: val->TO++; 
+            break;
+        case UH: val->UH++; 
+            break;
+        case VB0: val->VB0++; 
+            break;
+        case VBDR: val->VBDR++; 
+            break;
+        case VBDZ: val->VBDZ++; 
+            break;
+        case VBG: val->VBG++; 
+            break;
+        case VBI: val->VBI++; 
+            break;
+        case VBM: val->VBM++; 
+            break;
+        case VBN: val->VBN++; 
+            break;
+        case VBR: val->VBR++; 
+            break;
+        case VBZ: val->VBZ++; 
+            break;
+        case VD0: val->VD0++; 
+            break;
+        case VDD: val->VDD++; 
+            break;
+        case VDG: val->VDG++; 
+            break;
+        case VDI: val->VDI++; 
+            break;
+        case VDN: val->VDN++; 
+            break;
+        case VDZ: val->VDZ++; 
+            break;
+        case VH0: val->VH0++; 
+            break;
+        case VHD: val->VHD++; 
+            break;
+        case VHG: val->VHG++; 
+            break;
+        case VHI: val->VHI++; 
+            break;
+        case VHN: val->VHN++; 
+            break;
+        case VHZ: val->VHZ++; 
+            break;
+        case VM: val->VM++; 
+            break;
+        case VMK: val->VMK++; 
+            break;
+        case VV0: val->VV0++; 
+            break;
+        case VVD: val->VVD++; 
+            break;
+        case VVG: val->VVG++; 
+            break;
+        case VVGK: val->VVGK++; 
+            break;
+        case VVI: val->VVI++; 
+            break;
+        case VVN: val->VVN++; 
+            break;
+        case VVNK: val->VVNK++; 
+            break;
+        case VVZ: val->VVZ++; 
+            break;
+        case XX: val->XX++; 
+            break;
+        case ZZ1: val->ZZ1++; 
+            break;
+        case ZZ2: val->ZZ2++; 
+            break;
     }
-    
 }
-
-unsigned long hash(char *str)
+unsigned long hash(char *tag)
 {
     unsigned long hash = 5381;
     int c;
     
-    while ((c = *str++))
+    while ((c = *tag++))
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
     
     return hash;

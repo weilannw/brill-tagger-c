@@ -7,4 +7,7 @@
 int main(int argc, char* argv[]){
     /* dictionary with word frequency */
     map_t dict_hashmap = generate_dictionary(TRAINING_CORPUS_PATH);
+    
+    /* deallocate hashmap from memory */
+    hashmap_free(dict_hashmap);
 }
