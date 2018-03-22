@@ -2,24 +2,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include "tags.h"
+#include "../tagger/tags.h"
 #include "dictionary_generator.h"
 #include "../lib/hashmap.h"
-#define KEY_MAX_LENGTH (256)
-#define KEY_PREFIX ("somekey")
-#define KEY_COUNT (1024*1024)
-
-
-
-typedef struct data_struct_s
-{
-    char key_string[KEY_MAX_LENGTH];
-    int number;
-} data_struct_t;
-
-void updateTasks(char* word, struct tagset *val, char* tag);
-unsigned long hash(char *str);
-void printMap(map_t mymap, char* name);
 
 map_t generate_dictionary(char *filepath)
 {
@@ -43,7 +28,7 @@ map_t generate_dictionary(char *filepath)
     char *saveptr;
     char *word;
     char *tag;
-    tagset tags;
+    tagcounts_t tags;
     
     
     if (fp == NULL)
@@ -62,15 +47,15 @@ map_t generate_dictionary(char *filepath)
         strcpy(newword, word);
         strcpy(newtag, tag);
 
-        //Get the current tagset
+        //Get the current tagcounts_t
         if(hashmap_get(mymap, word, (void **)&tags) == MAP_MISSING){
-            struct tagset *newtags = malloc (sizeof (struct tagset));
-            memset(newtags, 0, sizeof(struct tagset));
+            struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
+            memset(newtags, 0, sizeof(struct tagcounts_t));
             updateTags(newword, newtags, newtag);
             hashmap_put(mymap, newword, newtags);
         }
         else{
-            struct tagset *curtags = malloc (sizeof (struct tagset));
+            struct tagcounts_t *curtags = malloc (sizeof (struct tagcounts_t));
             hashmap_get(mymap, newword, (void **)&curtags);
             updateTags(newword,curtags, newtag);
             hashmap_remove(mymap, newword);
@@ -81,7 +66,7 @@ map_t generate_dictionary(char *filepath)
     return mymap;
 }
 
-void updateTags(char* word, struct tagset *val, char* tag){
+void updateTags(char* word, struct tagcounts_t *val, char* tag){
     unsigned long hash_value = hash(tag);
     switch(hash_value){
         case APPGE: val->APPGE++; 
@@ -360,22 +345,11 @@ void updateTags(char* word, struct tagset *val, char* tag){
             break;
     }
 }
-unsigned long hash(char *tag)
-{
-    unsigned long hash = 5381;
-    int c;
-    
-    while ((c = *tag++))
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-    
-    return hash;
-}
 
 void printMap(map_t mymap, char* name){
-  struct tagset *finalval = malloc (sizeof (struct tagset));
+  struct tagcounts_t *finalval = malloc (sizeof (struct tagcounts_t));
    if(hashmap_get(mymap, name, (void **)&finalval) == MAP_OK)
     printf("Key: %s\nValues: APPGE=%d\tZZ1=%d\tZZ2=%d\n", name, finalval->APPGE, finalval->ZZ1, finalval->ZZ2);
-
 }
           
 
