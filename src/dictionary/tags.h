@@ -8,7 +8,8 @@
 #ifndef tags_h
 #define tags_h
 
-
+/* struct containing counts for each tag, 
+   one struct for each unique string */
 typedef struct tagset
 {
     int APPGE;   // possessive pronoun, pre-nominal (e.g. my, your, our)

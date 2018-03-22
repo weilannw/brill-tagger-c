@@ -1,13 +1,9 @@
-/*
- * A unit test and example of how to use the simple C hashmap
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include "tags.h"
-#include "hashmap.h"
+#include "../lib/hashmap.h"
 
 #define KEY_MAX_LENGTH (256)
 #define KEY_PREFIX ("somekey")
@@ -25,9 +21,8 @@ void updateTasks(char* word, struct tagset *val, char* tag);
 unsigned long hash(char *str);
 void printMap(map_t mymap, char* name);
 
-int main(int argc, char** argv)
+map_t generate_dictionary(char *filepath)
 {
-    
     FILE * fp;
     char * line = NULL;
     size_t len = 0;
@@ -44,10 +39,10 @@ int main(int argc, char** argv)
     
     mymap = hashmap_new();
 
-    fp = fopen("try.txt", "r");
+    fp = fopen(filepath, "r");
     char *saveptr;
-    char* word;
-    char* tag;
+    char *word;
+    char *tag;
     tagset tags;
     
     
