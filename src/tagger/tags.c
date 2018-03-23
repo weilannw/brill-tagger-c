@@ -1,11 +1,9 @@
 #include "tags.h"
-unsigned long hash(char *tag)
+int hash(char *tag)
 {
-    unsigned long hash = 5381;
+    int hash = 5381;
     int c;
-    
     while ((c = *tag++))
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-    
+        hash = ((hash << 6) + hash) + c; /* hash * 33 + c */
     return hash;
 }
