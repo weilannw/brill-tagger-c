@@ -6,6 +6,9 @@
 #include "dictionary_generator.h"
 #include "../lib/hashmap.h"
 
+void shorten_tag_struct(map_t map);
+void get_highest_frequency(tagscount_t* tags, *int hash);
+
 map_t generate_dictionary(char *filepath)
 {
     //Used for file reading
@@ -24,7 +27,7 @@ map_t generate_dictionary(char *filepath)
     
     //Instantiate a new hashmap
     mymap = hashmap_new();
-
+    
     //Use these variables to parse and prepare words for tagset updating.
     fp = fopen(filepath, "r");
     char *saveptr;
@@ -37,18 +40,18 @@ map_t generate_dictionary(char *filepath)
     
     //Continue reading until the end of the file
     while ((read = getline(&line, &len, fp)) != -1) {
-      
+        
         word = strtok_r(line, " ", &saveptr);
         tag = strtok_r(NULL, " ", &saveptr);
         if(word[read-1] == '\n') word[read-1] = '\0';
         if(tag[read-1] == '\n') tag[read-1] = '\0';
         
-         char* newword = malloc(strlen(word) + 1);
-         char* newtag = malloc(strlen(tag) + 1);
+        char* newword = malloc(strlen(word) + 1);
+        char* newtag = malloc(strlen(tag) + 1);
         
         strcpy(newword, word);
         strcpy(newtag, tag);
-
+        
         //See if the word is already used as a key value.
         //If it is not, we allocate a new structure to store as the keyword's value
         //and call updateTags, this will set the initial tag to 1.
@@ -71,7 +74,7 @@ map_t generate_dictionary(char *filepath)
             hashmap_remove(mymap, newword);
             hashmap_put(mymap, newword, curtags);
         }
-
+        
     }
     //return the finished map
     return mymap;
@@ -224,8 +227,8 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
         case ZZ1: val->ZZ1+=1; break;
         case ZZ2: val->ZZ2+=1; break;
         default: printf("Illegal input tag\n");
-        /* punctuation not included because 
-        these tags are known up front */
+            /* punctuation not included because
+             these tags are known up front */
     }
 }
 
@@ -235,7 +238,185 @@ void printMap(map_t mymap, char* name){
     struct tagcounts_t *finalval = malloc (sizeof (struct tagcounts_t));
     if(hashmap_get(mymap, name, (void **)&finalval) == MAP_OK)
         printf("Key: %s\nValues: APPGE=%d\tZZ1=%d\tZZ2=%d\n",
-             name, finalval->APPGE, finalval->ZZ1, finalval->ZZ2);
+               name, finalval->APPGE, finalval->ZZ1, finalval->ZZ2);
 }
-          
+
+void shorten_tag_struct(map_t map){
+    PFany p;
+    any_t a;
+    hashmap_iterate(map, p, a);
+    
+    int i;
+    
+    /* Cast the hashmap */
+    hashmap_map* m = (hashmap_map*) map;
+    
+    /* On empty hashmap, return immediately */
+    if (hashmap_length(m) <= 0)
+        return MAP_MISSING;
+    
+    /* Linear probing */
+    for(i = 0; i< m->table_size; i++)
+        if(m->data[i].in_use != 0) {
+            int highest = malloc(sizeof(int));
+            char* key = m->data[i].key;
+            
+            get_highest_frequency((tagscount_t)&m->data[i].data, &highest);
+            
+            free(m->data[i].data);
+            hashmap_remove(map, m->data[i].key);
+            
+            hashmap_put(map, key, highest);
+            
+        }
+    
+    
+}
+
+void get_highest_frequency(tagscount_t* tags, *int hash){
+    
+    int highest = -1;
+    
+    if(tags->APPGE > highest) highest = tags->APPGE;
+    if(tags->AT > highest) highest = tags->AT;
+    if(tags->AT1 > highest) highest = tags->AT1;
+    if(tags->BCL > highest) highest = tags->BCL;
+    if(tags->CC > highest) highest = tags->CC;
+    if(tags->CCB > highest) highest = tags->CCB;
+    if(tags->CS > highest) highest = tags->CS;
+    if(tags->CSA > highest) highest = tags->CSA;
+    if(tags->CSN > highest) highest = tags->CSN;
+    if(tags->CST > highest) highest = tags->CST;
+    if(tags->CSW > highest) highest = tags->CSW;
+    if(tags->DA > highest) highest = tags->DA;
+    if(tags->DA1 > highest) highest = tags->DA1;
+    if(tags->DA2 > highest) highest = tags->DA2;
+    if(tags->DAR > highest) highest = tags->DAR;
+    if(tags->DAT > highest) highest = tags->DAT;
+    if(tags->DB > highest) highest = tags->DB;
+    if(tags->DB2 > highest) highest = tags->DB2;
+    if(tags->DD > highest) highest = tags->DD;
+    if(tags->DD1 > highest) highest = tags->DD1;
+    if(tags->DD2 > highest) highest = tags->DD2;
+    if(tags->DDQ > highest) highest = tags->DDQ;
+    if(tags->DDQGE > highest) highest = tags->DDQGE;
+    if(tags->DDQV > highest) highest = tags->DDQV;
+    if(tags->EX > highest) highest = tags->EX;
+    if(tags->FO > highest) highest = tags->FO;
+    if(tags->FU > highest) highest = tags->FU;
+    if(tags->FW > highest) highest = tags->FW;
+    if(tags->GE > highest) highest = tags->GE;
+    if(tags->IF > highest) highest = tags->IF;
+    if(tags->II > highest) highest = tags->II;
+    if(tags->IO > highest) highest = tags->IO;
+    if(tags->IW > highest) highest = tags->IW;
+    if(tags->JJ > highest) highest = tags->JJ;
+    if(tags->JJR > highest) highest = tags->JJR;
+    if(tags->JJT > highest) highest = tags->JJT;
+    if(tags->JK > highest) highest = tags->JK;
+    if(tags->MC > highest) highest = tags->MC;
+    if(tags->MC1 > highest) highest = tags->MC1;
+    if(tags->MC2 > highest) highest = tags->MC2;
+    if(tags->MCGE > highest) highest = tags->MCGE;
+    if(tags->MCMC > highest) highest = tags->MCMC;
+    if(tags->MD > highest) highest = tags->MD;
+    if(tags->MF > highest) highest = tags->MF;
+    if(tags->ND1 > highest) highest = tags->ND1;
+    if(tags->NN > highest) highest = tags->NN;
+    if(tags->NN1 > highest) highest = tags->NN1;
+    if(tags->NN2 > highest) highest = tags->NN2;
+    if(tags->NNA > highest) highest = tags->NNA;
+    if(tags->NNB > highest) highest = tags->NNB;
+    if(tags->NNL1 > highest) highest = tags->NNL1;
+    if(tags->NNL2 > highest) highest = tags->NNL2;
+    if(tags->NNO > highest) highest = tags->NNO;
+    if(tags->NNO2 > highest) highest = tags->NNO2;
+    if(tags->NNT1 > highest) highest = tags->NNT1;
+    if(tags->NNT2 > highest) highest = tags->NNT2;
+    if(tags->NNU > highest) highest = tags->NNU;
+    if(tags->NNU1 > highest) highest = tags->NNU1;
+    if(tags->NNU2 > highest) highest = tags->NNU2;
+    if(tags->NP > highest) highest = tags->NP;
+    if(tags->NP1 > highest) highest = tags->NP1;
+    if(tags->NP2 > highest) highest = tags->NP2;
+    if(tags->NPD1 > highest) highest = tags->NPD1;
+    if(tags->NPD2 > highest) highest = tags->NPD2;
+    if(tags->NPM1 > highest) highest = tags->NPM1;
+    if(tags->NPM2 > highest) highest = tags->NPM2;
+    if(tags->PN > highest) highest = tags->PN;
+    if(tags->PN1 > highest) highest = tags->PN1;
+    if(tags->PNQO > highest) highest = tags->PNQO;
+    if(tags->PNQS > highest) highest = tags->PNQS;
+    if(tags->PNQV > highest) highest = tags->PNQV;
+    if(tags->PNX1 > highest) highest = tags->PNX1;
+    if(tags->PPGE > highest) highest = tags->PPGE;
+    if(tags->PPH1 > highest) highest = tags->PPH1;
+    if(tags->PPHO1 > highest) highest = tags->PPHO1;
+    if(tags->PPHO2 > highest) highest = tags->PPHO2;
+    if(tags->PPHS1 > highest) highest = tags->PPHS1;
+    if(tags->PPHS2 > highest) highest = tags->PPHS2;
+    if(tags->PPIO1 > highest) highest = tags->PPIO1;
+    if(tags->PPIO2 > highest) highest = tags->PPIO2;
+    if(tags->PPIS1 > highest) highest = tags->PPIS1;
+    if(tags->PPIS2 > highest) highest = tags->PPIS2;
+    if(tags->PPX1 > highest) highest = tags->PPX1;
+    if(tags->PPX2 > highest) highest = tags->PPX2;
+    if(tags->PPY > highest) highest = tags->PPY;
+    if(tags->RA > highest) highest = tags->RA;
+    if(tags->REX > highest) highest = tags->REX;
+    if(tags->RG > highest) highest = tags->RG;
+    if(tags->RGQ > highest) highest = tags->RGQ;
+    if(tags->RGQV > highest) highest = tags->RGQV;
+    if(tags->RGR > highest) highest = tags->RGR;
+    if(tags->RGT > highest) highest = tags->RGT;
+    if(tags->RL > highest) highest = tags->RL;
+    if(tags->RP > highest) highest = tags->RP;
+    if(tags->RPK > highest) highest = tags->RPK;
+    if(tags->RR > highest) highest = tags->RR;
+    if(tags->RRQ > highest) highest = tags->RRQ;
+    if(tags->RRQV > highest) highest = tags->RRQV;
+    if(tags->RRR > highest) highest = tags->RRR;
+    if(tags->RRT > highest) highest = tags->RRT;
+    if(tags->RT > highest) highest = tags->RT;
+    if(tags->TO > highest) highest = tags->TO;
+    if(tags->UH > highest) highest = tags->UH;
+    if(tags->VB0 > highest) highest = tags->VB0;
+    if(tags->VBDR > highest) highest = tags->VBDR;
+    if(tags->VBDZ > highest) highest = tags->VBDZ;
+    if(tags->VBG > highest) highest = tags->VBG;
+    if(tags->VBI > highest) highest = tags->VBI;
+    if(tags->VBM > highest) highest = tags->VBM;
+    if(tags->VBN > highest) highest = tags->VBN;
+    if(tags->VBR > highest) highest = tags->VBR;
+    if(tags->VBZ > highest) highest = tags->VBZ;
+    if(tags->VD0 > highest) highest = tags->VD0;
+    if(tags->VDD > highest) highest = tags->VDD;
+    if(tags->VDG > highest) highest = tags->VDG;
+    if(tags->VDI > highest) highest = tags->VDI;
+    if(tags->VDN > highest) highest = tags->VDN;
+    if(tags->VDZ > highest) highest = tags->VDZ;
+    if(tags->VH0 > highest) highest = tags->VH0;
+    if(tags->VHD > highest) highest = tags->VHD;
+    if(tags->VHG > highest) highest = tags->VHG;
+    if(tags->VHI > highest) highest = tags->VHI;
+    if(tags->VHN > highest) highest = tags->VHN;
+    if(tags->VHZ > highest) highest = tags->VHZ;
+    if(tags->VM > highest) highest = tags->VM;
+    if(tags->VMK > highest) highest = tags->VMK;
+    if(tags->VV0 > highest) highest = tags->VV0;
+    if(tags->VVD > highest) highest = tags->VVD;
+    if(tags->VVG > highest) highest = tags->VVG;
+    if(tags->VVGK > highest) highest = tags->VVGK;
+    if(tags->VVI > highest) highest = tags->VVI;
+    if(tags->VVN > highest) highest = tags->VVN;
+    if(tags->VVNK > highest) highest = tags->VVNK;
+    if(tags->VVZ > highest) highest = tags->VVZ;
+    if(tags->XX > highest) highest = tags->XX;
+    if(tags->ZZ1 > highest) highest = tags->ZZ1;
+    if(tags->ZZ2 > highest) highest = tags->ZZ2;
+    
+    *hash = highest;
+}
+
+
 
