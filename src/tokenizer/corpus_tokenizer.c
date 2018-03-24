@@ -1,28 +1,44 @@
-/*todo:
-    initial tagger should 
-    parse rules from plaintext
-    apply rules onto the corpus in order
-        -this should be able to test rules for 
-        error improvement using enum methods (format: if previous tag is this,
-        do this)
-        -should be able to apply rules and generate a result corpus
+/*
+    This will read the file into a memory map--structure of 
+    how data is layed out in the memory
+    map will determine the structure of the data types used for
+    optimizing multi threaded code.
 
-            -test rule
-            -apply rule
-    
-    parallelize init
-    typedef enum{
-        PREV_TAG_IS=0,
-        NEXT_TAG_IS=1,
-        PREV_2_TAG_IS=2,
-        NEXT_2_TAG_IS=3,
-        PREV_1_OR_2_TAG_IS=4, 
-        NEXT_1_OR_2_TAG_IS=5,
-        PREV_1_OR_2_OR_3_TAG_IS=6,
-        NEXT_1_OR_2_OR_3_TAG_IS=7,
-        PREV_TAG_IS_X_AND_NEXT_TAG_IS_Y=8,
-        PREV_TAG_IS_X_AND_NEXT_2_TAG_IS_Y=9,
-        NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y=10
-    }known_word_rules_t;
+    One idea for the memory map is for the corpus preformatter
+    to have every line space-padded to the maximum tag length
+    so that changes to the tags will not result in a SIGBUS error.
+    either that, or the hashing function will be replaced by a simple
+    int conversion on the original corpus to create a new corpus
+    in which tags are represented as integers. 
+
+    There will need to be two memory maps per thread, 
+    one for the training corpus, 
+    and one for the corresponding corpus which is stripped of 
+
+
+    All threads will start with their own portion of training-corpus
+        Not a lot of documentation on rule instantiation -- possible method:
+        -most frequent tag error will need to be found 
+            -which tag is usually needed for that tag Y
+                -eg tag is X but should be Y
+            -iterate through all contextual
+                rule templates, instantiating them with this most frequent tag1 
+                tag (eg tag1>tag2), and the most frequent surrounding 
+                tags (only consider the tagged words surrounding 
+                        the incorrectly tagged words (tag1) to which the conversion
+                        applies (tag1>tag2)
+                        and only consider the surrounding tags that are free of 
+                        errors when instantiating rules) 
+                    -1st prev, 2nd prev, 3rd prev
+                    -1st next, 2nd next, 3rd next
+                -test each rule on the corpus, keeping the rule that reduces the error the most
+                and add it to the rule list, applying it to the actual corpus.
+                test
+
+                things to store during initial error search:
+                -indices of all errors for quick retrieval
+                on calculating most common errors:
+                -now store the surrounding tags for each index for 
+                -now store the 
 
 */
