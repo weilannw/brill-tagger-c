@@ -8,11 +8,13 @@
 
 map_t generate_dictionary(char *filepath)
 {
+    //Used for file reading
     FILE * fp;
     char * line = NULL;
     size_t len = 0;
     ssize_t read;
     
+    //Used for various placeholders
     int index;
     int error;
     map_t mymap;
@@ -20,10 +22,10 @@ map_t generate_dictionary(char *filepath)
     data_struct_t* value;
     char* val;
     
-    char *buffer[3];
-    
+    //Instantiate a new hashmap
     mymap = hashmap_new();
 
+    //Use these variables to parse and prepare words for tagset updating.
     fp = fopen(filepath, "r");
     char *saveptr;
     char *word;
@@ -32,7 +34,8 @@ map_t generate_dictionary(char *filepath)
     
     if (fp == NULL)
         exit(EXIT_FAILURE);
-    int counter = 0;
+    
+    //Continue reading until the end of the file
     while ((read = getline(&line, &len, fp)) != -1) {
       
         word = strtok_r(line, " ", &saveptr);
@@ -46,13 +49,21 @@ map_t generate_dictionary(char *filepath)
         strcpy(newword, word);
         strcpy(newtag, tag);
 
-        //Get the current tagcounts_t
+        //See if the word is already used as a key value.
+        //If it is not, we allocate a new structure to store as the keyword's value
+        //and call updateTags, this will set the initial tag to 1.
+        //Finally, we put this keyword and value into the hashmap.
+        
         if(hashmap_get(mymap, word, (void **)&tags) == MAP_MISSING){
             struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
             memset(newtags, 0, sizeof(struct tagcounts_t));
             updateTags(newword, newtags, newtag);
             hashmap_put(mymap, newword, newtags);
         }
+        
+        //If the word already exists, get the current tagset values of the keyword.
+        //Update it's contents to reflect the new tag (increment the correct value)
+        //and finally remove the old version from the map and put the new version in.
         else{
             struct tagcounts_t *curtags = malloc (sizeof (struct tagcounts_t));
             hashmap_get(mymap, newword, (void **)&curtags);
@@ -62,11 +73,18 @@ map_t generate_dictionary(char *filepath)
         }
 
     }
+    //return the finished map
     return mymap;
 }
 void updateTags(char* word, struct tagcounts_t *val, char* tag){
+    
+    //Hash the tag value to save time in the future
     int hash_value = tag_to_hash(tag);
+    
     /*auto generated switch statement*/
+    //Switch statement is passed the hashed tag value. The corresponding cases
+    //are enumerated types described in ../tagger/tags.h
+    
     switch(hash_value){
         case APPGE: val->APPGE+=1; break;
         case AT: val->AT+=1; break;
@@ -211,6 +229,8 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
     }
 }
 
+//Simple helper method used to test certain inputs. Showed correct output for the corresponding text file
+//used to test
 void printMap(map_t mymap, char* name){
     struct tagcounts_t *finalval = malloc (sizeof (struct tagcounts_t));
     if(hashmap_get(mymap, name, (void **)&finalval) == MAP_OK)
