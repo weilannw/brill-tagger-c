@@ -6,8 +6,10 @@
 //
 #ifndef tags_h
 #define tags_h
+#define LINE_MAX_LENGTH 100 // max line length in mem map
 /* comparing hash values allows us 
 to avoid expensive strcmp operations */
+
 typedef enum{
     APPGE=404153362,
     AT=22741146,
@@ -157,6 +159,7 @@ typedef enum{
     ZZ=22742777
 }tag_hash_t;
 
+void apply_tag(int, char *);
 /* converts hashed tag to string for printed output */
 void hash_to_tag(int, char *);
 

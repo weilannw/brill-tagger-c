@@ -2,6 +2,7 @@
     "files.associations": {
         "tags.h": "c",
         "assert.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "strings.h": "c"
     }
 }
