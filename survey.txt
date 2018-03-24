@@ -20,5 +20,3 @@ OK
 
 Do you have any specific questions you'd like me to answer as part of your evaluation?
 
-How do you think our code structure looks so far? we realize there is no parallelization yet,
-but thats because we are still in the thinking phase of thinking about what things are parallelizable.

@@ -18,17 +18,17 @@
 
     All threads will start with their own portion of training-corpus
         Not a lot of documentation on rule instantiation -- possible method:
-        -most frequent tag error will need to be found 
-            -which tag is usually needed for that tag Y
-                -eg tag is X but should be Y
+            -most frequent tag error will need to be found 
+                -eg tag is tag1 but should be tag2
             -iterate through all contextual
-                rule templates, instantiating them with this most frequent tag1 
-                tag (eg tag1>tag2), and the most frequent surrounding 
-                tags (only consider the tagged words surrounding 
-                        the incorrectly tagged words (tag1) to which the conversion
-                        applies (tag1>tag2)
-                        and only consider the surrounding tags that are free of 
-                        errors when instantiating rules) 
+                rule templates, instantiating them with this most frequent tag 
+                 (eg tag1>tag2), and the most frequent surrounding 
+                tags (only consider:
+                        -the incorrectly tagged words
+                        to which the conversion applies (tag1->tag2)
+                        -surrounding tags that are free of 
+                        errors
+                        -when instantiating rules
                     -1st prev, 2nd prev, 3rd prev
                     -1st next, 2nd next, 3rd next
                 -test each rule on the corpus, keeping the rule that reduces the error the most
@@ -36,9 +36,9 @@
                 test
 
                 things to store during initial error search:
-                -indices of all errors for quick retrieval
+                -a 2d array of error types storing indices of all errors of a type
+                 for quick retrieval
                 on calculating most common errors:
                 -now store the surrounding tags for each index for 
-                -now store the 
 
 */
