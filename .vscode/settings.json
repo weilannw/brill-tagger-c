@@ -3,6 +3,8 @@
         "tags.h": "c",
         "assert.h": "c",
         "type_traits": "c",
-        "strings.h": "c"
+        "strings.h": "c",
+        "dictionary_generator.h": "c",
+        "hashmap.h": "c"
     }
 }

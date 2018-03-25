@@ -7,10 +7,12 @@
 #include "../lib/hashmap.h"
 
 void shorten_tag_struct(map_t map);
-void get_highest_frequency(tagscount_t* tags, *int hash);
+void get_highest_frequency(tagcounts_t *tags, int *hash);
 
-static tagcounts_t frequency_count = malloc (sizeof (struct tagcounts_t));
-int most_common_tag = malloc (sizeof(int));
+tagcounts_t frequency_count;
+//call in generate dict = malloc (sizeof (struct tagcounts_t));
+int most_common_tag;
+ // call in generate dict= malloc (sizeof(int));
 
 
 map_t generate_dictionary(char *filepath)
@@ -248,7 +250,6 @@ void printMap(map_t mymap, char* name){
 }
 
 void shorten_tag_struct(map_t map){
-    
 
     PFany p;
     any_t a;
@@ -257,7 +258,7 @@ void shorten_tag_struct(map_t map){
     int i;
     
     /* Cast the hashmap */
-    hashmap_map* m = (hashmap_map*) map;
+    hashmap_map *m = (hashmap_map*) map;
     
     /* On empty hashmap, return immediately */
     if (hashmap_length(m) <= 0)
@@ -269,7 +270,7 @@ void shorten_tag_struct(map_t map){
             int highest = malloc(sizeof(int));
             char* key = m->data[i].key;
             
-            get_highest_frequency((tagscount_t)&m->data[i].data, &highest);
+            get_highest_frequency((tagcounts_t)&m->data[i].data, &highest);
             
             free(m->data[i].data);
             hashmap_remove(map, m->data[i].key);
@@ -281,11 +282,9 @@ void shorten_tag_struct(map_t map){
     get_highest_frequency(&frequency_count, &most_common_tag);
     free(frequency_count);
     
-    
 }
 
-void get_highest_frequency(tagscount_t* tags, *int hash){
-    
+void get_highest_frequency(tagcounts_t* tags, int *hash){
     int highest = -1;
     
     if(tags->APPGE > highest) highest = APPGE;
