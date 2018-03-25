@@ -2,15 +2,30 @@
 #include <strings.h>
 #include "../dictionary/dictionary_generator.h"
 #include "../lib/hashmap.h"
+#include "../io/corpus_io.h"
 #include "tags.h"
+/* the initial tagger deals with the first round of tagging,
+ * which is based on the frequency of tags for a given word,
+ * where the most frequent tag is applied immediately. If the word
+ * can not be found, unknown word tagging rules are applied. 
+ * args:
+ *      char *:
+ *         pointer to the start of the memory map
+ *      map_t:
+ *         hashmap struct
+ */
 void apply_initial_tags(char * mem_map, map_t map){
     // loop through each line in the file and call apply_initial tag
+    //this will be parallelized
 }
+
 /* applies initial tag based on tag frequency for a word
-   args: 
-        -char *mem_map_line: pointer to start of a line in mem map
-        -map_t map: the hashmap with frequencies
-*/
+ * args: 
+ *       char *: 
+ *          pointer to start of a line in mem map
+ *       map_t: 
+ *          the hashmap with tag frequencies for each word 
+ */
 void apply_initial_tag(char *mem_map_line, map_t map){
     //memory map is a pointer to the beginning of the line in the memory map
     int hashed_value;

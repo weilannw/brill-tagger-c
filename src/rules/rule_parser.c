@@ -44,3 +44,16 @@ void allocate_current_rule(contextual_rule_t *rule){
     rule->tag1 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
     rule->tag2 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
 }
+void free_contextual_rule(contextual_rule_t *rule){
+    free(rule->arg1);
+    rule->arg1 = NULL;
+    free(rule->arg2);
+    rule->arg2 = NULL;
+    free(rule->tag1);
+    rule->tag1 = NULL;
+    free(rule->tag2);
+    rule->tag2 = NULL;
+    free(rule);
+    rule = NULL;
+
+}
