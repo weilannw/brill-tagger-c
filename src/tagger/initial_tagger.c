@@ -26,7 +26,7 @@ void apply_initial_tags(char * mem_map, map_t map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *mem_map_line, map_t map){
+void apply_initial_tag(char* mem_map_line, map_t map){
     //memory map is a pointer to the beginning of the line in the memory map
     int hashed_value;
     // find the place to store the null byte in the string for the hashmap
@@ -42,6 +42,6 @@ void apply_initial_tag(char *mem_map_line, map_t map){
         apply_tag(hashed_value, &mem_map_line[word_len]);
 }
 /* called if the word cannot be found in the hashmap */
-void apply_initial_unknown_word_tag(char *mem_map_line){
+void apply_initial_unknown_word_tag(char* mem_map_line){
     /* relies on properties of the word for tagging */
 }

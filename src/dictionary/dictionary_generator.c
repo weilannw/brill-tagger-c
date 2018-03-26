@@ -84,6 +84,13 @@ map_t generate_dictionary(char *filepath)
         }
         
     }
+    
+    //Placeholder values that aren't needed but are passed into the hashmaps function
+    PFany p;
+    any_t t;
+    
+    hashmap_iterate(mymap, p, t);
+    
     //return the finished map
     return mymap;
 }
@@ -249,41 +256,9 @@ void printMap(map_t mymap, char* name){
                name, finalval->APPGE, finalval->ZZ1, finalval->ZZ2);
 }
 
-void shorten_tag_struct(map_t map){
 
-    PFany p;
-    any_t a;
-    hashmap_iterate(map, p, a);
-    
-    int i;
-    
-    /* Cast the hashmap */
-    hashmap_map *m = (hashmap_map*) map;
-    
-    /* On empty hashmap, return immediately */
-    if (hashmap_length(m) <= 0)
-        return MAP_MISSING;
-    
-    /* Linear probing */
-    for(i = 0; i< m->table_size; i++)
-        if(m->data[i].in_use != 0) {
-            int highest = malloc(sizeof(int));
-            char* key = m->data[i].key;
-            
-            get_highest_frequency((tagcounts_t)&m->data[i].data, &highest);
-            
-            free(m->data[i].data);
-            hashmap_remove(map, m->data[i].key);
-            
-            hashmap_put(map, key, highest);
-            
-        }
-    
-    get_highest_frequency(&frequency_count, &most_common_tag);
-    free(frequency_count);
-    
-}
-
+//This method takes in a tag structure along with an allocated integer.
+//The method stores the most frequent value's hash into the address of the passed in int pointer
 void get_highest_frequency(tagcounts_t* tags, int *hash){
     int highest = -1;
     

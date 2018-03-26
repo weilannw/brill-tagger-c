@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../dictionary/dictionary_generator.h"
 
 #define INITIAL_SIZE (256)
 #define MAX_CHAIN_LENGTH (8)
@@ -323,6 +324,7 @@ int hashmap_get(map_t in, char* key, any_t *arg){
  * Iterate the function parameter over each element in the hashmap.  The
  * additional any_t argument is passed to the function as its first
  * argument and the hashmap element is the second.
+ * Function has been changed so that each struct is iterated and reduced to its most frequent hash value.
  */
 int hashmap_iterate(map_t in, PFany f, any_t item) {
 	int i;
@@ -336,13 +338,29 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
 
 	/* Linear probing */
 	for(i = 0; i< m->table_size; i++)
+        //Only look at data if it's not in use. NOTE: Might need to make this block. Further testing needed.
 		if(m->data[i].in_use != 0) {
-			any_t data = (any_t) (m->data[i].data);
-			int status = f(item, data);
-			if (status != MAP_OK) {
-				return status;
-			}
+			
+            //Allocate memory for this current words most frequent hash
+            int highest = malloc(sizeof(int));
+            
+            //Get the current keyword
+            char* key = m->data[i].key;
+            
+            //Get the most frequent tag from this key's struct. Store it into highest.
+            get_highest_frequency((tagcounts_t*)&m->data[i].data, &highest);
+            
+            //Free the struct to get more memory resources back.
+            free(m->data[i].data);
+            
+            //Remove the old map entry.
+            hashmap_remove(in, key);
+
+            //Put in a new map entry with the current key and now its highest frequency count.
+            hashmap_put(in, key, highest);
 		}
+    
+    
 
     return MAP_OK;
 }
