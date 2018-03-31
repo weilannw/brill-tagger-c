@@ -21,6 +21,12 @@ typedef struct contextual_rule_t{
     char *arg1;
     char *arg2;
 }contextual_rule_t;
+
+/* length is stored for freeing */
+typedef struct rules_list_t{
+    contextual_rule_t *rules ;
+    int length;
+}rules_list_t;
 /* 
   for each index in the mem mapped file where tag1 is the current tag,
     check the trigger function passing in arg1 and arg2
@@ -28,9 +34,12 @@ typedef struct contextual_rule_t{
     For each of those where trig function evals
     to true, change current tag to tag2
 */
-contextual_rule_t * parse_rules_from_file(char *);
-void allocate_current_rule(contextual_rule_t *rule);
+rules_list_t * parse_rules_from_file(char *);
+void allocate_current_rule(contextual_rule_t *);
 void parse_contextual_rule(char *, contextual_rule_t*);
+void rules_list_free(rules_list_t*);
+void rules_list_print(rules_list_t*);
+
 /*
 Tagging rules are of the form:
     ([Tag1]>[Tag2]):[Trigger function number]([args])

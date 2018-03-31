@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include "rule_parser.h"
@@ -9,24 +11,31 @@ static int countlines(FILE *file){
     while((cur = getc(file))!=EOF)
         if(cur == '\n')
             count++;
+    fseek(file, 0, SEEK_SET);
     return count;
 }
-contextual_rule_t * parse_rules_from_file(char * fp){
+rules_list_t * parse_rules_from_file(char * fp){
     FILE * file = fopen(fp, "r");
+    if(file == NULL){
+        printf("Could not open file '%s' (errno %d)\n", fp, errno);
+        exit(EXIT_FAILURE);
+    }
+    printf("file: %s\n", fp);
     char *line;
     ssize_t read;
-    int numlines = countlines(file);
-    contextual_rule_t *rules = 
-        (contextual_rule_t*)malloc(sizeof(contextual_rule_t)*numlines);
+    rules_list_t *list = 
+        (rules_list_t*)malloc(sizeof(rules_list_t));
+    list->length = countlines(file);
+    list->rules = 
+        (contextual_rule_t*)malloc(sizeof(contextual_rule_t)*list->length);
     size_t len;
     int cur = 0;
-    if(file == NULL)
-        exit(EXIT_FAILURE);
     while ((read = getline(&line, &len, file)) != -1){
-        allocate_current_rule(&rules[cur]);
-        parse_contextual_rule(line, &rules[cur++]);
+        printf("WOWOOW\n");
+        allocate_current_rule(&(list->rules)[cur]);
+        parse_contextual_rule(line, &(list->rules)[cur++]);
     }
-    return rules;
+    return list;
 }
 void parse_contextual_rule(char * rulestr, contextual_rule_t *rule){
     char *saveptr;
@@ -44,16 +53,33 @@ void allocate_current_rule(contextual_rule_t *rule){
     rule->tag1 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
     rule->tag2 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
 }
-void free_contextual_rule(contextual_rule_t *rule){
-    free(rule->arg1);
-    rule->arg1 = NULL;
-    free(rule->arg2);
-    rule->arg2 = NULL;
-    free(rule->tag1);
-    rule->tag1 = NULL;
-    free(rule->tag2);
-    rule->tag2 = NULL;
-    free(rule);
-    rule = NULL;
-
+void rules_list_print(rules_list_t *list){
+    contextual_rule_t *rules = list->rules;
+    for(int i = 0; i < list->length; i++){
+        printf("rules[%d]:\n" 
+            "tag1:%s\n"
+            "tag2:%s\n"
+            "fn:%d\n"
+            "arg1:%s\n"
+            "arg2:%s\n",
+            i, rules->tag1, rules->tag2, rules->triggerfn, 
+            rules->arg1, rules->arg2);
+    }
+}
+void rules_list_free(rules_list_t *list){
+    contextual_rule_t *rules = list->rules;
+    for(int i = 0; i < list->length; i++){
+        for(int ii = 0; ii < MAX_TAG_LEN; ii++){
+            free(rules[i].arg1);
+            rules[i].arg1 = NULL;
+            free(rules[i].arg2);
+            rules[i].arg2 = NULL;
+            free(rules[i].tag1);
+            rules[i].tag1 = NULL;
+            free(rules[i].tag2);
+            rules[i].tag2 = NULL;
+        }
+        free(&rules[i]);
+    }
+    free(list);
 }
