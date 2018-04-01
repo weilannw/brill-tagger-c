@@ -35,7 +35,7 @@ typedef struct rules_list_t{
     to true, change current tag to tag2
 */
 rules_list_t * parse_rules_from_file(char *);
-void allocate_current_rule(contextual_rule_t *);
+void allocate_contextual_rule(contextual_rule_t *);
 void parse_contextual_rule(char *, contextual_rule_t*);
 void rules_list_free(rules_list_t*);
 void rules_list_print(rules_list_t*);
