@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdbool.h>
 #ifndef corpus_io_h
 #define corpus_io_h
@@ -6,8 +7,7 @@
 
 /* find end of word in a line (delimited by tab)*/
 int word_length(char *);
-int get_tag_hash(int, char *, int, bool);
-int get_tag_index(int, char *, int, bool);
+size_t goto_next_tag_index(size_t *, char *, bool);
 
 /* applies the tag to the place in memory where the tag starts */
 void apply_tag(int, char *);

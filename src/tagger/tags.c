@@ -1,24 +1,25 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "tags.h"
 
-/* todo : implement function that trims tag so that 
- a pointer in the memory map can simply be passed in
- and only the tag is read */
 int tag_to_hash(char *tag){
-    char *trimmed_tag = trim_tag(tag);
+    //trim the tag
+    char *saveptr;
+    char *trimmed;
+    char *tagcpy = (char*)malloc(sizeof(char)*TAG_BUFFER_LENGTH);
+    tagcpy[TAG_BUFFER_LENGTH-1]='\0';
+    strncpy(tagcpy, tag, TAG_BUFFER_LENGTH-1);
+    trimmed = strtok_r(tagcpy, " _@\n", &saveptr);
+    //trim at _ and @ characters -- that is how multiple tags
+    //are delimited. We only care about the first tag.
+    //run the hashing
     int hash = 5381;
     int c;
-    while ((c = *trimmed_tag++))
+    while ((c = *trimmed++))
         hash = ((hash << 6) + hash) + c;
-    free(trimmed_tag);
+    free(tagcpy);
     return hash;
-}
-char *trim_tag(char *tag){
-    char * saveptr;
-    char *trimmed_tag = malloc(sizeof(char)*TAG_BUFFER_LENGTH);
-    trimmed_tag = strtok_r(tag, " \n", &saveptr);
-    return trimmed_tag;
 }
 void hash_to_tag(int hash, char * tag){
     switch(hash){

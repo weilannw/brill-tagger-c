@@ -1,10 +1,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#ifndef rule_checker_h
+#define rule_checker_h
+#include "rule_parser.h"
 /* type passed into contextual rules for checking */
 typedef struct contextual_info_t{
-    int tag1; // hash of first tag in rule to be compared against
-    int tag2; // hash of second tag in rule to be compared against
-    int tag_index; //index of the start of current line's tag in mem map
+    int prev_tags[3]; // previous tags in order (0 is immediately previous)
+    int next_tags[3]; // next tags in order (0 is immediately next)
     char *corpus; //pointer to the memory map
 }contextual_info_t;
 
@@ -19,7 +21,9 @@ typedef enum{
     NEXT_1_OR_2_OR_3_TAG_IS=7,
     PREV_TAG_IS_X_AND_NEXT_TAG_IS_Y=8,
     PREV_TAG_IS_X_AND_NEXT_2_TAG_IS_Y=9,
-    NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y=10
+    NEXT_TAG_IS_X_AND_PREV_2_TAG_IS_Y=10,
+    NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y=11,
+    PREV_TAG_IS_X_AND_PREV_2_TAG_IS_Y=12
 }known_word_rules_t;
 
 typedef enum{
@@ -35,20 +39,22 @@ typedef enum{
 }unknown_word_rules_t;
 
 /*known word rules rely on contextual info (tags of previous and next words) */
-bool prev_tag_is(contextual_info_t);
-bool next_tag_is(contextual_info_t);
-bool prev_2_tag_is(contextual_info_t);
-bool next_2_tag_is(contextual_info_t);
-bool prev_1_or_2_tag_is(contextual_info_t);
-bool next_1_or_2_tag_is(contextual_info_t);
-bool prev_1_or_2_or_3_tag_is(contextual_info_t);
-bool next_1_or_2_or_3_tag_is(contextual_info_t);
-bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t);
-bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t);
-bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t);
+bool prev_tag_is(contextual_info_t, int, int);
+bool next_tag_is(contextual_info_t, int, int);
+bool prev_2_tag_is(contextual_info_t, int, int);
+bool next_2_tag_is(contextual_info_t, int, int);
+bool prev_1_or_2_tag_is(contextual_info_t, int, int);
+bool next_1_or_2_tag_is(contextual_info_t, int, int);
+bool prev_1_or_2_or_3_tag_is(contextual_info_t, int, int);
+bool next_1_or_2_or_3_tag_is(contextual_info_t, int, int);
+bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t, int, int);
+bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t, int, int);
+bool next_tag_is_x_and_prev_2_tag_is_y(contextual_info_t, int, int);
+bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t, int, int);
+bool prev_tag_is_x_and_prev_2_tag_is_y(contextual_info_t, int, int);
 
 /* rules for known words */
-bool (*known_word_rules[11]) (contextual_info_t) = {
+bool (*known_word_rules[13]) (contextual_info_t, int, int) = {
     prev_tag_is,
     next_tag_is,
     prev_2_tag_is, //word two before is tagged X
@@ -59,7 +65,9 @@ bool (*known_word_rules[11]) (contextual_info_t) = {
     next_1_or_2_or_3_tag_is,
     prev_tag_is_x_and_next_tag_is_y,
     prev_tag_is_x_and_next_2_tag_is_y, //word 2 before is tagged Y and word 1 before is tagged X
-    next_tag_is_x_and_next_2_tag_is_y
+    next_tag_is_x_and_prev_2_tag_is_y,
+    next_tag_is_x_and_next_2_tag_is_y,
+    prev_tag_is_x_and_prev_2_tag_is_y
 };
 /*unknown word rules take a char* because it allows for processing of 
 word itself rather than surrounding words */
@@ -73,6 +81,9 @@ bool prev_wd_is(char*);
 bool next_wd_is(char*);
 bool contains_char(char*);
 
+void store_contextual_info(contextual_info_t *, size_t, char *);
+bool check_contextual_rule(contextual_rule_t, contextual_info_t);
+
 /* rules for unknown words */
 bool (*unknown_word_rules[9]) (char*) = {
     rem_prefix, //removing prefix creates a known word
@@ -85,3 +96,4 @@ bool (*unknown_word_rules[9]) (char*) = {
     next_wd_is,
     contains_char //word contains character X
 };
+#endif

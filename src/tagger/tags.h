@@ -1,15 +1,8 @@
-//
-//  tags.h
-//  
-//
-//  Created by Nicholas Weiland
-//
 #ifndef tags_h
 #define tags_h
 #define LINE_MAX_LENGTH 100 // max line length in mem map
 #define TAG_BUFFER_LENGTH 6
 
-char *trim_tag(char *);
 /* inserts the tag string into the index in the memory map */
 void apply_tag(int, char *);
 /* converts hashed tag to string for printed output */
@@ -21,9 +14,9 @@ void apply_tag(int, char *);
 char * get_tagged_text(int, int);
 /* hash function for matching tag with tag_hash_t */
 int tag_to_hash(char *);
+
 /* comparing hash values allows us 
 to avoid expensive strcmp operations */
-
 typedef enum{
     APPGE=404153362,
     AT=22741146,

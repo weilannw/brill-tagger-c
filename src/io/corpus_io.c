@@ -2,20 +2,16 @@
 #include <stdbool.h>
 #include "corpus_io.h"
 #include "../tagger/tags.h"
- // todo: create a memory map of the corpus called corpus
-#define TAGLEN 5 
-// ^length of tag buffer not including null byte or newline
-/* get index of tag in corpus + or - specified number of lines
-   (goes backwards if bool flag is true), 0 returning the current
-   index */
-int get_tag_index(int cur_index, char *corpus, int how_many, bool backwards){
-    if(how_many == 0) 
-        return cur_index;
-    int inc = backwards ? -1 : 1;
-    for (int i = 0; i < how_many; i+=((corpus[cur_index] == '\t') ? 1 : 0))
-        cur_index += inc;
-    cur_index += backwards ? 1 : -TAGLEN;
-    return cur_index;
+ // todo: create memory maps of the corpus
+
+/* get index of tag in corpus + or - 1 line. result is stored in 
+the current index pointer */
+size_t goto_next_tag_index(size_t *cur_index, char *corpus, bool prev){
+    int inc = prev ? -1 : 1;
+    while (corpus[*cur_index] != '\t')
+        *cur_index += inc;
+    *cur_index += prev ? 1 : -(TAG_BUFFER_LENGTH-1);
+    return *cur_index;
 }  
 void apply_tag(int tag_hash, char * line){
     /* this will insert the tag string in the specified location */

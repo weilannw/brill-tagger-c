@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "../tagger/tags.h"
+#include "../io/corpus_io.h"
 #include "rule_checker.h"
 #include "rule_parser.h"
 
@@ -13,92 +14,73 @@ bool prev_wd_is(char *word_data){return true;}
 bool next_wd_is(char *word_data){return true;}
 bool contains_char(char *word_data){return true;}
 
-bool prev_tag_is(contextual_info_t info){
-    return tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 1, true)]) == info.tag1;
+bool prev_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[0] == tag1);
 }
-bool next_tag_is(contextual_info_t info){
-    return tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 1, false)]) == info.tag1;
+bool next_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1);
 }
-bool prev_2_tag_is(contextual_info_t info){
-    return tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 2, true)]) == info.tag1;
+bool prev_2_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[1] == tag1);
 }
-bool next_2_tag_is(contextual_info_t info){
-    return tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 2, false)]) == info.tag1;
+bool next_2_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[1] == tag1);
 }
-bool prev_1_or_2_tag_is(contextual_info_t info){
-    int tag_ind1; 
-    return tag_to_hash(info.corpus[
-                        (tag_ind1 = get_tag_index(info.tag_index, info.corpus, 1, true))
-                                  ]
-                      ) == info.tag1 ||
-           tag_to_hash(info.corpus[
-                                    get_tag_index(tag_ind1, info.corpus, 1, true)
-                                  ]
-                       ) == info.tag1;
+bool prev_1_or_2_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[0] == tag1 ||
+            info.prev_tags[1] == tag1);
 }
-bool next_1_or_2_tag_is(contextual_info_t info){
-    int tag_ind1; 
-    return tag_to_hash(info.corpus[
-                        (tag_ind1 = get_tag_index(info.tag_index, info.corpus, 1, false))
-                                  ]
-                      ) == info.tag1 ||
-           tag_to_hash(info.corpus[
-                                    get_tag_index(tag_ind1, info.corpus, 1, false)
-                                  ]
-                      ) == info.tag1;
+bool next_1_or_2_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1 ||
+            info.next_tags[1] == tag1);
 }
-bool prev_1_or_2_or_3_tag_is(contextual_info_t info){
-    int tag_ind1; 
-    int tag_ind2;
-    return tag_to_hash(info.corpus[
-                        (tag_ind1 = get_tag_index(info.tag_index, info.corpus, 1, true))
-                                  ]
-                      ) == info.tag1 ||
-           tag_to_hash(info.corpus[
-                        (tag_ind2 = get_tag_index(tag_ind1, info.corpus, 1, true))
-                                  ]
-                      ) == info.tag1 ||
-            tag_to_hash(info.corpus[
-                            get_tag_index(tag_ind2, info.corpus, 1, true)
-                                   ]
-                      ) == info.tag1;
+bool prev_1_or_2_or_3_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[0] == tag1 ||
+            info.prev_tags[1] == tag1 ||
+            info.prev_tags[2] == tag1 );
 }
-bool next_1_or_2_or_3_tag_is(contextual_info_t info){
-    int tag_ind1; 
-    int tag_ind2;
-    return tag_to_hash(info.corpus[
-                        (tag_ind1 = get_tag_index(info.tag_index, info.corpus, 1, false))
-                                  ]
-                      ) == info.tag1 ||
-           tag_to_hash(info.corpus[
-                        (tag_ind2 = get_tag_index(tag_ind1, info.corpus, 1, false))
-                                  ]
-                      ) == info.tag1 ||
-            tag_to_hash(info.corpus[
-                            get_tag_index(tag_ind2, info.corpus, 1, false)
-                                   ]
-                      ) == info.tag1;
+bool next_1_or_2_or_3_tag_is(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1 ||
+            info.next_tags[1] == tag1 ||
+            info.next_tags[2] == tag1 );
 }
-bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t info){
-    return tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 1, true)]) == info.tag1 &&
-           tag_to_hash(info.corpus[get_tag_index(
-        info.tag_index, info.corpus, 1, false)]) == info.tag2;
+bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[0] == tag1 &&
+            info.next_tags[0] == tag2);
 }
-bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t info){return true;}
-bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t info){return true;}
+bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
+    return (info.prev_tags[0] == tag1 &&
+            info.next_tags[1] == tag2);
+}
+bool next_tag_is_x_and_prev_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1 &&
+            info.prev_tags[1] == tag2);
+}
+bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1 &&
+            info.next_tags[1] == tag2);
+}
+bool prev_tag_is_x_and_prev_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
+    return (info.next_tags[0] == tag1 &&
+            info.next_tags[1] == tag2);
+}
 
+void store_contextual_info(contextual_info_t *info, size_t index, char *corpus){
+    size_t *cur_index;
+    *cur_index = index;
+    bool prev = false;
+    info->corpus = corpus;
+    info->next_tags[0] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+    info->next_tags[1] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+    info->next_tags[2] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+    prev = true;
+    *cur_index = index;
+    info->prev_tags[0] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+    info->prev_tags[1] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+    info->prev_tags[2] = tag_to_hash(&corpus[goto_next_tag_index(cur_index, corpus, prev)]);
+}
 /* checks if a contextual (known word) 
-    rule applies to a given word index */
-bool apply_contextual_rule(contextual_rule_t rule, int index, char *corpus){
-    contextual_info_t info;
-    info.tag1 = rule.arg1;
-    info.tag2 = rule.arg2;
-    info.tag_index = index;
-    info.corpus = corpus;
-    return known_word_rules[rule.triggerfn](info);
+    rule applies given contextual information */
+bool check_contextual_rule(contextual_rule_t rule, contextual_info_t info){
+    return known_word_rules[rule.triggerfn](info, rule.arg1, rule.arg2);
 }

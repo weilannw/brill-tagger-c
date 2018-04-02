@@ -7,6 +7,7 @@
         "dictionary_generator.h": "c",
         "hashmap.h": "c",
         "stdbool.h": "c",
-        "limits": "cpp"
+        "limits": "cpp",
+        "stdlib.h": "c"
     }
 }
