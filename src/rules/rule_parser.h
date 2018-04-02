@@ -15,11 +15,11 @@ Parsed trigger function numbers:
     10:NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y
 */
 typedef struct contextual_rule_t{
-    char *tag1;
-    char *tag2;
+    int tag1;
+    int tag2;
     int triggerfn;
-    char *arg1;
-    char *arg2;
+    int arg1;
+    int arg2;
 }contextual_rule_t;
 
 /* length is stored for freeing */

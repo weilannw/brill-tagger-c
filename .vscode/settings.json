@@ -5,6 +5,8 @@
         "type_traits": "c",
         "strings.h": "c",
         "dictionary_generator.h": "c",
-        "hashmap.h": "c"
+        "hashmap.h": "c",
+        "stdbool.h": "c",
+        "limits": "cpp"
     }
 }

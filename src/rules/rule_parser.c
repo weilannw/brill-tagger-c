@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "rule_parser.h"
-#define MAX_TAG_LEN 6
-#define MAX_RULE_LEN 30
+#include "../tagger/tags.h"
 static void getfileinfo(FILE *file, size_t *numlines, size_t *numchars){
     char cur;
     *numlines = 0;
@@ -43,7 +42,6 @@ rules_list_t * parse_rules_from_file(char * fp){
             line = strtok_r(contents, "\n", &saveptr);
         else 
             line = strtok_r(NULL, "\n", &saveptr);
-        allocate_contextual_rule(&(list->rules)[i]);
         parse_contextual_rule(line, &(list->rules)[i]);
     }
     fclose(file);
@@ -52,44 +50,31 @@ rules_list_t * parse_rules_from_file(char * fp){
 void parse_contextual_rule(char * rulestr, contextual_rule_t *rule){
     char *saveptr;
     char *delim = "(>):,\n";
-    strncpy(rule->tag1, strtok_r(rulestr, delim, &saveptr), MAX_TAG_LEN);
-    strncpy(rule->tag2, strtok_r(NULL, delim, &saveptr), MAX_TAG_LEN);
+    rule->tag1 = tag_to_hash(strtok_r(rulestr, delim, &saveptr));
+    rule->tag2 = tag_to_hash(strtok_r(NULL, delim, &saveptr));
     rule->triggerfn = atoi(strtok_r(NULL, delim, &saveptr)); 
         //^ index of the trigger function in the trigger function array
-    strncpy(rule->arg1, strtok_r(NULL, delim, &saveptr), MAX_TAG_LEN);
-    strncpy(rule->arg2, strtok_r(NULL, delim, &saveptr), MAX_TAG_LEN);
-}
-void allocate_contextual_rule(contextual_rule_t *rule){
-    rule->arg1 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
-    rule->arg2 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
-    rule->tag1 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
-    rule->tag2 = (char*)malloc(sizeof(char)*MAX_TAG_LEN);
+    rule->arg1 = tag_to_hash(strtok_r(NULL, delim, &saveptr));
+    rule->arg2 = tag_to_hash(strtok_r(NULL, delim, &saveptr));
 }
 void rules_list_print(rules_list_t *list){
     contextual_rule_t *rules = list->rules;
     for(int i = 0; i < list->length; i++){
         printf("*******rules[%d]*******\n" 
-            "tag1: %s\n"
-            "tag2: %s\n"
+            "tag1: %d\n"
+            "tag2: %d\n"
             "fn: %d\n"
-            "arg1: %s\n"
-            "arg2: %s\n",
-            i, rules[i].tag1, rules[i].tag2, rules[i].triggerfn, 
-            rules[i].arg1, rules[i].arg2);
+            "arg1: %d\n"
+            "arg2: %d\n",
+            i, 
+            rules[i].tag1, 
+            rules[i].tag2, 
+            rules[i].triggerfn, 
+            rules[i].arg1, 
+            rules[i].arg2);
     }
 }
 void rules_list_free(rules_list_t *list){
-    contextual_rule_t *rules = list->rules;
-    for(int i = 0; i < list->length; i++){
-        free(list->rules[i].arg1);
-        list->rules[i].arg1 = NULL;
-        free(list->rules[i].arg2);
-        list->rules[i].arg2 = NULL;
-        free(list->rules[i].tag1);
-        list->rules[i].tag1 = NULL;
-        free(list->rules[i].tag2);
-        list->rules[i].tag2 = NULL;
-    }
     free(list->rules);
     free(list);
 }

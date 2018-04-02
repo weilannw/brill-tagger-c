@@ -2,9 +2,10 @@
 #include <stdlib.h>
 /* type passed into contextual rules for checking */
 typedef struct contextual_info_t{
-    char *arg1;
-    char *arg2;
-    int cur_index;
+    int tag1; // hash of first tag in rule to be compared against
+    int tag2; // hash of second tag in rule to be compared against
+    int tag_index; //index of the start of current line's tag in mem map
+    char *corpus; //pointer to the memory map
 }contextual_info_t;
 
 typedef enum{
