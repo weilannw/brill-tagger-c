@@ -7,7 +7,6 @@
 #include "tags.h"
 #include "tagger.h"
 
-
 /******** start of the initial tagging methods ********/
 
 void apply_initial_tags(char * mem_map, map_t map){
@@ -22,8 +21,8 @@ void apply_initial_tags(char * mem_map, map_t map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *mem_map_line, map_t map){
-    //memory map is a pointer to the beginning of the line in the memory map
+void apply_initial_tag(char *mem_map_line, map_t hash_map){
+    //mem_map_line is a pointer to the beginning of the line in the memory map
     int hashed_value;
     // find the place to store the null byte in the string for the hashmap
     int word_len = word_length(mem_map_line);
@@ -33,7 +32,7 @@ void apply_initial_tag(char *mem_map_line, map_t map){
     word_copy[word_len-1] = '\0';
     // fall through to unknown word tag method if word is not known,
     // otherwise apply the tag to the line in the file
-    if(hashmap_get(map, word_copy, 
+    if(hashmap_get(hash_map, word_copy, 
     (void **)&hashed_value) == MAP_MISSING)
         apply_initial_unknown_word_tag(mem_map_line);
     else    
