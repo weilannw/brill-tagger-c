@@ -1,7 +1,7 @@
 #ifndef rule_parser_h
 #define rule_parser_h
-/*format: 
-Parsed trigger function numbers: 
+/*
+Trigger function numbers: 
     0:PREV_TAG_IS
     1:NEXT_TAG_IS
     2:PREV_2_TAG_IS
@@ -12,7 +12,9 @@ Parsed trigger function numbers:
     7:NEXT_1_OR_2_OR_3_TAG_IS
     8:PREV_TAG_IS_X_AND_NEXT_TAG_IS_Y
     9:PREV_TAG_IS_X_AND_NEXT_2_TAG_IS_Y
-    10:NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y
+    10:NEXT_TAG_IS_X_AND_PREV_2_TAG_IS_Y
+    11:NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y
+    12:PREV_TAG_IS_X_AND_PREV_2_TAG_IS_Y
 */
 typedef struct contextual_rule_t{
     int tag1;
