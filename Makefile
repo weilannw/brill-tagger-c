@@ -18,11 +18,17 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
+.PHONY:
+	txts
+	clean
+
 clean:
 	$(RM) -r $(BUILD_DIR)
 
--include $(DEPS)
+sync:
+	txts -rup src/files/* $(BUILD_DIR)
 
+-include $(DEPS)
 
 MKDIR_P ?= mkdir -p
 

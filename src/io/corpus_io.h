@@ -3,7 +3,7 @@
 #ifndef corpus_io_h
 #define corpus_io_h
 #define LINE_MAX_LENGTH 100 // max line length in mem map
-#define TAG_BUFFER_LENGTH 6
+#define TAG_BUFFER_LENGTH 6 // includes max tag length with newline, carriage return omitted by script
 
 /* find end of word in a line (delimited by tab)*/
 int word_length(char *);
