@@ -164,6 +164,6 @@ typedef enum{
     COM=349809,
     QUE=349828,
     ZZ=22742777,
-    NUL=0
+    NUL=1595642816
 }tag_hash_t;
 #endif /* tags_h */

@@ -21,6 +21,7 @@ int tag_to_hash(char *tag){
     free(tagcpy);
     return hash;
 }
+// output of null indicates bad input hash
 void hash_to_tag(int hash, char * tag){
     switch(hash){
         case APPGE: tag="appge"; break;
@@ -170,6 +171,6 @@ void hash_to_tag(int hash, char * tag){
         case QUE: tag="?"; break;
         case ZZ: tag="zz"; break;
         case NUL: tag="null"; break;
-        default: tag ="ERROR"; break;
+        default: tag = NULL; break;
     }
 }
