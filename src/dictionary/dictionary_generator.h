@@ -155,6 +155,6 @@ typedef struct data_struct_t
 void updateTags(char* , struct tagcounts_t *, char* );
 void printMap(map_t mymap, char* );
 map_t generate_dictionary(char *);
-void get_highest_frequency(tagcounts_t *tags, int *hash);
+int get_highest_frequency(map_t in, char* key);
 
 #endif

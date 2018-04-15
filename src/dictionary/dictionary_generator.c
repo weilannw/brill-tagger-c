@@ -7,7 +7,6 @@
 #include "../lib/hashmap.h"
 
 void shorten_tag_struct(map_t map);
-void get_highest_frequency(tagcounts_t *tags, int *hash);
 
 tagcounts_t frequency_count;
 //call in generate dict = malloc (sizeof (struct tagcounts_t));
@@ -88,6 +87,9 @@ map_t generate_dictionary(char *filepath)
     //Placeholder values that aren't needed but are passed into the hashmaps function
     PFany p;
     any_t t;
+    
+    printMap(mymap, "James");
+    
     
     hashmap_iterate(mymap, p, t);
     
@@ -252,18 +254,21 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
 void printMap(map_t mymap, char* name){
     struct tagcounts_t *finalval = malloc (sizeof (struct tagcounts_t));
     if(hashmap_get(mymap, name, (void **)&finalval) == MAP_OK)
-        printf("Key: %s\nValues: APPGE=%d\tZZ1=%d\tZZ2=%d\n",
-               name, finalval->APPGE, finalval->ZZ1, finalval->ZZ2);
+        printf("Key: %s\nValues: DA2 %d\n", name, finalval->DA2);
 }
 
 
 //This method takes in a tag structure along with an allocated integer.
 //The method stores the most frequent value's hash into the address of the passed in int pointer
-void get_highest_frequency(tagcounts_t* tags, int *hash){
+int get_highest_frequency(map_t mymap, char* key){
     int highest = -1;
+    int temp = -1;
     
-    if(tags->APPGE > highest) highest = APPGE;
-    if(tags->AT > highest) highest = AT;
+    struct tagcounts_t *tags = malloc (sizeof (struct tagcounts_t));
+    hashmap_get(mymap, key, (void **)&tags);
+    
+    if(tags->APPGE > temp){ temp = tags->APPGE; highest = APPGE;}
+    if(tags->AT > temp) highest = AT;
     if(tags->AT1 > highest) highest = AT1;
     if(tags->BCL > highest) highest = BCL;
     if(tags->CC > highest) highest = CC;
@@ -400,7 +405,7 @@ void get_highest_frequency(tagcounts_t* tags, int *hash){
     if(tags->ZZ1 > highest) highest = ZZ1;
     if(tags->ZZ2 > highest) highest = ZZ2;
     
-    *hash = highest;
+    return highest;
 }
 
 
