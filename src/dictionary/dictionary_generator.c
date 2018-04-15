@@ -252,9 +252,9 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
 //Simple helper method used to test certain inputs. Showed correct output for the corresponding text file
 //used to test
 void printMap(map_t mymap, char* name){
-    struct tagcounts_t *finalval = malloc (sizeof (struct tagcounts_t));
-    if(hashmap_get(mymap, name, (void **)&finalval) == MAP_OK)
-        printf("Key: %s\nValues: DA2 %d\n", name, finalval->DA2);
+    //int highest;
+    //if(hashmap_get(mymap, name, (void **)&highest) == MAP_OK)
+        //printf("Key: %s\nValue %d\n", name, );
 }
 
 
@@ -267,143 +267,143 @@ int get_highest_frequency(map_t mymap, char* key){
     struct tagcounts_t *tags = malloc (sizeof (struct tagcounts_t));
     hashmap_get(mymap, key, (void **)&tags);
     
-    if(tags->APPGE > temp){ temp = tags->APPGE; highest = APPGE;}
-    if(tags->AT > temp) highest = AT;
-    if(tags->AT1 > highest) highest = AT1;
-    if(tags->BCL > highest) highest = BCL;
-    if(tags->CC > highest) highest = CC;
-    if(tags->CCB > highest) highest = CCB;
-    if(tags->CS > highest) highest = CS;
-    if(tags->CSA > highest) highest = CSA;
-    if(tags->CSN > highest) highest = CSN;
-    if(tags->CST > highest) highest = CST;
-    if(tags->CSW > highest) highest = CSW;
-    if(tags->DA > highest) highest = DA;
-    if(tags->DA1 > highest) highest = DA1;
-    if(tags->DA2 > highest) highest = DA2;
-    if(tags->DAR > highest) highest = DAR;
-    if(tags->DAT > highest) highest = DAT;
-    if(tags->DB > highest) highest = DB;
-    if(tags->DB2 > highest) highest = DB2;
-    if(tags->DD > highest) highest = DD;
-    if(tags->DD1 > highest) highest = DD1;
-    if(tags->DD2 > highest) highest = DD2;
-    if(tags->DDQ > highest) highest = DDQ;
-    if(tags->DDQGE > highest) highest = DDQGE;
-    if(tags->DDQV > highest) highest = DDQV;
-    if(tags->EX > highest) highest = EX;
-    if(tags->FO > highest) highest = FO;
-    if(tags->FU > highest) highest = FU;
-    if(tags->FW > highest) highest = FW;
-    if(tags->GE > highest) highest = GE;
-    if(tags->IF > highest) highest = IF;
-    if(tags->II > highest) highest = II;
-    if(tags->IO > highest) highest = IO;
-    if(tags->IW > highest) highest = IW;
-    if(tags->JJ > highest) highest = JJ;
-    if(tags->JJR > highest) highest = JJR;
-    if(tags->JJT > highest) highest = JJT;
-    if(tags->JK > highest) highest = JK;
-    if(tags->MC > highest) highest = MC;
-    if(tags->MC1 > highest) highest = MC1;
-    if(tags->MC2 > highest) highest = MC2;
-    if(tags->MCGE > highest) highest = MCGE;
-    if(tags->MCMC > highest) highest = MCMC;
-    if(tags->MD > highest) highest = MD;
-    if(tags->MF > highest) highest = MF;
-    if(tags->ND1 > highest) highest = ND1;
-    if(tags->NN > highest) highest = NN;
-    if(tags->NN1 > highest) highest = NN1;
-    if(tags->NN2 > highest) highest = NN2;
-    if(tags->NNA > highest) highest = NNA;
-    if(tags->NNB > highest) highest = NNB;
-    if(tags->NNL1 > highest) highest = NNL1;
-    if(tags->NNL2 > highest) highest = NNL2;
-    if(tags->NNO > highest) highest = NNO;
-    if(tags->NNO2 > highest) highest = NNO2;
-    if(tags->NNT1 > highest) highest = NNT1;
-    if(tags->NNT2 > highest) highest = NNT2;
-    if(tags->NNU > highest) highest = NNU;
-    if(tags->NNU1 > highest) highest = NNU1;
-    if(tags->NNU2 > highest) highest = NNU2;
-    if(tags->NP > highest) highest = NP;
-    if(tags->NP1 > highest) highest = NP1;
-    if(tags->NP2 > highest) highest = NP2;
-    if(tags->NPD1 > highest) highest = NPD1;
-    if(tags->NPD2 > highest) highest = NPD2;
-    if(tags->NPM1 > highest) highest = NPM1;
-    if(tags->NPM2 > highest) highest = NPM2;
-    if(tags->PN > highest) highest = PN;
-    if(tags->PN1 > highest) highest = PN1;
-    if(tags->PNQO > highest) highest = PNQO;
-    if(tags->PNQS > highest) highest = PNQS;
-    if(tags->PNQV > highest) highest = PNQV;
-    if(tags->PNX1 > highest) highest = PNX1;
-    if(tags->PPGE > highest) highest = PPGE;
-    if(tags->PPH1 > highest) highest = PPH1;
-    if(tags->PPHO1 > highest) highest = PPHO1;
-    if(tags->PPHO2 > highest) highest = PPHO2;
-    if(tags->PPHS1 > highest) highest = PPHS1;
-    if(tags->PPHS2 > highest) highest = PPHS2;
-    if(tags->PPIO1 > highest) highest = PPIO1;
-    if(tags->PPIO2 > highest) highest = PPIO2;
-    if(tags->PPIS1 > highest) highest = PPIS1;
-    if(tags->PPIS2 > highest) highest = PPIS2;
-    if(tags->PPX1 > highest) highest = PPX1;
-    if(tags->PPX2 > highest) highest = PPX2;
-    if(tags->PPY > highest) highest = PPY;
-    if(tags->RA > highest) highest = RA;
-    if(tags->REX > highest) highest = REX;
-    if(tags->RG > highest) highest = RG;
-    if(tags->RGQ > highest) highest = RGQ;
-    if(tags->RGQV > highest) highest = RGQV;
-    if(tags->RGR > highest) highest = RGR;
-    if(tags->RGT > highest) highest = RGT;
-    if(tags->RL > highest) highest = RL;
-    if(tags->RP > highest) highest = RP;
-    if(tags->RPK > highest) highest = RPK;
-    if(tags->RR > highest) highest = RR;
-    if(tags->RRQ > highest) highest = RRQ;
-    if(tags->RRQV > highest) highest = RRQV;
-    if(tags->RRR > highest) highest = RRR;
-    if(tags->RRT > highest) highest = RRT;
-    if(tags->RT > highest) highest = RT;
-    if(tags->TO > highest) highest = TO;
-    if(tags->UH > highest) highest = UH;
-    if(tags->VB0 > highest) highest = VB0;
-    if(tags->VBDR > highest) highest = VBDR;
-    if(tags->VBDZ > highest) highest = VBDZ;
-    if(tags->VBG > highest) highest = VBG;
-    if(tags->VBI > highest) highest = VBI;
-    if(tags->VBM > highest) highest = VBM;
-    if(tags->VBN > highest) highest = VBN;
-    if(tags->VBR > highest) highest = VBR;
-    if(tags->VBZ > highest) highest = VBZ;
-    if(tags->VD0 > highest) highest = VD0;
-    if(tags->VDD > highest) highest = VDD;
-    if(tags->VDG > highest) highest = VDG;
-    if(tags->VDI > highest) highest = VDI;
-    if(tags->VDN > highest) highest = VDN;
-    if(tags->VDZ > highest) highest = VDZ;
-    if(tags->VH0 > highest) highest = VH0;
-    if(tags->VHD > highest) highest = VHD;
-    if(tags->VHG > highest) highest = VHG;
-    if(tags->VHI > highest) highest = VHI;
-    if(tags->VHN > highest) highest = VHN;
-    if(tags->VHZ > highest) highest = VHZ;
-    if(tags->VM > highest) highest = VM;
-    if(tags->VMK > highest) highest = VMK;
-    if(tags->VV0 > highest) highest = VV0;
-    if(tags->VVD > highest) highest = VVD;
-    if(tags->VVG > highest) highest = VVG;
-    if(tags->VVGK > highest) highest = VVGK;
-    if(tags->VVI > highest) highest = VVI;
-    if(tags->VVN > highest) highest = VVN;
-    if(tags->VVNK > highest) highest = VVNK;
-    if(tags->VVZ > highest) highest = VVZ;
-    if(tags->XX > highest) highest = XX;
-    if(tags->ZZ1 > highest) highest = ZZ1;
-    if(tags->ZZ2 > highest) highest = ZZ2;
+    if(tags->APPGE > temp){temp = tags->APPGE; highest = APPGE;}
+    if(tags->AT > temp){temp = tags->AT; highest = AT;}
+    if(tags->AT1 > temp){temp = tags->AT1; highest = AT1;}
+    if(tags->BCL > temp){temp = tags->BCL; highest = BCL;}
+    if(tags->CC > temp){temp = tags->CC; highest = CC;}
+    if(tags->CCB > temp){temp = tags->CCB; highest = CCB;}
+    if(tags->CS > temp){temp = tags->CS; highest = CS;}
+    if(tags->CSA > temp){temp = tags->CSA; highest = CSA;}
+    if(tags->CSN > temp){temp = tags->CSN; highest = CSN;}
+    if(tags->CST > temp){temp = tags->CST; highest = CST;}
+    if(tags->CSW > temp){temp = tags->CSW; highest = CSW;}
+    if(tags->DA > temp){temp = tags->DA; highest = DA;}
+    if(tags->DA1 > temp){temp = tags->DA1; highest = DA1;}
+    if(tags->DA2 > temp){temp = tags->DA2; highest = DA2;}
+    if(tags->DAR > temp){temp = tags->DAR; highest = DAR;}
+    if(tags->DAT > temp){temp = tags->DAT; highest = DAT;}
+    if(tags->DB > temp){temp = tags->DB; highest = DB;}
+    if(tags->DB2 > temp){temp = tags->DB2; highest = DB2;}
+    if(tags->DD > temp){temp = tags->DD; highest = DD;}
+    if(tags->DD1 > temp){temp = tags->DD1; highest = DD1;}
+    if(tags->DD2 > temp){temp = tags->DD2; highest = DD2;}
+    if(tags->DDQ > temp){temp = tags->DDQ; highest = DDQ;}
+    if(tags->DDQGE > temp){temp = tags->DDQGE; highest = DDQGE;}
+    if(tags->DDQV > temp){temp = tags->DDQV; highest = DDQV;}
+    if(tags->EX > temp){temp = tags->EX; highest = EX;}
+    if(tags->FO > temp){temp = tags->FO; highest = FO;}
+    if(tags->FU > temp){temp = tags->FU; highest = FU;}
+    if(tags->FW > temp){temp = tags->FW; highest = FW;}
+    if(tags->GE > temp){temp = tags->GE; highest = GE;}
+    if(tags->IF > temp){temp = tags->IF; highest = IF;}
+    if(tags->II > temp){temp = tags->II; highest = II;}
+    if(tags->IO > temp){temp = tags->IO; highest = IO;}
+    if(tags->IW > temp){temp = tags->IW; highest = IW;}
+    if(tags->JJ > temp){temp = tags->JJ; highest = JJ;}
+    if(tags->JJR > temp){temp = tags->JJR; highest = JJR;}
+    if(tags->JJT > temp){temp = tags->JJT; highest = JJT;}
+    if(tags->JK > temp){temp = tags->JK; highest = JK;}
+    if(tags->MC > temp){temp = tags->MC; highest = MC;}
+    if(tags->MC1 > temp){temp = tags->MC1; highest = MC1;}
+    if(tags->MC2 > temp){temp = tags->MC2; highest = MC2;}
+    if(tags->MCGE > temp){temp = tags->MCGE; highest = MCGE;}
+    if(tags->MCMC > temp){temp = tags->MCMC; highest = MCMC;}
+    if(tags->MD > temp){temp = tags->MD; highest = MD;}
+    if(tags->MF > temp){temp = tags->MF; highest = MF;}
+    if(tags->ND1 > temp){temp = tags->ND1; highest = ND1;}
+    if(tags->NN > temp){temp = tags->NN; highest = NN;}
+    if(tags->NN1 > temp){temp = tags->NN1; highest = NN1;}
+    if(tags->NN2 > temp){temp = tags->NN2; highest = NN2;}
+    if(tags->NNA > temp){temp = tags->NNA; highest = NNA;}
+    if(tags->NNB > temp){temp = tags->NNB; highest = NNB;}
+    if(tags->NNL1 > temp){temp = tags->NNL1; highest = NNL1;}
+    if(tags->NNL2 > temp){temp = tags->NNL2; highest = NNL2;}
+    if(tags->NNO > temp){temp = tags->NNO; highest = NNO;}
+    if(tags->NNO2 > temp){temp = tags->NNO2; highest = NNO2;}
+    if(tags->NNT1 > temp){temp = tags->NNT1; highest = NNT1;}
+    if(tags->NNT2 > temp){temp = tags->NNT2; highest = NNT2;}
+    if(tags->NNU > temp){temp = tags->NNU; highest = NNU;}
+    if(tags->NNU1 > temp){temp = tags->NNU1; highest = NNU1;}
+    if(tags->NNU2 > temp){temp = tags->NNU2; highest = NNU2;}
+    if(tags->NP > temp){temp = tags->NP; highest = NP;}
+    if(tags->NP1 > temp){temp = tags->NP1; highest = NP1;}
+    if(tags->NP2 > temp){temp = tags->NP2; highest = NP2;}
+    if(tags->NPD1 > temp){temp = tags->NPD1; highest = NPD1;}
+    if(tags->NPD2 > temp){temp = tags->NPD2; highest = NPD2;}
+    if(tags->NPM1 > temp){temp = tags->NPM1; highest = NPM1;}
+    if(tags->NPM2 > temp){temp = tags->NPM2; highest = NPM2;}
+    if(tags->PN > temp){temp = tags->PN; highest = PN;}
+    if(tags->PN1 > temp){temp = tags->PN1; highest = PN1;}
+    if(tags->PNQO > temp){temp = tags->PNQO; highest = PNQO;}
+    if(tags->PNQS > temp){temp = tags->PNQS; highest = PNQS;}
+    if(tags->PNQV > temp){temp = tags->PNQV; highest = PNQV;}
+    if(tags->PNX1 > temp){temp = tags->PNX1; highest = PNX1;}
+    if(tags->PPGE > temp){temp = tags->PPGE; highest = PPGE;}
+    if(tags->PPH1 > temp){temp = tags->PPH1; highest = PPH1;}
+    if(tags->PPHO1 > temp){temp = tags->PPHO1; highest = PPHO1;}
+    if(tags->PPHO2 > temp){temp = tags->PPHO2; highest = PPHO2;}
+    if(tags->PPHS1 > temp){temp = tags->PPHS1; highest = PPHS1;}
+    if(tags->PPHS2 > temp){temp = tags->PPHS2; highest = PPHS2;}
+    if(tags->PPIO1 > temp){temp = tags->PPIO1; highest = PPIO1;}
+    if(tags->PPIO2 > temp){temp = tags->PPIO2; highest = PPIO2;}
+    if(tags->PPIS1 > temp){temp = tags->PPIS1; highest = PPIS1;}
+    if(tags->PPIS2 > temp){temp = tags->PPIS2; highest = PPIS2;}
+    if(tags->PPX1 > temp){temp = tags->PPX1; highest = PPX1;}
+    if(tags->PPX2 > temp){temp = tags->PPX2; highest = PPX2;}
+    if(tags->PPY > temp){temp = tags->PPY; highest = PPY;}
+    if(tags->RA > temp){temp = tags->RA; highest = RA;}
+    if(tags->REX > temp){temp = tags->REX; highest = REX;}
+    if(tags->RG > temp){temp = tags->RG; highest = RG;}
+    if(tags->RGQ > temp){temp = tags->RGQ; highest = RGQ;}
+    if(tags->RGQV > temp){temp = tags->RGQV; highest = RGQV;}
+    if(tags->RGR > temp){temp = tags->RGR; highest = RGR;}
+    if(tags->RGT > temp){temp = tags->RGT; highest = RGT;}
+    if(tags->RL > temp){temp = tags->RL; highest = RL;}
+    if(tags->RP > temp){temp = tags->RP; highest = RP;}
+    if(tags->RPK > temp){temp = tags->RPK; highest = RPK;}
+    if(tags->RR > temp){temp = tags->RR; highest = RR;}
+    if(tags->RRQ > temp){temp = tags->RRQ; highest = RRQ;}
+    if(tags->RRQV > temp){temp = tags->RRQV; highest = RRQV;}
+    if(tags->RRR > temp){temp = tags->RRR; highest = RRR;}
+    if(tags->RRT > temp){temp = tags->RRT; highest = RRT;}
+    if(tags->RT > temp){temp = tags->RT; highest = RT;}
+    if(tags->TO > temp){temp = tags->TO; highest = TO;}
+    if(tags->UH > temp){temp = tags->UH; highest = UH;}
+    if(tags->VB0 > temp){temp = tags->VB0; highest = VB0;}
+    if(tags->VBDR > temp){temp = tags->VBDR; highest = VBDR;}
+    if(tags->VBDZ > temp){temp = tags->VBDZ; highest = VBDZ;}
+    if(tags->VBG > temp){temp = tags->VBG; highest = VBG;}
+    if(tags->VBI > temp){temp = tags->VBI; highest = VBI;}
+    if(tags->VBM > temp){temp = tags->VBM; highest = VBM;}
+    if(tags->VBN > temp){temp = tags->VBN; highest = VBN;}
+    if(tags->VBR > temp){temp = tags->VBR; highest = VBR;}
+    if(tags->VBZ > temp){temp = tags->VBZ; highest = VBZ;}
+    if(tags->VD0 > temp){temp = tags->VD0; highest = VD0;}
+    if(tags->VDD > temp){temp = tags->VDD; highest = VDD;}
+    if(tags->VDG > temp){temp = tags->VDG; highest = VDG;}
+    if(tags->VDI > temp){temp = tags->VDI; highest = VDI;}
+    if(tags->VDN > temp){temp = tags->VDN; highest = VDN;}
+    if(tags->VDZ > temp){temp = tags->VDZ; highest = VDZ;}
+    if(tags->VH0 > temp){temp = tags->VH0; highest = VH0;}
+    if(tags->VHD > temp){temp = tags->VHD; highest = VHD;}
+    if(tags->VHG > temp){temp = tags->VHG; highest = VHG;}
+    if(tags->VHI > temp){temp = tags->VHI; highest = VHI;}
+    if(tags->VHN > temp){temp = tags->VHN; highest = VHN;}
+    if(tags->VHZ > temp){temp = tags->VHZ; highest = VHZ;}
+    if(tags->VM > temp){temp = tags->VM; highest = VM;}
+    if(tags->VMK > temp){temp = tags->VMK; highest = VMK;}
+    if(tags->VV0 > temp){temp = tags->VV0; highest = VV0;}
+    if(tags->VVD > temp){temp = tags->VVD; highest = VVD;}
+    if(tags->VVG > temp){temp = tags->VVG; highest = VVG;}
+    if(tags->VVGK > temp){temp = tags->VVGK; highest = VVGK;}
+    if(tags->VVI > temp){temp = tags->VVI; highest = VVI;}
+    if(tags->VVN > temp){temp = tags->VVN; highest = VVN;}
+    if(tags->VVNK > temp){temp = tags->VVNK; highest = VVNK;}
+    if(tags->VVZ > temp){temp = tags->VVZ; highest = VVZ;}
+    if(tags->XX > temp){temp = tags->XX; highest = XX;}
+    if(tags->ZZ1 > temp){temp = tags->ZZ1; highest = ZZ1;}
+    if(tags->ZZ2 > temp){temp = tags->ZZ2; highest = ZZ2;}
     
     return highest;
 }

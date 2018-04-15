@@ -20,6 +20,6 @@ int main(int argc, char* argv[]){
     
     map_t map = generate_dictionary("test.txt");
     
-   // printMap(map, "James");
+    printMap(map, "James");
     return 1;
 }
