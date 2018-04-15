@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tags.h"
-
+//will only read the length of the 
 int tag_to_hash(char *tag){
     //trim the tag
     char *saveptr;
@@ -10,7 +10,7 @@ int tag_to_hash(char *tag){
     char *tagcpy = (char*)malloc(sizeof(char)*TAG_BUFFER_LENGTH);
     tagcpy[TAG_BUFFER_LENGTH-1]='\0';
     strncpy(tagcpy, tag, TAG_BUFFER_LENGTH-1);
-    trimmed = strtok_r(tagcpy, " _@\n", &saveptr);
+    trimmed = strtok_r(tagcpy, "\n", &saveptr);
     //trim at _ and @ characters -- that is how multiple tags
     //are delimited. We only care about the first tag.
     //run the hashing
@@ -169,6 +169,7 @@ void hash_to_tag(int hash, char * tag){
         case COM: tag=","; break;
         case QUE: tag="?"; break;
         case ZZ: tag="zz"; break;
-        default: tag = NULL; break;
+        case NUL: tag="null"; break;
+        default: tag ="ERROR"; break;
     }
 }
