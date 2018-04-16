@@ -252,9 +252,9 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
 //Simple helper method used to test certain inputs. Showed correct output for the corresponding text file
 //used to test
 void printMap(map_t mymap, char* name){
-    //int highest;
-    //if(hashmap_get(mymap, name, (void **)&highest) == MAP_OK)
-        //printf("Key: %s\nValue %d\n", name, );
+    int highest;
+    if(hashmap_get(mymap, name, (void **)&highest) == MAP_OK)
+        printf("Key: %s\nValue %d\n", name, highest);
 }
 
 
