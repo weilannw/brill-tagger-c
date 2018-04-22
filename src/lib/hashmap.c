@@ -336,7 +336,7 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
 	if (hashmap_length(m) <= 0)
 		return MAP_MISSING;	
 
-    printf("Table size: %d\n", m->table_size);
+   // printf("Table size: %d\n", m->table_size);
 	/* Linear probing */
 	for(i = 0; i< m->table_size; i++)
         //Only look at data if it's not in use. NOTE: Might need to make this block. Further testing needed.
@@ -347,12 +347,12 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
             //Get the current keyword
             char* key = m->data[i].key;
             
-            printf("Pulled key is: %s\n", key);
+            // printf("Pulled key is: %s\n", key);
             
             //Get the most frequent tag from this key's struct. Store it into highest.
             int highest = get_highest_frequency(in, m->data[i].key);
             
-            printf("Highest frequency is %d\n", highest);
+            //printf("Highest frequency is %d\n", highest);
             
             
             
@@ -363,10 +363,9 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
             hashmap_remove(in, key);
 
             //Put in a new map entry with the current key and now its highest frequency count.
-            hashmap_put(in, key, 5);
+            hashmap_put(in, key, highest);
 		}
-    
-    
+   
 
     return MAP_OK;
 }

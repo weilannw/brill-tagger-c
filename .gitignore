@@ -1,2 +1,3 @@
 build/
 *corpus.txt
+.DS_store

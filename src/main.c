@@ -5,8 +5,8 @@
 #include "dictionary/dictionary_generator.h"
 #include "rules/rule_parser.h"
 #define TRAINING_CORPUS_PATH "training-corpus.txt"
-#define TESTING_CORPUS_LENGTH 14938398
-#define TESTING_CORPUS_LINES 1302584
+#define TESTING_CORPUS_LENGTH //hardcode this using wc -c on a file -- mine is (14938398)
+#define TESTING_CORPUS_LINES //use wc -l (1302584)
 #define TESTING_CORPUS_PATH "testing-corpus.txt"
 #define RULES_LIST_PATH "rules.txt" //must be present in build directory
 int main(int argc, char* argv[]){
@@ -32,3 +32,13 @@ int main(int argc, char* argv[]){
    // printMap(map, "James");
     return 1;
 }
+
+
+
+
+
+
+
+
+
+
