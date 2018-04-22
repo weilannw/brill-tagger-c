@@ -24,7 +24,7 @@ void apply_initial_tags(corpus_t corpus, map_t map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *word, map_t hash_map, int a, corpus_t corpus){
+void apply_initial_tag(char *word, map_t hash_map, size_t index, corpus_t corpus){
 
     int hashed_value;
     // fall through to unknown word tag method if word is not known,
@@ -32,12 +32,12 @@ void apply_initial_tag(char *word, map_t hash_map, int a, corpus_t corpus){
     
     if(hashmap_get(hash_map, word,
     (void **)&hashed_value) == MAP_MISSING)
-        apply_initial_unknown_word_tag(word);
+        apply_initial_unknown_word_tag(word, index, corpus);
     else    
-        corpus.tags[i] = hashed_value;
+        corpus.tags[index] = hashed_value;
 }
 /* called if the word cannot be found in the hashmap */
-void apply_initial_unknown_word_tag(char *word, int a, corpus_t corpus){
+void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
 
     //Do this eventually,
     /* relies on properties of the word for tagging */

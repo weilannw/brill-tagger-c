@@ -36,8 +36,6 @@ typedef struct subcorpus_t{
 
 /* find end of word in a line (delimited by tab)*/
 int word_length(char *);
-bool goto_prev_tag_index(size_t *, char *);
-bool goto_next_tag_index(size_t *, char *, size_t);
 void parse_corpus(char *, size_t, size_t, corpus_t*);
 void print_corpus(corpus_t);
 void allocate_corpus(corpus_t*, size_t);

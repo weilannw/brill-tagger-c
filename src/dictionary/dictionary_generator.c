@@ -22,8 +22,6 @@ map_t generate_dictionary(char *filepath)
     size_t len = 0;
     ssize_t read;
     
-
-    
     //Used for various placeholders
     int index;
     int error;

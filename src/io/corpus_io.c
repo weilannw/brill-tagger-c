@@ -114,38 +114,6 @@ char * mmap_corpus(size_t numchars, char *filename){
     }
     return mem_map;
 }
-//start index of previous tag 
-//corpus_size is the number of bytes
-//return true for out of bounds
-bool goto_prev_tag_index(size_t *cur_index, char *corpus){
-    while((int)*cur_index-TAG_BUFFER_LENGTH-1 >= 0){
-        if(corpus[*cur_index]=='\t'){
-            *cur_index-=TAG_BUFFER_LENGTH+1;
-            return false;
-        }
-        *cur_index-=1;
-    }
-    return true;
-}  
-//start index of next tag
-//corpus_size is the number of bytes
-//return true for out of bounds
-bool goto_next_tag_index(size_t *cur_index, char *corpus, size_t corpus_size){
-    while(*cur_index<(int)corpus_size-1-TAG_BUFFER_LENGTH){
-        if(corpus[*cur_index]=='\t'){
-            *cur_index+=1;
-            return false;
-        }
-        *cur_index+=1;
-    }
-    return true;
-}
-
-/* tag points to the start of the tag buffer in the corpus mmap */
-void apply_tag(int tag_hash, char * tag){
-    /* this will insert the tag string in the specified location */
-    hash_to_tag(tag_hash, tag);
-}
 
 char * get_tagged_text(int tag, int index){
     return NULL;
