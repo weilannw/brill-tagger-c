@@ -56,36 +56,6 @@ void apply_rule_to_corpus(contextual_rule_t rule, char *corpus, size_t corpus_si
             apply_tag(rule.tag2,  &corpus[cur_index]);
     }*/
 }
-/*returns bool indicating if contextual info was stored
-  this method allows for checking contextual rules,
-  nulls break continuity so bounds are set at the beginning/end 
-  of the corpus and at a null.*/
-bool store_contextual_info(contextual_info_t *info, size_t index, corpus_t *corpus){
-    if(corpus->applied_tags[index] == NUL)
-        return false;
-    info->corpus = corpus;
-    info->index = index;
-    int lowerbound = -3;
-    int upperbound = 3;
-    int diff;
-    if(index < 3)
-        lowerbound = -index;
-    else if ((diff = corpus->num_lines-1-index) < 3)
-        upperbound = diff;
-    for(int i = -1; i >= lowerbound; i--)
-        if(corpus->applied_tags[index+i] == NUL){
-            lowerbound = i;
-            break;
-        }
-    for(int i = 1; i <= upperbound; i++)
-        if(corpus->applied_tags[index+i] == NUL){
-            upperbound = i;
-            break;
-        }
-    info->prev_bound = lowerbound;
-    info->next_bound = upperbound;
-    return true;
-}
 /* checks if a contextual (known word) 
    rule applies, given contextual information */
 bool check_contextual_rule(contextual_rule_t rule, contextual_info_t info){

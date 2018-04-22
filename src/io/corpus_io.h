@@ -34,9 +34,6 @@ typedef struct subcorpus_t{
     size_t num_lines; //length
 }subcorpus_t;
 
-corpus_t *testingcorpus;
-corpus_t *trainingcorpus;
-
 /* find end of word in a line (delimited by tab)*/
 int word_length(char *);
 bool goto_prev_tag_index(size_t *, char *);

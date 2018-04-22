@@ -69,6 +69,36 @@ void free_corpus(corpus_t corpus){
     free(corpus.applied_tags);
     corpus.applied_tags=NULL;
 }
+/*returns bool indicating if contextual info was stored
+  this method allows for checking contextual rules,
+  nulls break continuity so bounds are set at the beginning/end 
+  of the corpus and at a null.*/
+bool store_contextual_info(contextual_info_t *info, size_t index, corpus_t *corpus){
+    if(corpus->applied_tags[index] == NUL)
+        return false;
+    info->corpus = corpus;
+    info->index = index;
+    int lowerbound = -3;
+    int upperbound = 3;
+    int diff;
+    if(index < 3)
+        lowerbound = -index;
+    else if ((diff = corpus->num_lines-1-index) < 3)
+        upperbound = diff;
+    for(int i = -1; i >= lowerbound; i--)
+        if(corpus->applied_tags[index+i] == NUL){
+            lowerbound = i;
+            break;
+        }
+    for(int i = 1; i <= upperbound; i++)
+        if(corpus->applied_tags[index+i] == NUL){
+            upperbound = i;
+            break;
+        }
+    info->prev_bound = lowerbound;
+    info->next_bound = upperbound;
+    return true;
+}
 /* memory maps the corpus in plain text. 
    gives the file for closing later, and the number of bytes in the file */
 char * mmap_corpus(size_t numchars, char *filename){
@@ -116,6 +146,7 @@ void apply_tag(int tag_hash, char * tag){
     /* this will insert the tag string in the specified location */
     hash_to_tag(tag_hash, tag);
 }
+
 char * get_tagged_text(int tag, int index){
     return NULL;
 }
