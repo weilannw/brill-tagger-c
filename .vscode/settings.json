@@ -8,6 +8,8 @@
         "hashmap.h": "c",
         "stdbool.h": "c",
         "limits": "cpp",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "rule_parser.h": "c",
+        "rules.h": "c"
     }
 }

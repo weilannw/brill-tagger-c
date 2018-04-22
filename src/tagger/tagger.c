@@ -4,6 +4,7 @@
 #include "../dictionary/dictionary_generator.h"
 #include "../lib/hashmap.h"
 #include "../io/corpus_io.h"
+#include "../rules/rules.h"
 #include "tags.h"
 #include "tagger.h"
 
@@ -43,5 +44,50 @@ void apply_initial_unknown_word_tag(char *mem_map_line){
 
     /* relies on properties of the word for tagging */
 }
-
 /******** end of the initial tagging methods ********/
+void apply_rule_to_corpus(contextual_rule_t rule, char *corpus, size_t corpus_size){
+    //store indices rule applies to, then alter tags
+    
+    /*size_t cur_index;
+    contextual_info_t info;
+    while(cur_index < corpus_size && goto_next_tag_index(&cur_index, corpus, corpus_size)){
+        store_contextual_info(&info, cur_index, corpus, corpus_size);
+        if(tag_to_hash(&corpus[cur_index] ) == rule.tag1 && check_contextual_rule(rule, info))
+            apply_tag(rule.tag2,  &corpus[cur_index]);
+    }*/
+}
+/*returns bool indicating if contextual info was stored
+  this method allows for checking contextual rules,
+  nulls break continuity so bounds are set at the beginning/end 
+  of the corpus and at a null.*/
+bool store_contextual_info(contextual_info_t *info, size_t index, corpus_t *corpus){
+    if(corpus->applied_tags[index] == NUL)
+        return false;
+    info->corpus = corpus;
+    info->index = index;
+    int lowerbound = -3;
+    int upperbound = 3;
+    int diff;
+    if(index < 3)
+        lowerbound = -index;
+    else if ((diff = corpus->num_lines-1-index) < 3)
+        upperbound = diff;
+    for(int i = -1; i >= lowerbound; i--)
+        if(corpus->applied_tags[index+i] == NUL){
+            lowerbound = i;
+            break;
+        }
+    for(int i = 1; i <= upperbound; i++)
+        if(corpus->applied_tags[index+i] == NUL){
+            upperbound = i;
+            break;
+        }
+    info->prev_bound = lowerbound;
+    info->next_bound = upperbound;
+    return true;
+}
+/* checks if a contextual (known word) 
+   rule applies, given contextual information */
+bool check_contextual_rule(contextual_rule_t rule, contextual_info_t info){
+    return contextual_rules[rule.triggerfn](info, rule.arg1, rule.arg2);
+}

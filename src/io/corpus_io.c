@@ -1,91 +1,85 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <sys/mman.h>
-#include <stdio.h>
+#include <fcntl.h>
 #include "corpus_io.h"
 #include "../tagger/tags.h"
- // todo: create memory maps of the corpus
-// list of offsets
-// each thread/ proc num gets an offset
-// each thread gets a memory map
-/* get index of tag in corpus + or - 1 line. result is stored in 
-the current index pointer */
-/*char *allocate_subcorpora(char *mem_map, size_t size, size_t nthreads){
 
+// output number of lines and populated corpus_t, returns false on failure
+void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *corpus){
+    corpus->num_lines = num_lines;
+    allocate_corpus(corpus, num_lines);
+    char *corpus_text = mmap_corpus(num_bytes, filename);
+    size_t byte_index = 0;
+    size_t linenum = 0;
+    while(linenum < num_lines && byte_index < num_bytes){
+        parse_line(&corpus_text[byte_index], &byte_index, corpus, linenum);
+        linenum++;
+    }
+    munmap(corpus_text, num_bytes);
 }
-bool error_check(corpus_map_t map, size_t index){
-    return map()
-}
-char *create_corpus_mmap(char *tagged_corpusfn, char *evolving_corpusfn, off_t offset, size_t size, ){
-}*/
-/* create memory maps divided based on number of threads */
-/*void create_mem_maps(){
-    return 0;
-}
-void munmap_corpus_map(corpus_map_t *map){
-    munmap()
-}
-//offset is in terms of line number
-//memory mapping for vastly improved machine learning performance 
-corpus_map_t *create_corpus_map(size_t index, size_t lines, size_t chars, off_t offset, FILE *words, FILE *tags, FILE *evolving_tags){
-    corpus_map_t *corpus_map = (*corpus_map_t)malloc(sizeof(corpus_map_t));
-    corpus_map->index=index;
-    if((corpus_map->tags = (int*)mmap((void*)(corpus_map->tags), lines * sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, tags, offset * sizeof(int))) == MAP_FAILED){
-        printf("Failed to map tags file at index %d\n", index);
+//todo: add tag error checking
+//returns the end index of the line
+void parse_line(char *line, size_t *offset, corpus_t *corpus, size_t index){
+    int word_len = word_length(line);
+    if(word_len == -1){
+        printf("Error: Word length is greater than maximum\n");
         exit(0);
     }
-    if((corpus_map->evolving_tags = (int*)mmap((void*)(corpus_map->evolving_tags), lines * sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, evolving_tags, offset * sizeof(int))) == MAP_FAILED){
-        printf("Failed to map evolving_tags file at index %d\n", index);
-        exit(0);
-    }
-    if((corpus_map->words = (char*)mmap((void*)(corpus_map->words), lines * LINE_BUFFER_LENGTH, PROT_READ|PROT_WRITE, MAP_SHARED, words, offset * LINE_BUFFER_LENGTH)) == MAP_FAILED){
-        printf("Failed to map words file at index %d\n", index);
-        exit(0);
-    }
-    return corpus_map;
+    corpus->words[index] = (char*)malloc(sizeof(char)*word_len);
+    corpus->words[index][word_len]='\0';
+    strncpy(corpus->words[index], line, word_len);
+    *offset += word_len + TAG_BUFFER_LENGTH + 1; //points to beginning of next line
+    corpus->tags[index] = tag_to_hash(&line[word_len+1]);
 }
-FILE *create_file(char *filename, size_t length){
-    FILE *file = fopen(filename, "w+");
-    if(!file)
-        exit(0);
-    fseek(file, length, SEEK_SET);
-    fputc('\0', file);
-    return file;
-}*/
-static void getfileinfo(FILE *file, size_t *numlines, size_t *numchars){
-    char cur;
-    *numlines = 0;
-    *numchars = 0;
-    while((cur = getc(file))!=EOF){
-        *numchars+=1;
-        if(cur == '\n')
-            *numlines+=1;
+void print_corpus(corpus_t corpus){
+    char tag_buffer[TAG_BUFFER_LENGTH];
+    char applied_tag_buffer[TAG_BUFFER_LENGTH];
+    for(int i = 0; i < corpus.num_lines; i++){
+        hash_to_tag(corpus.tags[i], tag_buffer);
+        if(!*tag_buffer)
+            strcpy(tag_buffer, "none");
+        hash_to_tag(corpus.applied_tags[i], applied_tag_buffer);
+        if(!*applied_tag_buffer) 
+            strcpy(applied_tag_buffer, "none");
+        printf("------Corpus line %d------\n"
+               "Word:             %s\n"
+               "Tag:              %s\n"
+               "                  %d\n"
+               "Learned Tag:      %s\n"
+               "                  %d\n", 
+               i, corpus.words[i], tag_buffer, corpus.tags[i], applied_tag_buffer, corpus.applied_tags[i]);
     }
-    fseek(file, 0, SEEK_SET);
 }
-
-
-
-
-
-
-
+void allocate_corpus(corpus_t *corpus, size_t num_lines){
+    corpus->words = (char**)malloc(sizeof(char*)*num_lines);
+    corpus->tags = (int*)malloc(sizeof(int)*num_lines);
+    corpus->applied_tags = (int*)malloc(sizeof(int)*num_lines);
+}
+void free_corpus(corpus_t corpus){
+    for(int i = 0; i < corpus.num_lines; i++){
+        free(corpus.words[i]);
+        corpus.words[i]=NULL;
+    }
+    free(corpus.words);
+    corpus.words=NULL;
+    free(corpus.tags);
+    corpus.tags=NULL;
+    free(corpus.applied_tags);
+    corpus.applied_tags=NULL;
+}
 /* memory maps the corpus in plain text. 
    gives the file for closing later, and the number of bytes in the file */
-char * mmap_plain_text_corpus(FILE **fileptr, size_t *numbytes, char *filename){
-    size_t numlines = 0;
-    size_t numchars = 0;
+char * mmap_corpus(size_t numchars, char *filename){
     char *mem_map;
-    FILE *corpus = fopen(filename, "r+");
-    *fileptr = corpus;
-    if(!corpus){
-        printf("Failed to open plaintext corpus file\n");
+    int fd = open(filename, O_RDONLY);
+    if(fd == -1){
+        printf("Failed to open corpus file\n");
         exit(0);
     }
-    getfileinfo(corpus, &numlines, &numchars);
-    *numbytes = numchars;
-    if((mem_map = (char*)mmap((void*)(mem_map), numchars, PROT_READ|PROT_WRITE, MAP_SHARED, fileno(corpus), 0)) == MAP_FAILED){
-        printf("Failed to map plaintext corpus file\n");
+    if((mem_map = (char*)mmap(NULL, numchars, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED){
+        printf("Failed to map corpus file\n");
         exit(0);
     }
     return mem_map;
@@ -115,7 +109,34 @@ bool goto_next_tag_index(size_t *cur_index, char *corpus, size_t corpus_size){
         *cur_index+=1;
     }
     return true;
-}  
+}
+
+/* anything beyond a NUL tag is treated as out of bounds */
+/*void store_contextual_info(contextual_info_t *info, size_t index, char *corpus, size_t corpus_size){
+    size_t cur_index = index;
+   // info->corpus = corpus;
+    info->prev_tags[0] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
+    info->prev_tags[1] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
+    info->prev_tags[2] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
+    cur_index = index;
+    info->next_tags[0] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
+    info->next_tags[1] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
+    info->next_tags[2] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
+}
+int get_next_tag_hash(size_t *cur_index, char *corpus, size_t corpus_size, bool prev){
+    bool outofbounds = false;
+    size_t index = *cur_index;
+    int hash;
+    outofbounds = (prev) ? goto_prev_tag_index(&index, corpus):
+                    goto_next_tag_index(&index, corpus, corpus_size);
+    hash = (!outofbounds) ? tag_to_hash(&corpus[index]) : NUL;
+    if(hash != NUL) *cur_index = index;
+    //cur_index is only updated if hash is not NUL - (NUL is part of the tag enum)
+    //anything beyond a null tagged word is ignored, and anything out of 
+    //bounds is tagged null. These are synonymous in the code, since null
+    //tagged words break continuity.
+    return hash;
+} */
 /* tag points to the start of the tag buffer in the corpus mmap */
 void apply_tag(int tag_hash, char * tag){
     /* this will insert the tag string in the specified location */

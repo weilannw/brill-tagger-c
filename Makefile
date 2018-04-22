@@ -26,7 +26,7 @@ clean:
 	$(RM) -r $(BUILD_DIR)
 
 sync:
-	rsync -rup src/files/* $(BUILD_DIR)
+	rsync -rup ./files/* $(BUILD_DIR)
 
 -include $(DEPS)
 
