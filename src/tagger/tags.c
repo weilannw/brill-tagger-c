@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "tags.h"
-//will only read the length of the 
 int tag_to_hash(char *tag){
     //trim the tag
     char *saveptr;
@@ -21,7 +20,7 @@ int tag_to_hash(char *tag){
     free(tagcpy);
     return hash;
 }
-// output of null indicates bad input hash
+// default output of NULL indicates bad input hash
 void hash_to_tag(int hash, char * tag){
     switch(hash){
         case APPGE: tag="appge"; break;

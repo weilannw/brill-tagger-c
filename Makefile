@@ -19,14 +19,14 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 .PHONY:
-	txts
+	sync
 	clean
 
 clean:
 	$(RM) -r $(BUILD_DIR)
 
 sync:
-	txts -rup src/files/* $(BUILD_DIR)
+	rsync -rup src/files/* $(BUILD_DIR)
 
 -include $(DEPS)
 

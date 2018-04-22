@@ -3,18 +3,10 @@
 #define LINE_MAX_LENGTH 100 // max line length in mem map
 #define TAG_BUFFER_LENGTH 6
 
-/* inserts the tag string into the index in the memory map */
-void apply_tag(int, char *);
-/* converts hashed tag to string for printed output */
-void hash_to_tag(int, char *);
-/* find start end of word in a line (delimited by tab)*/
-int word_length(char *);
-/* applies the tag to the place in memory where the tag starts */
-void apply_tag(int, char *);
 char * get_tagged_text(int, int);
 /* hash function for matching tag with tag_hash_t */
 int tag_to_hash(char *);
-
+void hash_to_tag(int, char *);
 /* comparing hash values allows us 
 to avoid expensive strcmp operations */
 typedef enum{

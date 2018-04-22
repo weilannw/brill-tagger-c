@@ -81,9 +81,9 @@ bool prev_wd_is(char*);
 bool next_wd_is(char*);
 bool contains_char(char*);
 
-void store_contextual_info(contextual_info_t *, size_t, char *);
+void store_contextual_info(contextual_info_t *, size_t, char *, size_t);
 bool check_contextual_rule(contextual_rule_t, contextual_info_t);
-
+int get_next_tag_hash(size_t *, char *, size_t, bool);
 /* rules for unknown words */
 bool (*unknown_word_rules[9]) (char*) = {
     rem_prefix, //removing prefix creates a known word
