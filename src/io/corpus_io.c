@@ -111,32 +111,6 @@ bool goto_next_tag_index(size_t *cur_index, char *corpus, size_t corpus_size){
     return true;
 }
 
-/* anything beyond a NUL tag is treated as out of bounds */
-/*void store_contextual_info(contextual_info_t *info, size_t index, char *corpus, size_t corpus_size){
-    size_t cur_index = index;
-   // info->corpus = corpus;
-    info->prev_tags[0] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
-    info->prev_tags[1] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
-    info->prev_tags[2] = get_next_tag_hash(&cur_index, corpus, corpus_size, true);
-    cur_index = index;
-    info->next_tags[0] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
-    info->next_tags[1] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
-    info->next_tags[2] = get_next_tag_hash(&cur_index, corpus, corpus_size, false);
-}
-int get_next_tag_hash(size_t *cur_index, char *corpus, size_t corpus_size, bool prev){
-    bool outofbounds = false;
-    size_t index = *cur_index;
-    int hash;
-    outofbounds = (prev) ? goto_prev_tag_index(&index, corpus):
-                    goto_next_tag_index(&index, corpus, corpus_size);
-    hash = (!outofbounds) ? tag_to_hash(&corpus[index]) : NUL;
-    if(hash != NUL) *cur_index = index;
-    //cur_index is only updated if hash is not NUL - (NUL is part of the tag enum)
-    //anything beyond a null tagged word is ignored, and anything out of 
-    //bounds is tagged null. These are synonymous in the code, since null
-    //tagged words break continuity.
-    return hash;
-} */
 /* tag points to the start of the tag buffer in the corpus mmap */
 void apply_tag(int tag_hash, char * tag){
     /* this will insert the tag string in the specified location */
