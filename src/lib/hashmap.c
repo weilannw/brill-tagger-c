@@ -363,7 +363,7 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
             hashmap_remove(in, key);
 
             //Put in a new map entry with the current key and now its highest frequency count.
-            hashmap_put(in, key, highest);
+            hashmap_put(in, key, (any_t)highest);
 		}
    
 
