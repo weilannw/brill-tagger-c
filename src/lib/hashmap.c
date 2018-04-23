@@ -347,7 +347,7 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
             //Get the current keyword
             char* key = m->data[i].key;
             
-            // printf("Pulled key is: %s\n", key);
+            printf("Pulled key is: %s\n", key);
             
             //Get the most frequent tag from this key's struct. Store it into highest.
             int highest = get_highest_frequency(in, m->data[i].key);
