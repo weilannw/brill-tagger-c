@@ -51,6 +51,8 @@ map_t generate_dictionary(char *filepath)
         if(word[read-1] == '\n') word[read-1] = '\0';
         if(tag[read-1] == '\n') tag[read-1] = '\0';
         
+        printf("Here is the word: %s\t Here is the tag: %s\n", word, tag);
+        
         char* newword = malloc(strlen(word) + 1);
         char* newtag = malloc(strlen(tag) + 1);
         
@@ -86,7 +88,7 @@ map_t generate_dictionary(char *filepath)
     PFany p;
     any_t t;
     
-    printMap(mymap, "James");
+  //  printMap(mymap, "James");
     
     
     hashmap_iterate(mymap, p, t);
