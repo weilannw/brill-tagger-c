@@ -12,6 +12,7 @@
 
 void apply_initial_tags(corpus_t corpus, map_t map){
     for(int i = 0; i < corpus.num_lines; i++){
+        //printf("FUCK: %d, %s\n", i, corpus.words[i]);
         apply_initial_tag(corpus.words[i], map, i, corpus);
     }
         
@@ -29,12 +30,15 @@ void apply_initial_tag(char *word, map_t hash_map, size_t index, corpus_t corpus
     int hashed_value;
     // fall through to unknown word tag method if word is not known,
     // otherwise apply the tag to the line in the file
-    
+    //printf("Before: %s\n", word);
     if(hashmap_get(hash_map, word,
-    (void **)&hashed_value) == MAP_MISSING)
+    (void **)&hashed_value) == MAP_MISSING){
+        //printf("After: %s\n", word);
         apply_initial_unknown_word_tag(word, index, corpus);
+    }
     else    
-        corpus.tags[index] = hashed_value;
+        corpus.applied_tags[index] = hashed_value;
+    //printf("AppliedTags[%lu], %d\n", index, corpus.applied_tags[index]);
 }
 /* called if the word cannot be found in the hashmap */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){

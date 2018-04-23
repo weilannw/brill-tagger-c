@@ -51,7 +51,7 @@ map_t generate_dictionary(char *filepath)
         if(word[read-1] == '\n') word[read-1] = '\0';
         if(tag[read-1] == '\n') tag[read-1] = '\0';
         
-        printf("Here is the word: %s\t Here is the tag: %s\n", word, tag);
+        //printf("Here is the word: %s\t Here is the tag: %s\n", word, tag);
         
         char* newword = malloc(strlen(word) + 1);
         char* newtag = malloc(strlen(tag) + 1);
@@ -243,7 +243,7 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
         case XX: val->XX+=1; frequency_count.XX+=1; break;
         case ZZ1: val->ZZ1+=1; frequency_count.ZZ1+=1; break;
         case ZZ2: val->ZZ2+=1; frequency_count.ZZ2+=1; break;
-        default: printf("Illegal input tag\n");
+        //default: printf("Illegal input tag\n");
             /* punctuation not included because
              these tags are known up front */
     }
