@@ -46,7 +46,7 @@ map_t generate_dictionary(char *filepath)
     //Continue reading until the end of the file
     while ((read = getline(&line, &len, fp)) != -1) {
         
-        word = strtok_r(line, " ", &saveptr);
+        word = strtok_r(line, '\t', &saveptr);
         tag = strtok_r(NULL, '\t', &saveptr);
         if(word[read-1] == '\n') word[read-1] = '\0';
         if(tag[read-1] == '\n') tag[read-1] = '\0';
