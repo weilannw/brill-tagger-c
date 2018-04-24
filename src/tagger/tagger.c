@@ -29,10 +29,12 @@ void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus
     if(hashmap_get(hash_map, word,
     (void **)&hashed_value) == MAP_MISSING)
         apply_initial_unknown_word_tag(word, index, corpus);
-    else if (ignore_tag(hashed_value))
-        corpus.applied_tags[tempfix] = corpus.tags[tempfix];
+    else if (ignore_tag(*hashed_value))
+        corpus.applied_tags[index] = corpus.tags[index];
     else
-        corpus.applied_tags[tempfix] = hashed_value;*/
+        corpus.applied_tags[index] = *hashed_value;
+
+
 }
 /* called if the word cannot be found in the hashmap (unknown) */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
