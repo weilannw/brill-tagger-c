@@ -24,8 +24,8 @@ int main(int argc, char* argv[]){
     //for(size_t i = 0; i < corpus.num_lines; i++)
         //printf("AppliedTags[%lu], %d\n", i, corpus.applied_tags[i]);
 
-    print_corpus(corpus);
-    free_corpus(corpus);
+ //   print_corpus(corpus);
+ //   free_corpus(corpus);
 
     //print_rules_list(rules);
     //free_rules_list(rules);
