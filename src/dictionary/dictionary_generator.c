@@ -17,11 +17,9 @@ int most_common_tag;
 
 struct hashmap generate_dictionary(corpus_t corpus){
   
-    
     //Instantiate a new hashmap
     struct hashmap map;
     struct tagcounts_t *data;
-    
     
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -30,11 +28,11 @@ struct hashmap generate_dictionary(corpus_t corpus){
         if(data == NULL){
             struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
             memset(newtags, 0, sizeof(struct tagcounts_t));
-            updateTags(corpus.words[i], newtags, corpus.tags[i]);
+            update_tags(corpus.words[i], newtags, corpus.tags[i]);
             tag_hashmap_put(&map, corpus.words[i], newtags);
         }
         else{
-            updateTags(corpus.words[i], data, corpus.tags[i]);
+            update_tags(corpus.words[i], data, corpus.tags[i]);
         }
     }
         
@@ -43,7 +41,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
 
     return map;
 }
-void updateTags(char* word, struct tagcounts_t *val, int tag){
+void update_tags(char* word, struct tagcounts_t *val, int tag){
     
     //Hash the tag value to save time in the future
     int hash_value = tag;

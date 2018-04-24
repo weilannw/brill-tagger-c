@@ -152,7 +152,7 @@ typedef struct data_struct_t
     char key_string[KEY_MAX_LENGTH];
     int number;
 } data_struct_t;
-void updateTags(char* , struct tagcounts_t *, int );
+void update_tags(char* , struct tagcounts_t *, int );
 struct hashmap generate_dictionary(corpus_t corpus);
 int get_highest_frequency(struct tagcounts_t*);
 
