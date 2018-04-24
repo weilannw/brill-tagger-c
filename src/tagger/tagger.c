@@ -10,7 +10,7 @@
 
 /******** start of the initial tagging methods ********/
 
-void apply_initial_tags(corpus_t corpus, map_t map){
+void apply_initial_tags(corpus_t corpus, struct hashmap map){
     for(size_t i = 0; i < corpus.num_lines; i++){
         apply_initial_tag(corpus.words[i], map, i, corpus);
     }
@@ -24,13 +24,13 @@ void apply_initial_tags(corpus_t corpus, map_t map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *word, map_t hash_map, size_t index, corpus_t corpus){
+void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus_t corpus){
 
-    int hashed_value;
+    int hashed_value = NULL;
     // fall through to unknown word tag method if word is not known,
     // otherwise apply the tag to the line in the file
-    if(hashmap_get(hash_map, word,
-    (void **)&hashed_value) == MAP_MISSING)
+    hashed_value = hashmap_get(&hash_map, word);
+    if(hashed_value == NULL)
         apply_initial_unknown_word_tag(word, index, corpus);
     else    
         corpus.applied_tags[index] = hashed_value;

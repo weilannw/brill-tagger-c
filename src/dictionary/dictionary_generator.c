@@ -4,102 +4,49 @@
 #include <assert.h>
 #include "../tagger/tags.h"
 #include "dictionary_generator.h"
+#include "../io/corpus_io.h"
 #include "../lib/hashmap.h"
 
-void shorten_tag_struct(map_t map);
-
+void shorten_tag_struct(struct hashmap map);
+HASHMAP_FUNCS_CREATE(tag, const char, struct tagcounts_t);
 tagcounts_t frequency_count;
 //call in generate dict = malloc (sizeof (struct tagcounts_t));
 int most_common_tag;
  // call in generate dict= malloc (sizeof(int));
 
 
-map_t generate_dictionary(char *filepath)
-{
-    //Used for file reading
-    FILE * fp;
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    
-    //Used for various placeholders
-    int index;
-    int error;
-    map_t mymap;
-    char key_string[KEY_MAX_LENGTH];
-    data_struct_t* value;
-    char* val;
+struct hashmap generate_dictionary(corpus_t corpus){
+  
     
     //Instantiate a new hashmap
-    mymap = hashmap_new();
+    struct hashmap map;
+    struct tagcounts_t *data;
     
-    //Use these variables to parse and prepare words for tagset updating.
-    fp = fopen(filepath, "r");
-    char *saveptr;
-    char *word;
-    char *tag;
-    tagcounts_t tags;
     
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
+    hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
-    //Continue reading until the end of the file
-    while ((read = getline(&line, &len, fp)) != -1) {
-        
-        word = strtok_r(line, "\t", &saveptr);
-        tag = strtok_r(NULL, " ", &saveptr);
-        if(word[read-1] == '\n') word[read-1] = '\0';
-        if(tag[read-1] == '\n') tag[read-1] = '\0';
-        
-        //printf("Here is the word: %s\t Here is the tag: %s\n", word, tag);
-        
-        char* newword = malloc(strlen(word) + 1);
-        char* newtag = malloc(strlen(tag) + 1);
-        
-        strcpy(newword, word);
-        strcpy(newtag, tag);
-        
-        //See if the word is already used as a key value.
-        //If it is not, we allocate a new structure to store as the keyword's value
-        //and call updateTags, this will set the initial tag to 1.
-        //Finally, we put this keyword and value into the hashmap.
-        
-        if(hashmap_get(mymap, word, (void **)&tags) == MAP_MISSING){
+    for(int i = 0; i < corpus.num_lines; i++){
+        data = tag_hashmap_get(&map, corpus.words[i]);
+        if(data == NULL){
             struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
             memset(newtags, 0, sizeof(struct tagcounts_t));
-            updateTags(newword, newtags, newtag);
-            hashmap_put(mymap, newword, newtags);
+            updateTags(corpus.words[i], newtags, corpus.tags[i]);
+            tag_hashmap_put(&map, corpus.words[i], newtags);
         }
-        
-        //If the word already exists, get the current tagset values of the keyword.
-        //Update it's contents to reflect the new tag (increment the correct value)
-        //and finally remove the old version from the map and put the new version in.
         else{
-            struct tagcounts_t *curtags = malloc (sizeof (struct tagcounts_t));
-            hashmap_get(mymap, newword, (void **)&curtags);
-            updateTags(newword,curtags, newtag);
-            hashmap_remove(mymap, newword);
-            hashmap_put(mymap, newword, curtags);
+            updateTags(corpus.words[i], data, corpus.tags[i]);
         }
-        
     }
-    
-    //Placeholder values that aren't needed but are passed into the hashmaps function
-    PFany p;
-    any_t t;
-    
-  //  printMap(mymap, "James");
-    
-    
-    hashmap_iterate(mymap, p, t);
-    
-    //return the finished map
-    return mymap;
+        
+   
+
+
+    return map;
 }
-void updateTags(char* word, struct tagcounts_t *val, char* tag){
+void updateTags(char* word, struct tagcounts_t *val, int tag){
     
     //Hash the tag value to save time in the future
-    int hash_value = tag_to_hash(tag);
+    int hash_value = tag;
     
     /*auto generated switch statement*/
     //Switch statement is passed the hashed tag value. The corresponding cases
@@ -249,23 +196,14 @@ void updateTags(char* word, struct tagcounts_t *val, char* tag){
     }
 }
 
-//Simple helper method used to test certain inputs. Showed correct output for the corresponding text file
-//used to test
-void printMap(map_t mymap, char* name){
-    int highest;
-    if(hashmap_get(mymap, name, (void **)&highest) == MAP_OK)
-        printf("Key: %s\nValue %d\n", name, highest);
-}
 
 
 //This method takes in a tag structure along with an allocated integer.
 //The method stores the most frequent value's hash into the address of the passed in int pointer
-int get_highest_frequency(map_t mymap, char* key){
+int get_highest_frequency(tagcounts_t* tags){
     int highest = -1;
     int temp = -1;
     
-    struct tagcounts_t *tags = malloc (sizeof (struct tagcounts_t));
-    hashmap_get(mymap, key, (void **)&tags);
     
     if(tags->APPGE > temp){temp = tags->APPGE; highest = APPGE;}
     if(tags->AT > temp){temp = tags->AT; highest = AT;}
@@ -407,6 +345,5 @@ int get_highest_frequency(map_t mymap, char* key){
     
     return highest;
 }
-
 
 

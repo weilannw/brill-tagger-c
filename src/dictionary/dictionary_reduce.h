@@ -1,0 +1,13 @@
+//
+//  dictionary_reduce.h
+//  
+//
+//  Created by Colton Simmons on 4/23/18.
+//
+
+#ifndef dictionary_reduce_h
+#define dictionary_reduce_h
+
+#include <stdio.h>
+
+#endif /* dictionary_reduce_h */

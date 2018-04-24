@@ -11,11 +11,11 @@
 #define TESTING_CORPUS_PATH "testing-corpus.txt"
 #define RULES_LIST_PATH "rules.txt" //must be present in build directory
 int main(int argc, char* argv[]){
-    map_t dict_hashmap = generate_dictionary(TESTING_CORPUS_PATH);
+  //  struct hashmap dict_hashmap = generate_dictionary(TESTING_CORPUS_PATH);
     corpus_t corpus;
     parse_corpus(TESTING_CORPUS_PATH, TESTING_CORPUS_LENGTH, TESTING_CORPUS_LINES, &corpus);
     rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
-    apply_initial_tags(corpus, dict_hashmap);
+  //  apply_initial_tags(corpus, dict_hashmap);
 
     //subcorpus_t sub;
     //sub.corpus = corpus;
