@@ -10,7 +10,7 @@
 
 /******** start of the initial tagging methods ********/
 
-void apply_initial_tags(corpus_t corpus, map_t map){
+void apply_initial_tags(corpus_t corpus, struct hashmap map){
     for(size_t i = 0; i < corpus.num_lines; i++){
         apply_initial_tag(corpus.words[i], map, i, corpus);
     }
@@ -23,16 +23,18 @@ void apply_initial_tags(corpus_t corpus, map_t map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *word, map_t hash_map, size_t index, corpus_t corpus){
-    int hashed_value;
-    size_t tempfix = index; // due to mem leak, this is needed because index becomes 0 after hashmap get
-    if(hashmap_get(hash_map, word,
-    (void **)&hashed_value) == MAP_MISSING)
+void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus_t corpus){
+    int *hashed_value;
+    
+    hashed_value = (int*)hashmap_get(&hash_map, word);
+    if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
-    else if (ignore_tag(hashed_value))
-        corpus.applied_tags[tempfix] = corpus.tags[tempfix];
+    else if (ignore_tag(*hashed_value))
+        corpus.applied_tags[index] = corpus.tags[index];
     else
-        corpus.applied_tags[tempfix] = hashed_value;
+        corpus.applied_tags[index] = *hashed_value;
+
+
 }
 /* called if the word cannot be found in the hashmap (unknown) */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
