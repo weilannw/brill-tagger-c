@@ -32,7 +32,7 @@ void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus
     else if (ignore_tag(*hashed_value))
         corpus.applied_tags[index] = corpus.tags[index];
     else
-        corpus.applied_tags[index] = *hashed_value;
+        corpus.applied_tags[index] = *hashed_value;*/
 
 
 }

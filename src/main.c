@@ -15,8 +15,8 @@ int main(int argc, char* argv[]){
     parse_corpus(TESTING_CORPUS_PATH, TESTING_CORPUS_LENGTH, TESTING_CORPUS_LINES, &corpus);
     //rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
     //apply_initial_tags(corpus, dict_hashmap);
-    struct hashmap dict_hashmap = generate_dictionary(corpus);
-
+    //struct hashmap dict_hashmap = generate_dictionary(corpus);
+    //hashmap_destroy(&dict_hashmap);
     //subcorpus_t sub;
     //sub.corpus = corpus;
     //sub.index = 0;
@@ -24,8 +24,8 @@ int main(int argc, char* argv[]){
     //for(size_t i = 0; i < corpus.num_lines; i++)
         //printf("AppliedTags[%lu], %d\n", i, corpus.applied_tags[i]);
 
-    //print_corpus(corpus);
-    //free_corpus(corpus);
+    print_corpus(corpus);
+    free_corpus(corpus);
 
     //print_rules_list(rules);
     //free_rules_list(rules);

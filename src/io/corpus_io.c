@@ -42,6 +42,20 @@ void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *
         parse_line(&corpus_text[byte_index], &byte_index, corpus, linenum);
         linenum++;
     }
+    for(size_t linenum = 0; linenum < num_lines; linenum++){
+        if(ignore_tag(corpus->tags[linenum])){
+            corpus->info[linenum].ignore_flag = true;
+            corpus->applied_tags[linenum] = corpus->tags[linenum]; 
+            // tag never changes ( todo -- move this line ^ to unknown word handler 
+                                        //since tags will be ignored in hashmap)
+            corpus->info[linenum].next_bound = 0;
+            corpus->info[linenum].prev_bound = 0;
+        }
+        else{
+            corpus->applied_tags[linenum] = 0; //no tag -- maps to nothing
+            set_boundaries(linenum, corpus);
+        }
+    }
     munmap(corpus_text, num_bytes);
 }
 //todo: add tag error checking
@@ -57,18 +71,6 @@ void parse_line(char *line, size_t *offset, corpus_t *corpus, size_t index){
     strncpy(corpus->words[index], line, word_len-1);
     *offset += word_len - 1 + TAG_BUFFER_LENGTH + 1; //points to beginning of next line
     corpus->tags[index] = tag_to_hash(&line[word_len]);
-    if(ignore_tag(corpus->tags[index])){
-        corpus->info[index].ignore_flag = true;
-        corpus->applied_tags[index] = corpus->tags[index]; 
-        // tag never changes ( todo -- move this line ^ to unknown word handler 
-                                    //since tags will be ignored in hashmap)
-        corpus->info[index].next_bound = 0;
-        corpus->info[index].prev_bound = 0;
-    }
-    else{
-        set_boundaries(index, corpus);
-        corpus->applied_tags[index] = 0; //no tag -- maps to nothing
-    }
 }
 void print_corpus(corpus_t corpus){
     char tag_buffer[TAG_BUFFER_LENGTH];
@@ -124,8 +126,7 @@ void free_corpus(corpus_t corpus){
     corpus.applied_tags=NULL;
     free(corpus.info);
 }
-/*returns bool indicating if contextual info was stored
-  this method allows for checking contextual rules,
+ /* this method allows for checking contextual rules,
   nulls break continuity so bounds are set at the beginning/end 
   of the corpus and at a null.*/
 void set_boundaries(size_t index, corpus_t *corpus){
@@ -136,16 +137,18 @@ void set_boundaries(size_t index, corpus_t *corpus){
         lowerbound = -index;
     if ((diff = corpus->num_lines-1-index) < 3)
         upperbound = diff;
-    for(int8_t i = -1; i >= lowerbound; i--)
-        if(corpus->applied_tags[index+i] == NUL){
+    for(int8_t i = -1; i >= lowerbound; i--){
+        if(corpus->tags[index+i] == NUL){
             lowerbound = i+1;
             break;
         }
-    for(int8_t i = 1; i <= upperbound; i++)
-        if(corpus->applied_tags[index+i] == NUL){
+    }
+    for(int8_t i = 1; i <= upperbound; i++){
+        if(corpus->tags[index+i] == NUL){
             upperbound = i-1;
             break;
         }
+    }
     corpus->info[index].next_bound = upperbound;
     corpus->info[index].prev_bound = lowerbound;
 }
