@@ -5,11 +5,36 @@
 #include <fcntl.h>
 #include "corpus_io.h"
 #include "../tagger/tags.h"
-
+// tags with these types are never altered.
+bool ignore_tag(int hash){
+    //should be slightly faster than if statement
+    switch(hash){
+        case COL:
+            return true;
+        case SCOL:
+            return true;           
+        case LPAR:
+            return true;            
+        case RPAR:
+            return true;            
+        case PER:
+            return true;            
+        case COM:
+            return true;            
+        case QUE:
+            return true;            
+        case ZZ:
+            return true;
+        case NUL:
+            return true;
+        default:
+            return false;
+    }
+}
 // output number of lines and populated corpus_t, returns false on failure
 void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *corpus){
     corpus->num_lines = num_lines;
-    allocate_corpus(corpus, num_lines);
+    allocate_corpus(corpus);
     char *corpus_text = mmap_corpus(num_bytes, filename);
     size_t byte_index = 0;
     size_t linenum = 0;
@@ -28,10 +53,22 @@ void parse_line(char *line, size_t *offset, corpus_t *corpus, size_t index){
         exit(0);
     }
     corpus->words[index] = (char*)malloc(sizeof(char)*word_len);
-    corpus->words[index][word_len]='\0';
-    strncpy(corpus->words[index], line, word_len);
-    *offset += word_len + TAG_BUFFER_LENGTH + 1; //points to beginning of next line
-    corpus->tags[index] = tag_to_hash(&line[word_len+1]);
+    corpus->words[index][word_len-1]='\0';
+    strncpy(corpus->words[index], line, word_len-1);
+    *offset += word_len - 1 + TAG_BUFFER_LENGTH + 1; //points to beginning of next line
+    corpus->tags[index] = tag_to_hash(&line[word_len]);
+    if(ignore_tag(corpus->tags[index])){
+        corpus->info[index].ignore_flag = true;
+        corpus->applied_tags[index] = corpus->tags[index]; 
+        // tag never changes ( todo -- move this line ^ to unknown word handler 
+                                    //since tags will be ignored in hashmap)
+        corpus->info[index].next_bound = 0;
+        corpus->info[index].prev_bound = 0;
+    }
+    else{
+        set_boundaries(index, corpus);
+        corpus->applied_tags[index] = 0; //no tag -- maps to nothing
+    }
 }
 void print_corpus(corpus_t corpus){
     char tag_buffer[TAG_BUFFER_LENGTH];
@@ -48,14 +85,31 @@ void print_corpus(corpus_t corpus){
                "Tag:              %s\n"
                "                  %d\n"
                "Learned Tag:      %s\n"
-               "                  %d\n", 
-               i, corpus.words[i], tag_buffer, corpus.tags[i], applied_tag_buffer, corpus.applied_tags[i]);
+               "                  %d\n"
+               "Prev Bound:       %d\n"
+               "Next Bound:       %d\n" 
+               "Ignore Flag:      %s\n",
+               i, 
+               corpus.words[i],
+               tag_buffer, 
+               corpus.tags[i], 
+               applied_tag_buffer, 
+               corpus.applied_tags[i],
+               corpus.info[i].prev_bound,
+               corpus.info[i].next_bound,
+               (corpus.info[i].ignore_flag?"true":"false")
+               );
     }
 }
-void allocate_corpus(corpus_t *corpus, size_t num_lines){
-    corpus->words = (char**)malloc(sizeof(char*)*num_lines);
-    corpus->tags = (int*)malloc(sizeof(int)*num_lines);
-    corpus->applied_tags = (int*)malloc(sizeof(int)*num_lines);
+void allocate_corpus(corpus_t *corpus){
+    corpus->words = (char**)malloc(sizeof(char*)*corpus->num_lines);
+    memset(corpus->words, 0, sizeof(char*)*corpus->num_lines);
+    corpus->tags = (int*)malloc(sizeof(int)*corpus->num_lines);
+    memset(corpus->tags, 0, sizeof(int)*corpus->num_lines);
+    corpus->applied_tags = (int*)malloc(sizeof(int)*corpus->num_lines);
+    memset(corpus->applied_tags, 0, sizeof(int)*corpus->num_lines);
+    corpus->info = (word_info_t*)malloc(sizeof(word_info_t)*corpus->num_lines);
+    memset(corpus->info, 0, sizeof(word_info_t)*corpus->num_lines);
 }
 void free_corpus(corpus_t corpus){
     for(int i = 0; i < corpus.num_lines; i++){
@@ -68,36 +122,32 @@ void free_corpus(corpus_t corpus){
     corpus.tags=NULL;
     free(corpus.applied_tags);
     corpus.applied_tags=NULL;
+    free(corpus.info);
 }
 /*returns bool indicating if contextual info was stored
   this method allows for checking contextual rules,
   nulls break continuity so bounds are set at the beginning/end 
   of the corpus and at a null.*/
-bool store_contextual_info(contextual_info_t *info, size_t index, corpus_t *corpus){
-    if(corpus->applied_tags[index] == NUL)
-        return false;
-    info->corpus = corpus;
-    info->index = index;
-    int lowerbound = -3;
-    int upperbound = 3;
-    int diff;
+void set_boundaries(size_t index, corpus_t *corpus){
+    int8_t lowerbound = -3;
+    int8_t upperbound = 3;
+    size_t diff;
     if(index < 3)
         lowerbound = -index;
-    else if ((diff = corpus->num_lines-1-index) < 3)
+    if ((diff = corpus->num_lines-1-index) < 3)
         upperbound = diff;
-    for(int i = -1; i >= lowerbound; i--)
+    for(int8_t i = -1; i >= lowerbound; i--)
         if(corpus->applied_tags[index+i] == NUL){
-            lowerbound = i;
+            lowerbound = i+1;
             break;
         }
-    for(int i = 1; i <= upperbound; i++)
+    for(int8_t i = 1; i <= upperbound; i++)
         if(corpus->applied_tags[index+i] == NUL){
-            upperbound = i;
+            upperbound = i-1;
             break;
         }
-    info->prev_bound = lowerbound;
-    info->next_bound = upperbound;
-    return true;
+    corpus->info[index].next_bound = upperbound;
+    corpus->info[index].prev_bound = lowerbound;
 }
 /* memory maps the corpus in plain text. 
    gives the file for closing later, and the number of bytes in the file */
@@ -126,5 +176,5 @@ int word_length(char * line){
             return -1; // error (avoids long looping for invalid file)
         i++;
     }
-    return i;
+    return i+1; //includes null byte
 }

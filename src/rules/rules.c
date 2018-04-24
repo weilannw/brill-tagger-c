@@ -4,7 +4,7 @@
 #include "rules.h"
 
 /* rules for known words */
-bool (*contextual_rules[13])(contextual_info_t, int, int) = {
+bool (*contextual_rules[13])(corpus_t, size_t, int, int) = {
     prev_tag_is,
     next_tag_is,
     prev_2_tag_is, //word two before is tagged X
@@ -30,67 +30,67 @@ bool prev_wd_is(char *word_data){return true;}
 bool next_wd_is(char *word_data){return true;}
 bool contains_char(char *word_data){return true;}
 
-bool prev_tag_is(contextual_info_t info, int tag1, int tag2){
-    return (info.prev_bound <= -1 && 
-            info.corpus->applied_tags[info.index-1] == tag1);
+bool prev_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return (corpus.info[index].prev_bound <= -1 && 
+            corpus.applied_tags[index-1] == tag1);
 }
-bool next_tag_is(contextual_info_t info, int tag1, int tag2){
-    return (info.next_bound >= 1 && 
-            info.corpus->applied_tags[info.index+1] == tag1);
+bool next_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return (corpus.info[index].next_bound >= 1 && 
+            corpus.applied_tags[index+1] == tag1);
 }
-bool prev_2_tag_is(contextual_info_t info, int tag1, int tag2){
-    return (info.prev_bound <= -2 && 
-            info.corpus->applied_tags[info.index-2] == tag1);
+bool prev_2_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return (corpus.info[index].prev_bound <= -2 && 
+            corpus.applied_tags[index-2] == tag1);
 }
-bool next_2_tag_is(contextual_info_t info, int tag1, int tag2){
-    return (info.next_bound >= 2 &&
-            info.corpus->applied_tags[info.index+2] == tag1);
+bool next_2_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return (corpus.info[index].next_bound >= 2 &&
+            corpus.applied_tags[index+2] == tag1);
 }
-bool prev_1_or_2_tag_is(contextual_info_t info, int tag1, int tag2){
-    return ((info.prev_bound >= -1 && info.corpus->applied_tags[info.index-1] == tag1) ||
-            (info.prev_bound >= -2 && info.corpus->applied_tags[info.index-2] == tag1));
+bool prev_1_or_2_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return ((corpus.info[index].prev_bound >= -1 && corpus.applied_tags[index-1] == tag1) ||
+            (corpus.info[index].prev_bound >= -2 && corpus.applied_tags[index-2] == tag1));
 }
-bool next_1_or_2_tag_is(contextual_info_t info, int tag1, int tag2){
-    return ((info.prev_bound >= 1 && info.corpus->applied_tags[info.index+1] == tag1) ||
-            (info.prev_bound >= 2 && info.corpus->applied_tags[info.index+2] == tag1));
+bool next_1_or_2_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return ((corpus.info[index].prev_bound >= 1 && corpus.applied_tags[index+1] == tag1) ||
+            (corpus.info[index].prev_bound >= 2 && corpus.applied_tags[index+2] == tag1));
 }
-bool prev_1_or_2_or_3_tag_is(contextual_info_t info, int tag1, int tag2){
-    return ((info.prev_bound >= -1 && info.corpus->applied_tags[info.index-1] == tag1) ||
-            (info.prev_bound >= -2 && info.corpus->applied_tags[info.index-2] == tag1) ||
-            (info.prev_bound >= -3 && info.corpus->applied_tags[info.index-3] == tag1));
+bool prev_1_or_2_or_3_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return ((corpus.info[index].prev_bound >= -1 && corpus.applied_tags[index-1] == tag1) ||
+            (corpus.info[index].prev_bound >= -2 && corpus.applied_tags[index-2] == tag1) ||
+            (corpus.info[index].prev_bound >= -3 && corpus.applied_tags[index-3] == tag1));
 }
-bool next_1_or_2_or_3_tag_is(contextual_info_t info, int tag1, int tag2){
-    return ((info.prev_bound >= 1 && info.corpus->applied_tags[info.index+1] == tag1) ||
-            (info.prev_bound >= 2 && info.corpus->applied_tags[info.index+2] == tag1) ||
-            (info.prev_bound >= 3 && info.corpus->applied_tags[info.index+3] == tag1));
+bool next_1_or_2_or_3_tag_is(corpus_t corpus, size_t index, int tag1, int tag2){
+    return ((corpus.info[index].prev_bound >= 1 && corpus.applied_tags[index+1] == tag1) ||
+            (corpus.info[index].prev_bound >= 2 && corpus.applied_tags[index+2] == tag1) ||
+            (corpus.info[index].prev_bound >= 3 && corpus.applied_tags[index+3] == tag1));
 }
-bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t info, int tag1, int tag2){
-    if(info.prev_bound > -1 || info.next_bound < 1)
+bool prev_tag_is_x_and_next_tag_is_y(corpus_t corpus, size_t index, int tag1, int tag2){
+    if(corpus.info[index].prev_bound > -1 || corpus.info[index].next_bound < 1)
         return false;
-    return (info.corpus->applied_tags[info.index-1] == tag1 &&
-            info.corpus->applied_tags[info.index+1] == tag2);
+    return (corpus.applied_tags[index-1] == tag1 &&
+            corpus.applied_tags[index+1] == tag2);
 }
-bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
-    if(info.prev_bound > -1 || info.next_bound < 2)
+bool prev_tag_is_x_and_next_2_tag_is_y(corpus_t corpus, size_t index, int tag1, int tag2){
+    if(corpus.info[index].prev_bound > -1 || corpus.info[index].next_bound < 2)
         return false;
-    return (info.corpus->applied_tags[info.index-1] == tag1 &&
-            info.corpus->applied_tags[info.index+2] == tag2);
+    return (corpus.applied_tags[index-1] == tag1 &&
+            corpus.applied_tags[index+2] == tag2);
 }
-bool next_tag_is_x_and_prev_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
-    if(info.prev_bound > -2 || info.next_bound < 1)
+bool next_tag_is_x_and_prev_2_tag_is_y(corpus_t corpus, size_t index, int tag1, int tag2){
+    if(corpus.info[index].prev_bound > -2 || corpus.info[index].next_bound < 1)
         return false;
-    return (info.corpus->applied_tags[info.index-2] == tag1 &&
-            info.corpus->applied_tags[info.index+1] == tag2);
+    return (corpus.applied_tags[index-2] == tag1 &&
+            corpus.applied_tags[index+1] == tag2);
 }
-bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
-    if(info.next_bound < 2)
+bool next_tag_is_x_and_next_2_tag_is_y(corpus_t corpus, size_t index, int tag1, int tag2){
+    if(corpus.info[index].next_bound < 2)
         return false;
-    return (info.corpus->applied_tags[info.index+1] == tag1 &&
-            info.corpus->applied_tags[info.index+2] == tag2);
+    return (corpus.applied_tags[index+1] == tag1 &&
+            corpus.applied_tags[index+2] == tag2);
 }
-bool prev_tag_is_x_and_prev_2_tag_is_y(contextual_info_t info, int tag1, int tag2){
-    if(info.prev_bound > -2)
+bool prev_tag_is_x_and_prev_2_tag_is_y(corpus_t corpus, size_t index, int tag1, int tag2){
+    if(corpus.info[index].prev_bound > -2)
         return false;
-    return (info.corpus->applied_tags[info.index-1] == tag1 &&
-            info.corpus->applied_tags[info.index-2] == tag2);
+    return (corpus.applied_tags[index-1] == tag1 &&
+            corpus.applied_tags[index-2] == tag2);
 }

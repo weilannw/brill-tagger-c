@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "../tagger/tags.h"
 #include "../io/corpus_io.h"
-extern bool (*contextual_rules[13])(contextual_info_t, int, int);
+extern bool (*contextual_rules[13])(corpus_t, size_t, int, int);
 /*
 Trigger function numbers: 
     0:PREV_TAG_IS
@@ -52,19 +52,19 @@ typedef enum contextual_rules_enum_t{
 
 
 /*contextual rules rely on contextual info (tags of previous and next words) */
-bool prev_tag_is(contextual_info_t, int, int);
-bool next_tag_is(contextual_info_t, int, int);
-bool prev_2_tag_is(contextual_info_t, int, int);
-bool next_2_tag_is(contextual_info_t, int, int);
-bool prev_1_or_2_tag_is(contextual_info_t, int, int);
-bool next_1_or_2_tag_is(contextual_info_t, int, int);
-bool prev_1_or_2_or_3_tag_is(contextual_info_t, int, int);
-bool next_1_or_2_or_3_tag_is(contextual_info_t, int, int);
-bool prev_tag_is_x_and_next_tag_is_y(contextual_info_t, int, int);
-bool prev_tag_is_x_and_next_2_tag_is_y(contextual_info_t, int, int);
-bool next_tag_is_x_and_prev_2_tag_is_y(contextual_info_t, int, int);
-bool next_tag_is_x_and_next_2_tag_is_y(contextual_info_t, int, int);
-bool prev_tag_is_x_and_prev_2_tag_is_y(contextual_info_t, int, int);
+bool prev_tag_is(corpus_t, size_t, int, int);
+bool next_tag_is(corpus_t, size_t, int, int);
+bool prev_2_tag_is(corpus_t, size_t, int, int);
+bool next_2_tag_is(corpus_t, size_t, int, int);
+bool prev_1_or_2_tag_is(corpus_t, size_t, int, int);
+bool next_1_or_2_tag_is(corpus_t, size_t, int, int);
+bool prev_1_or_2_or_3_tag_is(corpus_t, size_t, int, int);
+bool next_1_or_2_or_3_tag_is(corpus_t, size_t, int, int);
+bool prev_tag_is_x_and_next_tag_is_y(corpus_t, size_t, int, int);
+bool prev_tag_is_x_and_next_2_tag_is_y(corpus_t, size_t, int, int);
+bool next_tag_is_x_and_prev_2_tag_is_y(corpus_t, size_t, int, int);
+bool next_tag_is_x_and_next_2_tag_is_y(corpus_t, size_t, int, int);
+bool prev_tag_is_x_and_prev_2_tag_is_y(corpus_t, size_t, int, int);
 
 /*unknown word rules take a char* because it allows for processing of 
 word itself rather than surrounding words */
