@@ -85,19 +85,39 @@ void get_fn_string(int fn, char* fnstr){
 }
 
 void print_rules_list(rules_list_t *list){
+    char tag1[TAG_BUFFER_LENGTH];
+    char tag2[TAG_BUFFER_LENGTH];
+    char arg1[TAG_BUFFER_LENGTH];
+    char arg2[TAG_BUFFER_LENGTH];
+    char triggerfn[MAX_TRIGGER_FN_STR_LEN];
     contextual_rule_t *rules = list->rules;
     for(int i = 0; i < list->length; i++){
-        printf("*******rules[%d]*******\n" 
-            "tag1: %d\n"
-            "tag2: %d\n"
-            "fn: %d\n"
-            "arg1: %d\n"
-            "arg2: %d\n",
-            i, 
+        hash_to_tag(rules[i].tag1, tag1);
+        hash_to_tag(rules[i].tag2, tag2);
+        hash_to_tag(rules[i].arg1, arg1);
+        hash_to_tag(rules[i].arg2, arg2);
+        get_fn_string(rules[i].triggerfn, triggerfn);
+        printf("-------rules[%d]-------\n" 
+            "tag1:     %s\n"
+            "          %d\n"
+            "tag2:     %s\n"
+            "          %d\n"
+            "fn:       %s\n"
+            "          %d\n"
+            "arg1:     %s\n"
+            "          %d\n"
+            "arg2:     %s\n"
+            "          %d\n",
+            i,
+            tag1,
             rules[i].tag1, 
+            tag2,
             rules[i].tag2, 
-            rules[i].triggerfn, 
-            rules[i].arg1, 
+            triggerfn,
+            rules[i].triggerfn,
+            arg1,
+            rules[i].arg1,
+            arg2,
             rules[i].arg2);
     }
 }

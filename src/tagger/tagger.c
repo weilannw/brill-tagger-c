@@ -33,8 +33,7 @@ void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus
         corpus.applied_tags[index] = corpus.tags[index];
     else
         corpus.applied_tags[index] = *hashed_value;*/
-
-
+    corpus.applied_tags[index] = corpus.tags[index];
 }
 /* called if the word cannot be found in the hashmap (unknown) */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
@@ -42,27 +41,23 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
     //Do this eventually,
     /* relies on properties of the word for tagging */
 }
+void apply_rules_to_corpus(rules_list_t rules, corpus_t corpus){
+    for(int i = 0; i < rules.length; i++)
+        apply_rule_to_corpus(rules.rules[i], corpus);
+}
 /******** end of the initial tagging methods ********/
 void apply_rule_to_corpus(contextual_rule_t rule, corpus_t corpus){
-    //store indices rule applies to, then alter tags
-    //contextual_info_t info;
-    //malloc contextual info elsewhere, free at the end
-    
-    /*for(size_t i = 0; i < corpus.num_lines; i++){
-        if(check_contextual_rule(rule, ){
-
-        }
-    }*/
-    /*size_t cur_index;
-    contextual_info_t info;
-    while(cur_index < corpus_size && goto_next_tag_index(&cur_index, corpus, corpus_size)){
-        store_contextual_info(&info, cur_index, corpus, corpus_size);
-        if(tag_to_hash(&corpus[cur_index] ) == rule.tag1 && check_contextual_rule(rule, info))
-            apply_tag(rule.tag2,  &corpus[cur_index]);
-    }*/
+    //store indices rule applies to, then alter the tags
+    int64_t indices[corpus.num_lines];
+    size_t index = 0;
+    for(int i = 0; i < corpus.num_lines; i++)
+        if(check_contextual_rule(rule, i, corpus))
+            indices[index++] = i;
+    for(int i = 0; i < index; i++)
+        corpus.applied_tags[indices[i]] = rule.tag2;
 }
 /* checks if a contextual (known word) 
    rule applies, given contextual information */
 bool check_contextual_rule(contextual_rule_t rule, size_t index, corpus_t corpus){
-    return contextual_rules[rule.triggerfn](corpus, index, rule.arg1, rule.arg2);
+    return corpus.applied_tags[index] == rule.tag1 && contextual_rules[rule.triggerfn](corpus, index, rule.arg1, rule.arg2);
 }

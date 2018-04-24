@@ -171,6 +171,6 @@ void hash_to_tag(int hash, char * tag){
         case QUE: strcpy(tag, "?"); break;
         case ZZ: strcpy(tag, "zz"); break;
         case NUL: strcpy(tag, "null"); break;
-        default: strcpy(tag, "\0"); break;
+        default: strcpy(tag, "none"); break; // change to \0 for error checks
     }
 }

@@ -77,11 +77,11 @@ void print_corpus(corpus_t corpus){
     char applied_tag_buffer[TAG_BUFFER_LENGTH];
     for(int i = 0; i < corpus.num_lines; i++){
         hash_to_tag(corpus.tags[i], tag_buffer);
-        if(!*tag_buffer)
-            strcpy(tag_buffer, "none");
+        //if(!*tag_buffer)
+          //  strcpy(tag_buffer, "none");
         hash_to_tag(corpus.applied_tags[i], applied_tag_buffer);
-        if(!*applied_tag_buffer) 
-            strcpy(applied_tag_buffer, "none");
+        //if(!*applied_tag_buffer) 
+          //  strcpy(applied_tag_buffer, "none");
         printf("------Corpus line %d------\n"
                "Word:             %s\n"
                "Tag:              %s\n"

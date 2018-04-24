@@ -23,15 +23,15 @@ Trigger function numbers:
 typedef struct contextual_rule_t{
     int tag1;
     int tag2;
-    int triggerfn;
+    int8_t triggerfn;
     int arg1;
     int arg2;
 }contextual_rule_t;
 
 /* length is stored for freeing */
 typedef struct rules_list_t{
-    contextual_rule_t *rules ;
-    int length;
+    contextual_rule_t *rules;
+    int32_t length;
 }rules_list_t;
 
 typedef enum contextual_rules_enum_t{

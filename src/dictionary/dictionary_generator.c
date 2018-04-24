@@ -24,17 +24,17 @@ struct hashmap generate_dictionary(corpus_t corpus){
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
     for(int i = 0; i < corpus.num_lines; i++){
-        printf("Trying to put in word: %s\n", corpus.words[i]);
+        //printf("Trying to put in word: %s\n", corpus.words[i]);
         if(!corpus.info[i].ignore_flag){
             data = tag_hashmap_get(&map, corpus.words[i]);
             if(data == NULL){
                 struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
                 memset(newtags, 0, sizeof(struct tagcounts_t));
-                updateTags(corpus.words[i], newtags, corpus.tags[i]);
+                update_tags(corpus.words[i], newtags, corpus.tags[i]);
                 tag_hashmap_put(&map, corpus.words[i], newtags);
             }
             else{
-                updateTags(corpus.words[i], data, corpus.tags[i]);
+                update_tags(corpus.words[i], data, corpus.tags[i]);
             }
         }
     }
