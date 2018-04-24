@@ -11,3 +11,5 @@
 #include <stdio.h>
 
 #endif /* dictionary_reduce_h */
+
+struct hashmap reduce_map(struct hashmap map);

@@ -24,7 +24,8 @@ struct hashmap reduce_map(struct hashmap map){
         data = (tagcounts_t*)hashmap_iter_get_data(iter);
         highest = get_highest_frequency(data);
         char* key = (char *)hashmap_iter_get_key(iter);
-        freq_hashmap_put(&newmap, key, &highest);
+        printf("Putting in key: %s with value: %d\n", key, highest);
+        freq_hashmap_put(&newmap, key, highest);
     }
     hashmap_destroy(&map);
     return newmap;
