@@ -1,5 +1,5 @@
 //created by Colton Simmons
-#include "../lib/hashmap.h"
+#include "../io/corpus_io.h"
 #ifndef dictionary_generator_h
 #define dictionary_generator_h
 /* struct containing counts for each tag, 
@@ -152,9 +152,8 @@ typedef struct data_struct_t
     char key_string[KEY_MAX_LENGTH];
     int number;
 } data_struct_t;
-void updateTags(char* , struct tagcounts_t *, char* );
-void printMap(map_t mymap, char* );
-map_t generate_dictionary(char *);
-int get_highest_frequency(map_t in, char* key);
+void updateTags(char* , struct tagcounts_t *, int );
+struct hashmap generate_dictionary(corpus_t corpus);
+int get_highest_frequency(struct tagcounts_t*);
 
 #endif
