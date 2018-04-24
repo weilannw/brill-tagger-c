@@ -163,7 +163,7 @@ void hash_to_tag(int hash, char * tag){
         case ZZ2: strcpy(tag, "zz2"); break;
         case COL: strcpy(tag, ":"); break;
         case DQ: strcpy(tag, "\""); break;
-        case SCOL: strcpy(tag, ");"); break;
+        case SCOL: strcpy(tag, ";"); break;
         case LPAR: strcpy(tag, "("); break;
         case RPAR: strcpy(tag, ")"); break;
         case PER: strcpy(tag, "."); break;
