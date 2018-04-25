@@ -13,3 +13,5 @@
 #endif /* dictionary_reduce_h */
 
 struct hashmap reduce_map(struct hashmap map);
+
+void destroy_reduced(struct hashmap map);
