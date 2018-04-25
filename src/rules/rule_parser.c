@@ -66,7 +66,7 @@ rules_list_t * parse_rules_from_file(char * fp){
 }
 void parse_contextual_rule(char * rulestr, contextual_rule_t *rule){
     char *saveptr;
-    char *delim = "(>):,\n\r";
+    char *delim = " \n\r";
     rule->tag1 = tag_to_hash(strtok_r(rulestr, delim, &saveptr));
     rule->tag2 = tag_to_hash(strtok_r(NULL, delim, &saveptr));
     rule->triggerfn = get_fn_number(strtok_r(NULL, delim, &saveptr)); 

@@ -11,9 +11,8 @@
 /******** start of the initial tagging methods ********/
 
 void apply_initial_tags(corpus_t corpus, struct hashmap map){
-    for(size_t i = 0; i < corpus.num_lines; i++){
+    for(size_t i = 0; i < corpus.num_lines; i++)
         apply_initial_tag(corpus.words[i], map, i, corpus);
-    }
 }
 
 /* applies initial tag based on tag frequency for a word
@@ -24,22 +23,53 @@ void apply_initial_tags(corpus_t corpus, struct hashmap map){
  *          the hashmap with tag frequencies for each word 
  */
 void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus_t corpus){
-    /*int hashed_value;
-    size_t tempfix = index; // due to mem leak, this is needed because index becomes 0 after hashmap get
-    if(hashmap_get(hash_map, word,
-    (void **)&hashed_value) == MAP_MISSING)
+    int hashed_value = (int)hashmap_get(&hash_map, word);
+    if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
-    else if (ignore_tag(*hashed_value))
-        corpus.applied_tags[index] = corpus.tags[index];
     else
-        corpus.applied_tags[index] = *hashed_value;*/
-    corpus.applied_tags[index] = corpus.tags[index];
+        corpus.applied_tags[index] = hashed_value;
 }
 /* called if the word cannot be found in the hashmap (unknown) */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
-
+    if(corpus.info[index].ignore_flag){
+        int tag = get_ignored_tag(word);
+        if(tag)
+            corpus.applied_tags[index] = tag;
+        else{
+            printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");
+            exit(EXIT_FAILURE);
+        }   
+    }
+            
     //Do this eventually,
     /* relies on properties of the word for tagging */
+}
+int get_ignored_tag(char *word){
+    switch(word[0]){
+        case ':':
+            return COL;
+        case ';':
+            return SCOL;
+        case '(':
+            return LPAR;
+        case ')':
+            return RPAR;
+        case '.':
+            return PER;
+        case ',':
+            return COM;
+        case '?':   
+            return QUE;
+        case '<':
+            if(strlen(word) > 1)
+                return NUL;
+            else
+                return 0;
+        case '@':
+            return NUL;
+        default:
+             return 0;
+    }
 }
 void apply_rules_to_corpus(rules_list_t rules, corpus_t corpus){
     for(int i = 0; i < rules.length; i++)

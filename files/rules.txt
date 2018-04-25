@@ -1,1 +1,2 @@
-(nd1>appge):prev_tag_is(at,_)
+appge nn1 prev_tag_is ii _
+at1 to prev_tag_is_x_and_next_tag_is_y vhz jj

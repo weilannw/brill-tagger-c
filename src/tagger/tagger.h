@@ -2,6 +2,7 @@
 #define tagger_h
 
 bool ignore_tag(int);
+int get_ignored_tag(char *);
 void apply_initial_tags(corpus_t, struct hashmap);
 void apply_initial_tag(char *, struct hashmap, size_t, corpus_t);
 void apply_initial_unknown_word_tag(char *, size_t, corpus_t);

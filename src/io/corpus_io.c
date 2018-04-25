@@ -45,9 +45,6 @@ void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *
     for(size_t linenum = 0; linenum < num_lines; linenum++){
         if(ignore_tag(corpus->tags[linenum])){
             corpus->info[linenum].ignore_flag = true;
-            corpus->applied_tags[linenum] = corpus->tags[linenum]; 
-            // tag never changes ( todo -- move this line ^ to unknown word handler 
-                                        //since tags will be ignored in hashmap)
             corpus->info[linenum].next_bound = 0;
             corpus->info[linenum].prev_bound = 0;
         }
