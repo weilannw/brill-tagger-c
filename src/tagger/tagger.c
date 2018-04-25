@@ -25,13 +25,13 @@ void apply_initial_tags(corpus_t corpus, hashmap_t map){
  *          the hashmap with tag frequencies for each word 
  */
 void apply_initial_tag(char *word, hashmap_t hash_map, size_t index, corpus_t corpus){
-    int hashed_value = (int)hashmap_get(&hash_map, word);
+    int* hashed_value = (int *)hashmap_get(&hash_map, word);
     if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
     else{
         printf("word: %s\n", word);
-        printf("hash in hashmap: %d\n", hashed_value);
-        corpus.machine_tags[index] = hashed_value;
+        printf("hash in hashmap: %d\n", *hashed_value);
+        corpus.machine_tags[index] = *hashed_value;
     }
 }
 /* called if the word cannot be found in the hashmap (unknown). 

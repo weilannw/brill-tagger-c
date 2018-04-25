@@ -1,5 +1,5 @@
 TARGET_EXEC ?= brill_tagger
-CFLAGS=-std=c99
+CFLAGS=-std=gnu99 -g
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
 
