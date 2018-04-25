@@ -4,6 +4,8 @@
 #include "tags.h"
 int tag_to_hash(char *tag){
     //trim the tag
+    if(!tag[0])
+        return FU;
     char *saveptr;
     char *trimmed;
     char *tagcpy = (char*)malloc(sizeof(char)*TAG_BUFFER_LENGTH);

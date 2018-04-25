@@ -11,9 +11,10 @@
 
 /******** start of the initial tagging methods ********/
 
-void apply_initial_tags(corpus_t corpus, struct hashmap map){
-    for(size_t i = 0; i < corpus.num_lines; i++)
+void apply_initial_tags(corpus_t corpus, hashmap_t map){
+    for(size_t i = 0; i < corpus.num_lines; i++){
         apply_initial_tag(corpus.words[i], map, i, corpus);
+    }
 }
 
 /* applies initial tag based on tag frequency for a word
@@ -23,12 +24,15 @@ void apply_initial_tags(corpus_t corpus, struct hashmap map){
  *       map_t: 
  *          the hashmap with tag frequencies for each word 
  */
-void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus_t corpus){
+void apply_initial_tag(char *word, hashmap_t hash_map, size_t index, corpus_t corpus){
     int hashed_value = (int)hashmap_get(&hash_map, word);
     if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
-    else
+    else{
+        printf("word: %s\n", word);
+        printf("hash in hashmap: %d\n", hashed_value);
         corpus.machine_tags[index] = hashed_value;
+    }
 }
 /* called if the word cannot be found in the hashmap (unknown). 
    This runs basic checks for a small number of common tags before giving up */
@@ -37,8 +41,9 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
     int tag;
     if(corpus.info[index].ignore_flag){
         tag = get_ignored_tag(word);
-        if(tag)
+        if(tag){
             corpus.machine_tags[index] = tag;
+        }
         else{
             printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");
             //ignore flags are only applied to punctuation and null, tagging should be straightforward
@@ -124,6 +129,8 @@ void apply_rules_to_corpus(rules_list_t rules, corpus_t corpus){
         apply_rule_to_corpus(rules.rules[i], corpus);
 }
 /******** end of the initial tagging methods ********/
+
+/* applies rules from a text file (not part of machine learning) */
 void apply_rule_to_corpus(contextual_rule_t rule, corpus_t corpus){
     //store indices rule applies to, then alter the tags
     int64_t indices[corpus.num_lines];
