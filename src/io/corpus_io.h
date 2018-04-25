@@ -20,9 +20,9 @@ typedef struct word_info_t{
 /* stores list of words and their original tags, and tags from applying rules */
 typedef struct corpus_t{
     size_t num_lines;
-    char **words;
-    int *tags;  //tag hashes from original text
-    int *applied_tags; // tag hashes starting from untagged text
+    char **words; //words are never modified by human or computer
+    int *human_tags;  //tags from original human-tagged text (hashed)
+    int *machine_tags; // tag hashes applied by the computer--"learned" tags
     word_info_t *info; //stores the boundaries so that prev and next tags can be checked
 }corpus_t;
 /*section of corpus accessed by individual thread*/

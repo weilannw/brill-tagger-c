@@ -19,8 +19,12 @@ int tag_to_hash(char *tag){
     while ((c = *trimmed++))
         hash = ((hash << 6) + hash) + c;
     free(tagcpy);
+    //hash_filter(&hash);
     return hash;
 }
+/*void hash_filter(int * hash){
+    
+}*/
 // default output of nullbyte indicates bad input hash
 void hash_to_tag(int hash, char * tag){
     switch(hash){
@@ -171,6 +175,6 @@ void hash_to_tag(int hash, char * tag){
         case QUE: strcpy(tag, "?"); break;
         case ZZ: strcpy(tag, "zz"); break;
         case NUL: strcpy(tag, "null"); break;
-        default: strcpy(tag, "none"); break; // change to \0 for error checks
+        default: strcpy(tag, "fu"); break; // change to \0 for error checks
     }
 }

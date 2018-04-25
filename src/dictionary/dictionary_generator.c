@@ -30,11 +30,11 @@ struct hashmap generate_dictionary(corpus_t corpus){
             if(data == NULL){
                 struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
                 memset(newtags, 0, sizeof(struct tagcounts_t));
-                update_tags(corpus.words[i], newtags, corpus.tags[i]);
+                update_tags(corpus.words[i], newtags, corpus.human_tags[i]);
                 tag_hashmap_put(&map, corpus.words[i], newtags);
             }
             else{
-                update_tags(corpus.words[i], data, corpus.tags[i]);
+                update_tags(corpus.words[i], data, corpus.human_tags[i]);
             }
         }
     }

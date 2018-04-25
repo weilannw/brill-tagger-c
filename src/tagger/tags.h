@@ -9,6 +9,8 @@ int tag_to_hash(char *);
 void hash_to_tag(int, char *);
 /* comparing hash values allows us 
 to avoid expensive strcmp operations */
+
+// add tag for exclamation mark
 typedef enum{
     APPGE=404153362,
     AT=22741146,
@@ -155,6 +157,7 @@ typedef enum{
     PER=349811,
     COM=349809,
     QUE=349828,
+    EXC=349798,
     ZZ=22742777,
     NUL=1595642816,
     NONE=0

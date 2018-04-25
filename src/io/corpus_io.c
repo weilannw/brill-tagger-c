@@ -22,7 +22,9 @@ bool ignore_tag(int hash){
         case COM:
             return true;            
         case QUE:
-            return true;            
+            return true; 
+        case EXC:
+            return true;           
         case ZZ:
             return true;
         case NUL:
@@ -43,13 +45,13 @@ void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *
         linenum++;
     }
     for(size_t linenum = 0; linenum < num_lines; linenum++){
-        if(ignore_tag(corpus->tags[linenum])){
+        if(ignore_tag(corpus->human_tags[linenum])){
             corpus->info[linenum].ignore_flag = true;
             corpus->info[linenum].next_bound = 0;
             corpus->info[linenum].prev_bound = 0;
         }
         else{
-            corpus->applied_tags[linenum] = 0; //no tag -- maps to nothing
+            corpus->machine_tags[linenum] = 0; //no tag -- maps to nothing
             set_boundaries(linenum, corpus);
         }
     }
@@ -66,17 +68,17 @@ void parse_line(char *line, size_t *offset, corpus_t *corpus, size_t index){
     corpus->words[index] = (char*)malloc(sizeof(char)*word_len);
     corpus->words[index][word_len-1]='\0';
     strncpy(corpus->words[index], line, word_len-1);
-    *offset += word_len - 1 + TAG_BUFFER_LENGTH + 1; //points to beginning of next line
-    corpus->tags[index] = tag_to_hash(&line[word_len]);
+    *offset+=word_len-1+TAG_BUFFER_LENGTH+1; //points to beginning of next line
+    corpus->human_tags[index] = tag_to_hash(&line[word_len]);
 }
 void print_corpus(corpus_t corpus){
     char tag_buffer[TAG_BUFFER_LENGTH];
     char applied_tag_buffer[TAG_BUFFER_LENGTH];
     for(int i = 0; i < corpus.num_lines; i++){
-        hash_to_tag(corpus.tags[i], tag_buffer);
+        hash_to_tag(corpus.human_tags[i], tag_buffer);
         //if(!*tag_buffer)
           //  strcpy(tag_buffer, "none");
-        hash_to_tag(corpus.applied_tags[i], applied_tag_buffer);
+        hash_to_tag(corpus.machine_tags[i], applied_tag_buffer);
         //if(!*applied_tag_buffer) 
           //  strcpy(applied_tag_buffer, "none");
         printf("------Corpus line %d------\n"
@@ -91,9 +93,9 @@ void print_corpus(corpus_t corpus){
                i, 
                corpus.words[i],
                tag_buffer, 
-               corpus.tags[i], 
+               corpus.human_tags[i], 
                applied_tag_buffer, 
-               corpus.applied_tags[i],
+               corpus.machine_tags[i],
                corpus.info[i].prev_bound,
                corpus.info[i].next_bound,
                (corpus.info[i].ignore_flag?"true":"false")
@@ -103,10 +105,10 @@ void print_corpus(corpus_t corpus){
 void allocate_corpus(corpus_t *corpus){
     corpus->words = (char**)malloc(sizeof(char*)*corpus->num_lines);
     memset(corpus->words, 0, sizeof(char*)*corpus->num_lines);
-    corpus->tags = (int*)malloc(sizeof(int)*corpus->num_lines);
-    memset(corpus->tags, 0, sizeof(int)*corpus->num_lines);
-    corpus->applied_tags = (int*)malloc(sizeof(int)*corpus->num_lines);
-    memset(corpus->applied_tags, 0, sizeof(int)*corpus->num_lines);
+    corpus->human_tags = (int*)malloc(sizeof(int)*corpus->num_lines);
+    memset(corpus->human_tags, 0, sizeof(int)*corpus->num_lines);
+    corpus->machine_tags = (int*)malloc(sizeof(int)*corpus->num_lines);
+    memset(corpus->machine_tags, 0, sizeof(int)*corpus->num_lines);
     corpus->info = (word_info_t*)malloc(sizeof(word_info_t)*corpus->num_lines);
     memset(corpus->info, 0, sizeof(word_info_t)*corpus->num_lines);
 }
@@ -117,10 +119,10 @@ void free_corpus(corpus_t corpus){
     }
     free(corpus.words);
     corpus.words=NULL;
-    free(corpus.tags);
-    corpus.tags=NULL;
-    free(corpus.applied_tags);
-    corpus.applied_tags=NULL;
+    free(corpus.human_tags);
+    corpus.human_tags=NULL;
+    free(corpus.machine_tags);
+    corpus.machine_tags=NULL;
     free(corpus.info);
 }
  /* this method allows for checking contextual rules,
@@ -135,13 +137,13 @@ void set_boundaries(size_t index, corpus_t *corpus){
     if ((diff = corpus->num_lines-1-index) < 3)
         upperbound = diff;
     for(int8_t i = -1; i >= lowerbound; i--){
-        if(corpus->tags[index+i] == NUL){
+        if(corpus->human_tags[index+i] == NUL){
             lowerbound = i+1;
             break;
         }
     }
     for(int8_t i = 1; i <= upperbound; i++){
-        if(corpus->tags[index+i] == NUL){
+        if(corpus->human_tags[index+i] == NUL){
             upperbound = i-1;
             break;
         }
@@ -171,7 +173,7 @@ char * get_tagged_text(int tag, int index){
 //char * get_next_line(int index)
 int word_length(char * line){
     int i = 0;
-    while (line[i] != '\t'){
+    while (line[i] != '\t' && line[i] != '\0'){
         if(i > LINE_MAX_LENGTH) 
             return -1; // error (avoids long looping for invalid file)
         i++;

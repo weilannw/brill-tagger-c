@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <strings.h>
 #include "../dictionary/dictionary_generator.h"
 #include "../lib/hashmap.h"
@@ -27,24 +28,70 @@ void apply_initial_tag(char *word, struct hashmap hash_map, size_t index, corpus
     if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
     else
-        corpus.applied_tags[index] = hashed_value;
+        corpus.machine_tags[index] = hashed_value;
 }
-/* called if the word cannot be found in the hashmap (unknown) */
+/* called if the word cannot be found in the hashmap (unknown). 
+   This runs basic checks for a small number of common tags before giving up */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
+    int num_type;
+    int tag;
     if(corpus.info[index].ignore_flag){
-        int tag = get_ignored_tag(word);
+        tag = get_ignored_tag(word);
         if(tag)
-            corpus.applied_tags[index] = tag;
+            corpus.machine_tags[index] = tag;
         else{
             printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");
+            //ignore flags are only applied to punctuation and null, tagging should be straightforward
             exit(EXIT_FAILURE);
         }   
     }
-    /*else{
-        if()
-    } */       
+    else if((tag = number_type(word))!=0)
+        corpus.machine_tags[index] = tag;
+    else if((tag = proper_noun_type(word, corpus, index))!=0)
+        corpus.machine_tags[index] = tag;
+    else if(tag == 0)
+        corpus.machine_tags[index] = FU; // "unclassified"
     //Do this eventually,
     /* relies on properties of the word for tagging */
+}
+int proper_noun_type(char * word, corpus_t corpus, size_t index){
+    if (isupper(word[0]) && 
+        corpus.machine_tags[index] != PER &&
+        corpus.machine_tags[index] != QUE &&
+        corpus.machine_tags[index] != DQ &&
+        corpus.machine_tags[index] != EXC){
+            if(word[word_length(word)-1] == 's')
+                return NN2;
+            else
+                return NN1;
+        }
+    else 
+        return 0;
+}
+
+int number_type(char * word){
+    bool is_hyphenated = false;
+    bool is_number = false;
+    char c = word[0];
+    int i = 0;
+    int tag;
+    while(c != '\0'){
+        c = word[i];
+        is_number = (isdigit(c) || c == '.' || c == ',');
+        is_hyphenated = (c == '-');
+        if(!is_number && !is_hyphenated)
+            return 0; // no cardinal tag found
+        i++;
+    }
+    if(is_number){
+        if(is_hyphenated)
+            tag = MCMC;
+        else if(i == 1 && word[0] == '1')
+            tag = MC1;
+        else
+            tag = MC;
+    }
+    return tag;
 }
 int get_ignored_tag(char *word){
     switch(word[0]){
@@ -62,11 +109,10 @@ int get_ignored_tag(char *word){
             return COM;
         case '?':   
             return QUE;
+        case '!':
+            return EXC;
         case '<':
-            if(strlen(word) > 1)
-                return NUL;
-            else
-                return 0;
+            return NUL;
         case '@':
             return NUL;
         default:
@@ -86,10 +132,10 @@ void apply_rule_to_corpus(contextual_rule_t rule, corpus_t corpus){
         if(check_contextual_rule(rule, i, corpus))
             indices[index++] = i;
     for(int i = 0; i < index; i++)
-        corpus.applied_tags[indices[i]] = rule.tag2;
+        corpus.machine_tags[indices[i]] = rule.tag2;
 }
 /* checks if a contextual (known word) 
    rule applies, given contextual information */
 bool check_contextual_rule(contextual_rule_t rule, size_t index, corpus_t corpus){
-    return corpus.applied_tags[index] == rule.tag1 && contextual_rules[rule.triggerfn](corpus, index, rule.arg1, rule.arg2);
+    return corpus.machine_tags[index] == rule.tag1 && contextual_rules[rule.triggerfn](corpus, index, rule.arg1, rule.arg2);
 }
