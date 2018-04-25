@@ -30,6 +30,7 @@ struct hashmap reduce_map(struct hashmap map){
         hash_to_tag(highest, tag);
         freq_hashmap_put(&newmap, key, highest);
         fprintf (fp, "%s\t%s\n", key, tag);
+        free(hashmap_iter_get_data(iter));
     }
     hashmap_destroy(&map);
     return newmap;
