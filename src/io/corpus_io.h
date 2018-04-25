@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <stdio.h>
+#include <stdint.h>
 #ifndef corpus_io_h
 #define corpus_io_h
 #define MAX_LINE_LENGTH 300 // max line length in mem map
