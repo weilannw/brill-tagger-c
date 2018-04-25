@@ -6,6 +6,7 @@
 #include "dictionary_generator.h"
 #include "../io/corpus_io.h"
 #include "../lib/hashmap.h"
+#include "dictionary_reduce.h"
 
 void shorten_tag_struct(struct hashmap map);
 HASHMAP_FUNCS_CREATE(tag, const char, struct tagcounts_t);
@@ -42,7 +43,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
    
 
 
-    return map;
+    return reduce_map(map);
 }
 void update_tags(char* word, struct tagcounts_t *val, int tag){
     
