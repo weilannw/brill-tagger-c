@@ -22,8 +22,8 @@ int main(int argc, char* argv[]){
     hashmap_t dict_hashmap = generate_dictionary(corpus);
 
 
-    int hash = (int)hashmap_get(&dict_hashmap, "rupee");
-    printf("hash: %d\n", hash);
+    int *hash = (int *)hashmap_get(&dict_hashmap, "rupee");
+    //printf("hash: %d\n", hash);
     destroy_reduced(dict_hashmap);
     hashmap_destroy(&dict_hashmap);
 
