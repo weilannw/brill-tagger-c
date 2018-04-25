@@ -23,7 +23,7 @@ struct hashmap reduce_map(struct hashmap map){
     
     for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
         int highest;
-        char tag[5];
+        char* tag = (char *)malloc(5*sizeof(char));
         data = (tagcounts_t*)hashmap_iter_get_data(iter);
         highest = get_highest_frequency(data);
         char* key = (char *)hashmap_iter_get_key(iter);
