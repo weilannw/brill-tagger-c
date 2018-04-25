@@ -22,14 +22,15 @@ struct hashmap reduce_map(struct hashmap map){
     iter = hashmap_iter(&map);
     
     for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
-        int highest;
-        char* tag = (char *)malloc(5*sizeof(char));
+        char tag[5];
+        int highest = (int)malloc(sizeof(int));
         data = (tagcounts_t*)hashmap_iter_get_data(iter);
         highest = get_highest_frequency(data);
         char* key = (char *)hashmap_iter_get_key(iter);
         hash_to_tag(highest, tag);
-        freq_hashmap_put(&newmap, key, tag);
+        freq_hashmap_put(&newmap, key, highest);
         fprintf (fp, "%s\t%s\n", key, tag);
     }
+    hashmap_destroy(&map);
     return newmap;
 }
