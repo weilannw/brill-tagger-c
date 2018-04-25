@@ -5,6 +5,7 @@
 #include "dictionary/dictionary_generator.h"
 #include "rules/rule_parser.h"
 #include "tagger/tagger.h"
+#include "dictionary/dictionary_reduce.h"
 #define TRAINING_CORPUS_PATH "training-corpus.txt"
 #define TESTING_CORPUS_LENGTH 226
 #define TESTING_CORPUS_LINES 20
@@ -17,12 +18,13 @@ int main(int argc, char* argv[]){
 
     //rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
 
-    rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
+  //  rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
     hashmap_t dict_hashmap = generate_dictionary(corpus);
 
 
     int hash = (int)hashmap_get(&dict_hashmap, "rupee");
     printf("hash: %d\n", hash);
+    destroy_reduced(dict_hashmap);
     hashmap_destroy(&dict_hashmap);
 
     //subcorpus_t sub;

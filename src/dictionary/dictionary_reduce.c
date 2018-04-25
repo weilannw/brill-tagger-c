@@ -10,7 +10,7 @@
 #include "../lib/hashmap.h"
 #include "../tagger/tags.h"
 
-HASHMAP_FUNCS_CREATE(freq, const char, const char);
+HASHMAP_FUNCS_CREATE(freq, const char, int);
 
 struct hashmap reduce_map(struct hashmap map){
     FILE *fp = fopen ("updated.txt", "w");
@@ -23,11 +23,11 @@ struct hashmap reduce_map(struct hashmap map){
     
     for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
         char tag[5];
-        int highest = (int)malloc(sizeof(int));
+        int* highest = (int *)malloc(sizeof(int));
         data = (tagcounts_t*)hashmap_iter_get_data(iter);
-        highest = get_highest_frequency(data);
+        *highest = get_highest_frequency(data);
         char* key = (char *)hashmap_iter_get_key(iter);
-        hash_to_tag(highest, tag);
+        hash_to_tag(*highest, tag);
         freq_hashmap_put(&newmap, key, highest);
         fprintf (fp, "%s\t%s\n", key, tag);
         free(hashmap_iter_get_data(iter));
@@ -38,7 +38,7 @@ struct hashmap reduce_map(struct hashmap map){
 
 void destroy_reduced(struct hashmap map){
     struct hashmap_iter *iter;
-
+    
      for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
          free(hashmap_iter_get_data(iter));
      }
