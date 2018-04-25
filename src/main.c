@@ -14,9 +14,9 @@ int main(int argc, char* argv[]){
     //todo: change delim from comma to something else in rule parser 
     corpus_t corpus;
     parse_corpus(TESTING_CORPUS_PATH, TESTING_CORPUS_LENGTH, TESTING_CORPUS_LINES, &corpus);
-    //rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
-    struct hashmap dict_hashmap = generate_dictionary(corpus);
-    //hashmap_destroy(&dict_hashmap);
+    rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
+    hashmap_t dict_hashmap = generate_dictionary(corpus);
+    hashmap_destroy(&dict_hashmap);
 
     //subcorpus_t sub;
     //sub.corpus = corpus;
