@@ -34,10 +34,3 @@ function end_index(TAG){
 	return len
 }
 ' > "$DESTFILE"
-sed -ni '' '/@	ii'"$SEDPADDING"'$/{
-        N;N;N;N;N;N;N;N;N;N;
-        s/@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n@	ii'"$SEDPADDING"'\n/@	null'"$SEDPADDING2"'/
-		t
-		n
-		s/@	ii'"$SEDPADDING"'/
-     }' "$DESTFILE"

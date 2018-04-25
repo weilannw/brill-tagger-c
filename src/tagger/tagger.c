@@ -40,7 +40,9 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
             exit(EXIT_FAILURE);
         }   
     }
-            
+    /*else{
+        if()
+    } */       
     //Do this eventually,
     /* relies on properties of the word for tagging */
 }
