@@ -9,7 +9,7 @@
 #define __HASHMAP_H__
 
 #include <stddef.h>
-
+typedef struct hashmap hashmap_t;
 /*
  * Define HASHMAP_METRICS to compile in performance analysis
  * functions for use in assessing hash function performance.
