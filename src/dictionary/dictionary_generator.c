@@ -21,6 +21,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
     //Instantiate a new hashmap
     struct hashmap map;
     struct tagcounts_t *data;
+    struct hashmap_iter *iter;
     
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -43,7 +44,13 @@ struct hashmap generate_dictionary(corpus_t corpus){
    
 
 
-    return reduce_map(map);
+    hashmap_t hashmap = reduce_map(map);
+    
+    for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
+               free(tag_hashmap_iter_get_data(iter));
+    }
+    
+    return hashmap;
 }
 void update_tags(char* word, struct tagcounts_t *val, int tag){
     

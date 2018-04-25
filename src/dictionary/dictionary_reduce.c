@@ -31,6 +31,5 @@ struct hashmap reduce_map(struct hashmap map){
         freq_hashmap_put(&newmap, key, tag);
         fprintf (fp, "%s\t%s\n", key, tag);
     }
-    hashmap_destroy(&map);
     return newmap;
 }
