@@ -22,6 +22,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
     struct hashmap map;
     struct tagcounts_t *data;
     struct hashmap_iter *iter;
+    struct tagcounts_t *freetags;
     
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -46,9 +47,13 @@ struct hashmap generate_dictionary(corpus_t corpus){
 
     hashmap_t hashmap = reduce_map(map);
     
-    for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
-               free(tag_hashmap_iter_get_data(iter));
+    iter = hashmap_iter(&map);
+    while (iter) {
+        freetags= (tagcounts_t*)tag_hashmap_iter_get_data(iter);
+            iter = hashmap_iter_remove(&map, iter);
+            free(freetags);
     }
+    
     
     return hashmap;
 }
