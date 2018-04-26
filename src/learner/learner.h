@@ -36,5 +36,7 @@ typedef struct pattern_t{
 */
 int cmpfunc (const void *, const void *);
 
+int find_most_frequent(int* values, int size);
+
 void errors_sorted_by_frequency(hashmap_t, sorted_error_list_t*);
 #endif
