@@ -35,10 +35,11 @@ void add_rule(contextual_rule_t *rule){
 
 HASHMAP_FUNCS_CREATE(error, int, error_t);
 
-void 
+
 sorted_error_list_t *error_frequencies(corpus_t corpus){
-    initialize_dynamic_array(&errors, ERROR_STARTING_LENGTH, sizeof(*error_t));
-    initialize_dynamic_array(&keys, ERROR_STARTING_LENGTH, sizeof(*int));
+  //  struct error_t errors;
+  //  initialize_dynamic_array(&errors, ERROR_STARTING_LENGTH, sizeof(*error_t));
+  //  initialize_dynamic_array(&keys, ERROR_STARTING_LENGTH, sizeof(*int));
     struct hashmap map;
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -87,7 +88,7 @@ sorted_error_list_t *error_frequencies(corpus_t corpus){
 //This will prevent us from having to iterate through the hashmap n amount of times.
 
 //This method could also just return an int* containing the keys in the correct order. Either or is easy to do.
-sorted_error_list_t* errors_sorted_by_frequency(hashmap_t maps){
+sorted_error_list_t* errors_sorted_by_frequency(hashmap_t map){
   
     int index = 0;
     int count = hashmap_size(&map);
@@ -135,6 +136,7 @@ sorted_error_list_t* errors_sorted_by_frequency(hashmap_t maps){
     
     free(initial_order);
 
+    return errors;
     
     //Reminder, free this pointer as well as the hashmap. This array of error_t
     //point to the same spot as the hashmap, so freeing this should free up the hashmap as well.
@@ -151,12 +153,19 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     int next3[number];
 
     for(int i = 0; i < number; i++){
-        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*(error.indices.elems[number])-3]:0;
-        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[*(error.indices.elems[number]-2)]:0;
-        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[*(error.indices.elems[number])-1)]:0;
-        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[*(error.indices.elems[number])+1)]:0;
-        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[*(error.indices.elems[number])+2)]:0;
-        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[*(error.indices.elems[number])+3)]:0;
+        int *prev3i  = ((int *)(error.indices.elems[number])) -3;
+        int *prev2i  = ((int *)(error.indices.elems[number])) -2;
+        int *prev1i  = ((int *)(error.indices.elems[number])) -1;
+        int *next1i  = ((int *)(error.indices.elems[number])) +3;
+        int *next2i  = ((int *)(error.indices.elems[number])) +3;
+        int *next3i  = ((int *)(error.indices.elems[number])) +3;
+
+        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*prev3i]:0;
+        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[*prev2i]:0;
+        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[*prev1i]:0;
+        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[*next1i]:0;
+        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[*next2i]:0;
+        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[*next3i]:0;
     }
     
     pattern_t pattern;
@@ -174,13 +183,16 @@ int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t 
     int improvement = 0;
     int errors_created = 0;
     for(size_t i = 0; i < error.number; i++){
-        if(check_contextual_rule(rule, corpus, *(error.indices.elems[i]))
+        int *ind = ((int *)(error.indices.elems[i]));
+        if(check_contextual_rule(rule, corpus, *ind))
             improvement++;
     }
-    for(size_t i = 0; i < corpus.numlines; i++){
+    for(size_t i = 0; i < corpus.num_lines; i++){
         if(rule.tag1 == error.machine_tag && check_contextual_rule(rule, corpus, i)){
             errors_created++;
     }
+}
+   
 }
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {

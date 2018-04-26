@@ -143,7 +143,7 @@ void print_rules_list(rules_list_t *list){
     hash_to_tag(rules[i].tag1, tag1);
     hash_to_tag(rules[i].tag2, tag2);
     hash_to_tag(rules[i].arg1, arg1);
-    if(arg2 != NULL)
+    if(rules[i].arg2 != 0)
         hash_to_tag(rules[i].arg2, arg2);
     else
         arg2[0] = '_';
