@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
   
     int exists = 0;
     FILE* file;
-    if (file = fopen("frequencies.txt", "r")){ exists = 1; fclose(file);}
+    file = fopen("frequencies.txt", "r");
+    if(file){ exists = 1; fclose(file);}
     //fclose(file);  
     //todo: change delim from comma to something else in rule parser 
     corpus_t corpus;

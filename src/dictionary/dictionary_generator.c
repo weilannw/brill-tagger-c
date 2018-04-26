@@ -51,6 +51,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
     }
     
     else{
+	//fclose(fp);
         struct hashmap newmap;
         hashmap_init(&newmap, hashmap_hash_string, hashmap_compare_string, 0);
         
@@ -75,7 +76,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
             new_hashmap_put(&newmap, key, highest);
         }
 	free(line);
-        
+        fclose(fp);
         return newmap;
         
     }
