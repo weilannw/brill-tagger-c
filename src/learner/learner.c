@@ -179,8 +179,8 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
         int *prev3i  = ((int *)(error.indices.elems[number])) -3;
         int *prev2i  = ((int *)(error.indices.elems[number])) -2;
         int *prev1i  = ((int *)(error.indices.elems[number])) -1;
-        int *next1i  = ((int *)(error.indices.elems[number])) +3;
-        int *next2i  = ((int *)(error.indices.elems[number])) +3;
+        int *next1i  = ((int *)(error.indices.elems[number])) +1;
+        int *next2i  = ((int *)(error.indices.elems[number])) +2;
         int *next3i  = ((int *)(error.indices.elems[number])) +3;
 
         prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*prev3i]:0;
