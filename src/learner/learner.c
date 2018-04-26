@@ -1,3 +1,29 @@
+#include "learner.h"
+#include "../rules/rules.h"
+
+rules_list_t learned_rules;
+
+//called once by a single thread
+void allocate_new_rule(rules_list_t rules){
+    rules.
+}
+contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
+    
+}
+void add_rule(contextual_rule_t rule){
+    //learned_rules.frequency 
+}
+
+/* 
+ first find error,
+ find most frequent pattern
+ find most frequent rule
+
+ if next greatest number of errors is less 
+ than most frequent pattern minus the number of 
+ non-error words of same tag and pattern, stop looking
+ and add to list of learned rules 
+*/
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/mman.h>

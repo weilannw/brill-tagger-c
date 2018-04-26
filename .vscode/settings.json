@@ -10,6 +10,7 @@
         "limits": "cpp",
         "stdlib.h": "c",
         "rule_parser.h": "c",
-        "rules.h": "c"
+        "rules.h": "c",
+        "learner.h": "c"
     }
 }

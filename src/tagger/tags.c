@@ -4,24 +4,24 @@
 #include "tags.h"
 int tag_to_hash(char *tag){
     //trim the tag
-    if(!tag[0])
-        return FU;
+    if(!tag[0]) // first char is null byte
+        return FU; // tag is undefined
     char *saveptr;
     char *trimmed;
     char *tagcpy = (char*)malloc(sizeof(char)*TAG_BUFFER_LENGTH);
     tagcpy[TAG_BUFFER_LENGTH-1]='\0';
     strncpy(tagcpy, tag, TAG_BUFFER_LENGTH-1);
     trimmed = strtok_r(tagcpy, "\n ", &saveptr);
-    //printf("tag: %.5s\n", trimmed);
-    //trim at _ and @ characters -- that is how multiple tags
-    //are delimited. We only care about the first tag.
-    //run the hashing
-    int hash = 5381;
-    int c;
-    while ((c = *trimmed++))
-        hash = ((hash << 6) + hash) + c;
+    int hashval = hash(trimmed);
     free(tagcpy);
     //hash_filter(&hash);
+    return hashval;
+}
+int hash(char *str){
+    int hash = 5381;
+    int c;
+    while ((c = *str++))
+        hash = ((hash << 6) + hash) + c;
     return hash;
 }
 /*void hash_filter(int * hash){

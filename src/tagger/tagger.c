@@ -29,8 +29,6 @@ void apply_initial_tag(char *word, hashmap_t hash_map, size_t index, corpus_t co
     if(!hashed_value)
         apply_initial_unknown_word_tag(word, index, corpus);
     else{
-        printf("word: %s\n", word);
-        printf("hash in hashmap: %d\n", *hashed_value);
         corpus.machine_tags[index] = *hashed_value;
     }
 }
@@ -40,13 +38,13 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
     int num_type;
     int tag;
     if(corpus.info[index].ignore_flag){
-        tag = get_ignored_tag(word);
-        if(tag){
+        if(corpus.human_tags[index] == NUL)
+            corpus.machine_tags[index] == NUL;
+        else if(tag = get_ignored_tag(word))
             corpus.machine_tags[index] = tag;
-        }
         else{
             printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");
-            //ignore flags are only applied to punctuation and null, tagging should be straightforward
+            //ignore flag is only applied to punctuation and null, tagging should be straightforward
             exit(EXIT_FAILURE);
         }   
     }
@@ -116,15 +114,15 @@ int get_ignored_tag(char *word){
             return QUE;
         case '!':
             return EXC;
-        case '<':
-            return NUL;
-        case '@':
-            return NUL;
         default:
              return 0;
     }
 }
 void apply_rules_to_corpus(rules_list_t rules, corpus_t corpus){
+    for(int i = 0; i < rules.length; i++)
+        apply_rule_to_corpus(rules.rules[i], corpus);
+}
+void apply_rules_to_indices(rules_list_t rules, corpus_t corpus){
     for(int i = 0; i < rules.length; i++)
         apply_rule_to_corpus(rules.rules[i], corpus);
 }

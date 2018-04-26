@@ -67,7 +67,7 @@ bool next_tag_is_x_and_next_2_tag_is_y(corpus_t, size_t, int, int);
 bool prev_tag_is_x_and_prev_2_tag_is_y(corpus_t, size_t, int, int);
 
 /*unknown word rules take a char* because it allows for processing of 
-word itself rather than surrounding words */
+word itself rather than surrounding tags */
 bool rem_prefix(char*);
 bool rem_suffix(char*);
 bool prefix_equals(char*);

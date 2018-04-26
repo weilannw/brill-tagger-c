@@ -6,6 +6,7 @@
 char * get_tagged_text(int, int);
 /* hash function for matching tag with tag_hash_t */
 int tag_to_hash(char *);
+int hash(char *);
 void hash_to_tag(int, char *);
 /* comparing hash values allows us 
 to avoid expensive strcmp operations */

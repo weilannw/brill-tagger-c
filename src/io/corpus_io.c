@@ -33,6 +33,9 @@ bool ignore_tag(int hash){
             return false;
     }
 }
+/*void create_corpora(char *filename, ){
+
+}*/
 // output number of lines and populated corpus_t, returns false on failure
 void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *corpus){
     corpus->num_lines = num_lines;
