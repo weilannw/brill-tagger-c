@@ -1,5 +1,6 @@
-#include "dynamic_array.h";
-
+#include <stdlib.h>
+#include <stddef.h>
+#include "dynamic_array.h"
 void initialize_dynamic_array(dynamic_array_t *array, size_t initial_length, uint16_t size_of){
     array->current_length = initial_length;
     array->elems = malloc(sizeof(size_of)*initial_length);
@@ -19,4 +20,7 @@ void add_to_dynamic_array(dynamic_array_t *array, void *any_type){
 static void grow_dynamic_array(dynamic_array_t *array){
     array->current_length *= 2;
     array->elems = realloc(array->elems, array->size_of_elem * array->current_length);
+}
+void free_dynamic_array(){
+
 }
