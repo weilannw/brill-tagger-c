@@ -2,8 +2,10 @@
 #define learner_h
 #include "../lib/hashmap.h"
 #include "../util/dynamic_array.h"
-#include "stddef.h"
-#include "../util/dynamic_array.h"
+#include <stddef.h>
+#include "../rules/rules.h"
+#include "../io/corpus_io.h"
+
 
 
 typedef struct error_t{
@@ -40,6 +42,12 @@ typedef struct pattern_t{
 int cmpfunc (const void *, const void *);
 
 int find_most_frequent(int*, size_t);
-int get_rule_error_improvement(corpus_t, contextual_rule_t, error_t){
+int get_rule_error_improvement(corpus_t, contextual_rule_t, error_t);
+sorted_error_list_t* error_frequencies(corpus_t);
+
 sorted_error_list_t* errors_sorted_by_frequency(hashmap_t);
+pattern_t find_patterns(corpus_t corpus, error_t error);
+void find_best_rule(corpus_t corpus);
+void add_rule(contextual_rule_t *rule);
+void learner_init();
 #endif

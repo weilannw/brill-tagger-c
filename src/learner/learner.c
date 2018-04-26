@@ -9,8 +9,10 @@
 #include "learner.h"
 #include "../rules/rules.h"
 #include "../util/dynamic_array.h"
+#include "../tagger/tagger.h"
 #define ERROR_STARTING_LENGTH 100
 dynamic_array_t learned_rules;
+HASHMAP_FUNCS_CREATE(error, int, error_t);
 
 void learner_init(){
     initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
@@ -26,10 +28,10 @@ void find_best_rule(corpus_t corpus){
     contextual_rule_t *current_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
     for(int i = 0; i < errors->length; i++){
         error_t error = errors->errors[i];
-        pattern_t find_patterns(corpus, error); // finds the most frequent prev and next tags
+        pattern_t pattern = find_patterns(corpus, error); // finds the most frequent prev and next tags
         for(int ii = 0; ii < sizeof(contextual_rules); ii++){
             
-        }
+        
         int improvement = get_rule_error_improvement(corpus, *current_rule, error);
         if(i!=errors->errors[i].number-1 && improvement >= errors->errors[i+1].number){
             break;
@@ -38,40 +40,28 @@ void find_best_rule(corpus_t corpus){
     //apply_rule_to_corpus()
    // add_rule(rule)
 }
+}
 /* calculates the error improved by a rule */
 int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t error){
     int improvement = 0;
     int errors_created = 0;
     for(size_t i = 0; i < error.number; i++){
-        if(check_contextual_rule(rule, corpus, *(error.indices.elems[i]))
+        int* x = (int *)error.indices.elems[i];
+        if(check_contextual_rule(rule, *x, corpus))
             improvement++;
     }
-    for(size_t i = 0; i < corpus.numlines; i++){
+    for(size_t i = 0; i < corpus.num_lines; i++){
         if(corpus.machine_tags[i] == corpus.human_tags[i] &&
-           check_contextual_rule(rule, corpus, i)){
+           check_contextual_rule(rule, i, corpus)){
                 errors_created++;
     }
-    return improvement - errors_created;
+   
 }
-//Helper method for qsort
-int cmpfunc (const void * a, const void * b) {
-    return ( *(int*)a - *(int*)b );
+     return improvement - errors_created;
 }
-/* 
- first find error,
- find most frequent pattern
- find most frequent rule
-
- if next greatest number of errors is less 
- than most frequent pattern minus the number of 
- non-error words of same tag and pattern, stop looking
- and add to list of learned rules 
-*/
-
-HASHMAP_FUNCS_CREATE(error, int, error_t);
 
 
-sorted_error_list_t *error_frequencies(corpus_t corpus){
+sorted_error_list_t* error_frequencies(corpus_t corpus){
   //  struct error_t errors;
   //  initialize_dynamic_array(&errors, ERROR_STARTING_LENGTH, sizeof(*error_t));
   //  initialize_dynamic_array(&keys, ERROR_STARTING_LENGTH, sizeof(*int));
@@ -213,22 +203,9 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     
     return pattern;
 }
-/* calculates the error improved by a rule */
-int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t error){
-    int improvement = 0;
-    int errors_created = 0;
-    for(size_t i = 0; i < error.number; i++){
-        int *ind = ((int *)(error.indices.elems[i]));
-        if(check_contextual_rule(rule, corpus, *ind))
-            improvement++;
-    }
-    for(size_t i = 0; i < corpus.num_lines; i++){
-        if(rule.tag1 == error.machine_tag && check_contextual_rule(rule, corpus, i)){
-            errors_created++;
-    }
-}
+
    
-}
+
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {
     return ( *(int*)a - *(int*)b );
