@@ -85,7 +85,7 @@ void get_fn_string(int fn, char* fnstr){
     strncpy(fnstr, trigger_fns[fn], MAX_TRIGGER_FN_STR_LEN);
 }
 
-void print_rules_list(rules_list_t *list){
+void print_rules_debug(rules_list_t *list){
     char tag1[TAG_BUFFER_LENGTH];
     char tag2[TAG_BUFFER_LENGTH];
     char arg1[TAG_BUFFER_LENGTH];
@@ -125,4 +125,35 @@ void print_rules_list(rules_list_t *list){
 void free_rules_list(rules_list_t *list){
     free(list->rules);
     free(list);
+}
+
+void print_rules_list(rules_list_t *list){
+    
+    FILE* fp = fopen("rules.txt", "w");
+    char tag1[TAG_BUFFER_LENGTH];
+    char tag2[TAG_BUFFER_LENGTH];
+    char arg1[TAG_BUFFER_LENGTH];
+    char arg2[TAG_BUFFER_LENGTH];
+    char triggerfn[MAX_TRIGGER_FN_STR_LEN];
+    
+    contextual_rule_t *rules = list->rules;
+    
+    for(int i = 0; i < list->length; i++){
+        
+    hash_to_tag(rules[i].tag1, tag1);
+    hash_to_tag(rules[i].tag2, tag2);
+    hash_to_tag(rules[i].arg1, arg1);
+    if(arg2 != NULL)
+        hash_to_tag(rules[i].arg2, arg2);
+    else
+        arg2[0] = '_';
+    
+    get_fn_string(rules[i].triggerfn, triggerfn);
+    printf("%s %s %s %s %s\n", tag1, tag2, triggerfn, arg1, arg2);
+    fprintf (fp, "%s %s %s %s %s\n", tag1, tag2, triggerfn, arg1, arg2);
+
+    }
+    
+    fclose(fp);
+    
 }
