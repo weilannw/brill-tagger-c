@@ -3,7 +3,7 @@
 typedef struct dynamic_array_t{
     size_t current_length;
     size_t current_index;
-    uint8_t size_of_elem;
+    size_t size_of_elem;
     void **elems;
 }dynamic_array_t;
 

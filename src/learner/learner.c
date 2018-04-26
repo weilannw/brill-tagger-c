@@ -9,18 +9,17 @@
 #include "learner.h"
 #include "../rules/rules.h"
 #include "../util/dynamic_array.h"
-
+#define ERROR_STARTING_LENGTH 100
 dynamic_array_t learned_rules;
 
 void learner_init(){
-    initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t));
+    initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
 }
 /*contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
     return
 }*/
 void add_rule(contextual_rule_t *rule){
-    add_to_dynamic_array(&learned_rules, rule)
-    //learned_rules.frequency 
+    add_to_dynamic_array(&learned_rules, rule);
 }
 
 /* 
@@ -36,46 +35,51 @@ void add_rule(contextual_rule_t *rule){
 
 HASHMAP_FUNCS_CREATE(error, int, error_t);
 
-hashmap_t error_frequencies(corpus_t corpus){
-    
+void 
+sorted_error_list_t *error_frequencies(corpus_t corpus){
+    initialize_dynamic_array(&errors, ERROR_STARTING_LENGTH, sizeof(*error_t));
+    initialize_dynamic_array(&keys, ERROR_STARTING_LENGTH, sizeof(*int));
     struct hashmap map;
-    
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
     for(size_t i = 0; i < corpus.num_lines; i++){
         if(corpus.info[i].ignore_flag)
             continue;
         //If there is an error, see if the key exists
-        if(corpus.human_tags[i] != corpus.machine_tags[i]){
+        if(corpus.machine_tags[i] != corpus.human_tags[i]){
             int* tempkey;
             *tempkey = corpus.human_tags[i] + corpus.machine_tags[i];
             error_t *er = error_hashmap_get(&map, tempkey);
-            
+            size_t *sizetptr = (size_t*)malloc(sizeof(size_t));
+
             //If the hashmap entry did not exist, allocate a new error_t struct and initialize variables
             //Idk how to properly malloc the struct, but I know you do. So instead of calling malloc, I
             //suppose just write a method that returns a pointer to a properly malloced error_t struct.
             //Idk how to do the int* allocation :p
             if(er == NULL){
                 error_t *error = malloc (sizeof (struct error_t));
-                int* key = malloc(sizeof(int*));
+                int *key = malloc(sizeof(int*));
                 *key =corpus.human_tags[i] + corpus.machine_tags[i];
                 error->number+=1;
-                error->indices[error->number-1] = i;
+                initialize_dynamic_array(&(error->indices), ERROR_STARTING_LENGTH, sizeof(size_t*));
+                *sizetptr = i;
+                add_to_dynamic_array(&(error->indices), sizetptr);
+                //error->indices[error->number-1] = i;
                 error->human_tag = corpus.human_tags[i];
                 error->machine_tag = corpus.machine_tags[i];
-                
                 //Put the error_t struct in the hashmap with the appropriate key
                 error_hashmap_put(&map, key, error);
             }
             
             //If the hashmap entry did exist, increase the frequency by 1 and keep track of the index
             else{
+                *sizetptr = i;
                 er->number+=1;
-                er->indices[er->number-1] = i;
+                add_to_dynamic_array(&(er->indices), sizetptr);
             }
         }
     }
-    return map;
+    return errors_sorted_by_frequency(map);
 }
 
 //Method used to return an array with key values in order from low to high according to frequency.
@@ -83,7 +87,7 @@ hashmap_t error_frequencies(corpus_t corpus){
 //This will prevent us from having to iterate through the hashmap n amount of times.
 
 //This method could also just return an int* containing the keys in the correct order. Either or is easy to do.
-void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *errors){
+sorted_error_list_t* errors_sorted_by_frequency(hashmap_t maps){
   
     int index = 0;
     int count = hashmap_size(&map);
@@ -91,6 +95,7 @@ void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *error
     error_t* errors_ordered;
     
     initial_order = malloc(count * sizeof(int));
+    sorted_error_list_t* errors= malloc(sizeof(sorted_error_list_t));
     errors_ordered = (error_t *)malloc(count * sizeof(error_t));
     memset(errors_ordered, 0, count*sizeof(error_t));
     struct hashmap_iter *iter;
@@ -146,12 +151,12 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     int next3[number];
 
     for(int i = 0; i < number; i++){
-        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[(error.indices[number]-3)]:0;
-        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[(error.indices[number]-2)]:0;
-        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[(error.indices[number]-1)]:0;
-        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[(error.indices[number]+1)]:0;
-        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[(error.indices[number]+2)]:0;
-        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[(error.indices[number]+3)]:0;
+        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*(error.indices.elems[number])-3]:0;
+        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[*(error.indices.elems[number]-2)]:0;
+        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[*(error.indices.elems[number])-1)]:0;
+        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[*(error.indices.elems[number])+1)]:0;
+        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[*(error.indices.elems[number])+2)]:0;
+        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[*(error.indices.elems[number])+3)]:0;
     }
     
     pattern_t pattern;
@@ -164,21 +169,33 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     
     return pattern;
 }
-
+/* calculates the error improved by a rule */
+int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t error){
+    int improvement = 0;
+    int errors_created = 0;
+    for(size_t i = 0; i < error.number; i++){
+        if(check_contextual_rule(rule, corpus, *(error.indices.elems[i]))
+            improvement++;
+    }
+    for(size_t i = 0; i < corpus.numlines; i++){
+        if(rule.tag1 == error.machine_tag && check_contextual_rule(rule, corpus, i)){
+            errors_created++;
+    }
+}
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {
     return ( *(int*)a - *(int*)b );
 }
 
 //Helper method for finding most frequent tag in an array
-int find_most_frequent(int* values, int size){
+int find_most_frequent(int* values, size_t size){
     int highest = -1;
     int temp_highest = 0;
     int temp_freq;
     int freq;
-    for(int i = 0; i < size; i++){
+    for(size_t i = 0; i < size; i++){
         temp_freq = values[i];
-        for(int j = 0; j < size; j++){
+        for(size_t j = 0; j < size; j++){
             if(i != j){
                 if(values[j] == temp_freq) temp_highest++;
             }

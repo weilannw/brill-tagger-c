@@ -6,7 +6,7 @@
 
 typedef struct error_t{
     size_t number;
-    size_t *indices;
+    dynamic_array_t indices;
     int machine_tag; // tag is this
     int human_tag; // should be this
 }error_t;
@@ -15,6 +15,7 @@ typedef struct sorted_error_list_t{
     size_t length;
     error_t *errors;
 }sorted_error_list_t;
+
 typedef struct pattern_t{
     int prevtag3;
     int prevtag2;
