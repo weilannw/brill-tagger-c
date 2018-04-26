@@ -62,9 +62,7 @@ int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t 
 
 
 sorted_error_list_t* error_frequencies(corpus_t corpus){
-  //  struct error_t errors;
-  //  initialize_dynamic_array(&errors, ERROR_STARTING_LENGTH, sizeof(*error_t));
-  //  initialize_dynamic_array(&keys, ERROR_STARTING_LENGTH, sizeof(*int));
+  
     struct hashmap map;
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -208,7 +206,7 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
 
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {
-    return ( *(int*)a - *(int*)b );
+    return ( *(int*)b - *(int*)a );
 }
 
 //Helper method for finding most frequent tag in an array
