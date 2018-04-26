@@ -7,7 +7,7 @@ typedef struct dynamic_array_t{
     void *elems;
 }dynamic_array_t;
 
-void initialize_dynamic_array(dynamic_array_t, size_t, size_t);
+void initialize_dynamic_array(dynamic_array_t*, size_t, size_t);
 void add_to_dynamic_array(dynamic_array_t *, void *);
-static void grow_dynamic_array(dynamic_array_t);
+static void grow_dynamic_array(dynamic_array_t*);
 #endif
