@@ -11,6 +11,8 @@
         "stdlib.h": "c",
         "rule_parser.h": "c",
         "rules.h": "c",
-        "learner.h": "c"
+        "learner.h": "c",
+        "rule_io.h": "c",
+        "mman.h": "c"
     }
 }

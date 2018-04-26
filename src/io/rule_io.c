@@ -3,9 +3,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rule_parser.h"
-#include "rules.h"
+#include "../rules/rules.h"
 #include "../tagger/tags.h"
+#include "rule_io.h"
+
 #define MAX_TRIGGER_FN_STR_LEN 34
 char *trigger_fns[13]= {
     "prev_tag_is",

@@ -7,7 +7,8 @@
 #include "../tagger/tags.h"
 #include "accuracy_check.h"
 
-
+//rules_list_t should include the number of rules since the last rule check,
+// testing corpus is passed in. 
 float accuracy(rules_list_t rules, corpus_t corpus){
     apply_rules_to_corpus(rules, corpus);
     

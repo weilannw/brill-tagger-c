@@ -3,7 +3,7 @@
 #include "learner/learner.h"
 #include "lib/hashmap.h"
 #include "dictionary/dictionary_generator.h"
-#include "rules/rule_parser.h"
+#include "io/rule_io.h"
 #include "tagger/tagger.h"
 #include "dictionary/dictionary_reduce.h"
 #define TRAINING_CORPUS_PATH "training-corpus.txt"

@@ -1,11 +1,20 @@
 #ifndef learner_h
 #define learner_h
+#include "stddef.h"
+
+
 typedef struct error_t{
     size_t number;
     size_t *indices;
     int machine_tag; // tag is this
-    int human_tag; //should be this
+    int human_tag; // should be this
 }error_t;
+/*errors sorted by their frequency*/
+typedef struct sorted_error_list_t{
+    size_t length;
+    size_t current_index;
+    error_t *errors;
+}sorted_error_list_t;
 typedef struct pattern_t{
     int prevtag3;
     int prevtag2;
@@ -14,7 +23,6 @@ typedef struct pattern_t{
     int nexttag2;
     int nexttag3;
 }pattern_t;
-#endif
 
 /* 
  first find error,
@@ -26,3 +34,7 @@ typedef struct pattern_t{
  non-error words of same tag and pattern, stop looking
  and add to list of learned rules 
 */
+int cmpfunc (const void *, const void *);
+
+void errors_sorted_by_frequency(hashmap_t, sorted_error_list_t*);
+#endif

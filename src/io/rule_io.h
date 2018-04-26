@@ -1,6 +1,6 @@
-#ifndef rule_parser_h
-#define rule_parser_h
-#include "rules.h"
+#ifndef rule_io_h
+#define rule_io_h
+#include "../rules/rules.h"
 /* 
   for each index in the mem mapped file where tag1 is the current tag,
     check the trigger function passing in arg1 and arg2
