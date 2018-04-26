@@ -13,7 +13,6 @@ typedef struct error_t{
 /*errors sorted by their frequency*/
 typedef struct sorted_error_list_t{
     size_t length;
-    size_t current_index;
     error_t *errors;
 }sorted_error_list_t;
 typedef struct pattern_t{
@@ -36,6 +35,8 @@ typedef struct pattern_t{
  and add to list of learned rules 
 */
 int cmpfunc (const void *, const void *);
+
+int find_most_frequent(int* values, int size);
 
 void errors_sorted_by_frequency(hashmap_t, sorted_error_list_t*);
 #endif

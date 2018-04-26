@@ -90,7 +90,7 @@ void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *error
     error_t* errors_ordered;
     
     initial_order = malloc(count * sizeof(int));
-    errors_ordered = malloc(count * sizeof(error_t));
+    errors_ordered = (error_t *)malloc(count * sizeof(error_t));
     memset(errors_ordered, 0, count*sizeof(error_t));
     struct hashmap_iter *iter;
     
@@ -116,12 +116,16 @@ void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *error
         //at the correct index. errors_ordered[i] is checked for null to avoid overwriting another struct.
         //Tiebreakers are unnecesary since error_t's with the same frequency value don't have a specific order.
         for(int i = 0; i < count; i++){
-            /*if(er->number == initial_order[i] && errors_ordered[i] == 0){
+            error_t temp = errors_ordered[i];
+            error_t * temppoint = &temp;
+            if(er->number == initial_order[i] && !temppoint){
                 errors_ordered[i] = *er;
                 break;
-            }*/
+            }
         }
     }
+    errors->length = count;
+    errors->errors = errors_ordered;
     
     free(initial_order);
 
@@ -129,11 +133,71 @@ void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *error
     //Reminder, free this pointer as well as the hashmap. This array of error_t
     //point to the same spot as the hashmap, so freeing this should free up the hashmap as well.
     //Then make sure to call hashmap destroy.
-   errors->errors = errors_ordered;
+}
+
+pattern_t find_patterns(corpus_t corpus, error_t error){
+    int number = error.number;
+    int prev3[number];
+    int prev2[number];
+    int prev1[number];
+    int next1[number];
+    int next2[number];
+    int next3[number];
+
+    for(int i = 0; i < number; i++){
+        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[(error.indices[number]-3)]:0;
+        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[(error.indices[number]-2)]:0;
+        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[(error.indices[number]-1)]:0;
+        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[(error.indices[number]+1)]:0;
+        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[(error.indices[number]+2)]:0;
+        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[(error.indices[number]+3)]:0;
+    }
+    
+    pattern_t pattern;
+    pattern.prevtag3 = find_most_frequent(prev3, number);
+    pattern.prevtag2 = find_most_frequent(prev2, number);
+    pattern.prevtag1 = find_most_frequent(prev1, number);
+    pattern.nexttag1 = find_most_frequent(next1, number);
+    pattern.nexttag2 = find_most_frequent(next2, number);
+    pattern.nexttag3 = find_most_frequent(next3, number);
+    
+    return pattern;
 }
 
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {
     return ( *(int*)a - *(int*)b );
 }
+
+//Helper method for finding most frequent tag in an array
+int find_most_frequent(int* values, int size){
+    int highest = -1;
+    int temp_highest = 0;
+    int temp_freq;
+    int freq;
+    for(int i = 0; i < size; i++){
+        temp_freq = values[i];
+        for(int j = 0; j < size; j++){
+            if(i != j){
+                if(values[j] == temp_freq) temp_highest++;
+            }
+        }
+        if(temp_highest > highest) freq = temp_freq;
+    }
+    
+    return freq;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
