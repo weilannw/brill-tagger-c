@@ -1,6 +1,7 @@
 #ifndef learner_h
 #define learner_h
 #include "../lib/hashmap.h"
+#include "../util/dynamic_array.h"
 #include "stddef.h"
 
 
