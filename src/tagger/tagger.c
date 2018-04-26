@@ -39,8 +39,8 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
     int tag;
     if(corpus.info[index].ignore_flag){
         if(corpus.human_tags[index] == NUL)
-            corpus.machine_tags[index] == NUL;
-        else if(tag = get_ignored_tag(word))
+            corpus.machine_tags[index] = NUL;
+        else if((tag = get_ignored_tag(word)))
             corpus.machine_tags[index] = tag;
         else{
             printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");

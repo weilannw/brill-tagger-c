@@ -1,5 +1,6 @@
 #ifndef learner_h
 #define learner_h
+#include "../lib/hashmap.h"
 #include "stddef.h"
 
 

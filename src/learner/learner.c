@@ -46,7 +46,9 @@ hashmap_t error_frequencies(corpus_t corpus){
             continue;
         //If there is an error, see if the key exists
         if(corpus.human_tags[i] != corpus.machine_tags[i]){
-            error_t *er = error_hashmap_get(&map, corpus.human_tags[i] + corpus.machine_tags[i]);
+            int* tempkey;
+            *tempkey = corpus.human_tags[i] + corpus.machine_tags[i];
+            error_t *er = error_hashmap_get(&map, tempkey);
             
             //If the hashmap entry did not exist, allocate a new error_t struct and initialize variables
             //Idk how to properly malloc the struct, but I know you do. So instead of calling malloc, I
@@ -54,13 +56,15 @@ hashmap_t error_frequencies(corpus_t corpus){
             //Idk how to do the int* allocation :p
             if(er == NULL){
                 error_t *error = malloc (sizeof (struct error_t));
+                int* key = malloc(sizeof(int*));
+                *key =corpus.human_tags[i] + corpus.machine_tags[i];
                 error->number+=1;
                 error->indices[error->number-1] = i;
                 error->human_tag = corpus.human_tags[i];
                 error->machine_tag = corpus.machine_tags[i];
                 
                 //Put the error_t struct in the hashmap with the appropriate key
-                error_hashmap_put(&map, corpus.human_tags[i] + corpus.machine_tags[i], error);
+                error_hashmap_put(&map, key, error);
             }
             
             //If the hashmap entry did exist, increase the frequency by 1 and keep track of the index
@@ -78,7 +82,7 @@ hashmap_t error_frequencies(corpus_t corpus){
 //This will prevent us from having to iterate through the hashmap n amount of times.
 
 //This method could also just return an int* containing the keys in the correct order. Either or is easy to do.
-void errors_sorted_by_frequency(hashmap_t map, sorted_error_list_t *errors){
+void errors_sorted_by_frequency(hashmap_t map, struct sorted_error_list_t *errors){
   
     int index = 0;
     int count = hashmap_size(&map);
