@@ -1,6 +1,7 @@
 #ifndef learner_h
 #define learner_h
 #include "../lib/hashmap.h"
+#include "../util/dynamic_array.h"
 #include "stddef.h"
 #include "../util/dynamic_array.h"
 
@@ -38,7 +39,7 @@ typedef struct pattern_t{
 */
 int cmpfunc (const void *, const void *);
 
-int find_most_frequent(int* values, int size);
+int find_most_frequent(int* values, size_t size);
 
-void errors_sorted_by_frequency(hashmap_t, sorted_error_list_t*);
+sorted_error_list_t* errors_sorted_by_frequency(hashmap_t);
 #endif

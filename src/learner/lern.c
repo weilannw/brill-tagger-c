@@ -3,10 +3,10 @@
 #include <sys/mman.h>
 #include <stdio.h>
 #include <stdint.h>
+#include "learner.h"
 #include "../io/corpus_io.h"
 #include "../tagger/tags.h"
 #include "../lib/hashmap.h"
-#include "learner.h"
 #include "../rules/rules.h"
 #include "../util/dynamic_array.h"
 #define ERROR_STARTING_LENGTH 100
@@ -25,15 +25,15 @@ void add_rule(contextual_rule_t *rule){
 void find_best_rule(corpus_t corpus){
     sorted_error_list_t *errors = error_frequencies(corpus);
     contextual_rule_t *current_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
-    for(int i = 0; i < errors.number; i++){
-        error_t error = errors[i];
+    for(int i = 0; i < errors->length; i++){
+        error_t error = errors->errors[i];
         pattern_t find_patterns(corpus, error); // finds the most frequent prev and next tags
         for(int ii = 0; ii < sizeof(contextual_rules); ii++){
             
         }
         int improvement = get_rule_error_improvement(corpus, rule, error);
-        if(i!=errors.number-1 && improvement >= errors[i+1].number){
-            break;
+        if(i!=errors->number-1 && improvement >= errors[i+1]->number){
+            break;g
         }
     }
     //apply_rule_to_corpus()
@@ -51,8 +51,7 @@ void find_best_rule(corpus_t corpus){
 */
 
 HASHMAP_FUNCS_CREATE(error, int, error_t);
-
-void 
+ 
 sorted_error_list_t *error_frequencies(corpus_t corpus){
     struct hashmap map;
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
