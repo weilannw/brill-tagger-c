@@ -21,8 +21,15 @@ int main(int argc, char* argv[]){
     int* num = (int *)hashmap_get(&dict_hashmap, "rupee");
 
     printf("Here is the value for rupee: %d", *num);
-    
-    destroy_reduced(dict_hashmap);
+    FILE* fp = fopen("frequencies.txt", "r");
+    if(fp){
+        destroy_reduced(dict_hashmap, 1);
+    }
+    else{
+        destroy_reduced(dict_hashmap, 0);
+
+    }
+fclose(fp);
    // hashmap_destroy(&dict_hashmap);
 
     //subcorpus_t sub;

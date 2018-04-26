@@ -37,13 +37,15 @@ struct hashmap reduce_map(struct hashmap map){
     return newmap;
 }
 
-void destroy_reduced(struct hashmap map){
+void destroy_reduced(struct hashmap map, int x){
     struct hashmap_iter *iter;
     
      for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
 
          free(hashmap_iter_get_data(iter));
-         free((void*)hashmap_iter_get_key(iter));
+         if(x){
+             free((void*)hashmap_iter_get_key(iter));
+         }
      }
     hashmap_destroy(&map);
     
