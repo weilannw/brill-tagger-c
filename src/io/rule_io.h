@@ -16,7 +16,9 @@ void get_fn_string(int, char*);
 void allocate_contextual_rule(contextual_rule_t *);
 void parse_contextual_rule(char *, contextual_rule_t*);
 void free_rules_list(rules_list_t*);
-void print_rules_list(rules_list_t*);
+void print_rules_debug(rules_list_t*);
+void print_rules_list(rules_list_t *list);
+
 
 /*
 Tagging rules are of the form:
