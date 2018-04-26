@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 #include "dynamic_array.h"
 void initialize_dynamic_array(dynamic_array_t *array, size_t initial_length, uint16_t size_of){
     array->current_length = initial_length;
