@@ -43,7 +43,7 @@ void destroy_reduced(struct hashmap map, int x){
      for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
 
          free(hashmap_iter_get_data(iter));
-         if(x){
+         if(x == 1){
              free((void*)hashmap_iter_get_key(iter));
          }
      }
