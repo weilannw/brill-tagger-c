@@ -13,7 +13,7 @@
 HASHMAP_FUNCS_CREATE(freq, const char, int);
 
 struct hashmap reduce_map(struct hashmap map){
-    FILE *fp = fopen ("updated.txt", "w");
+    FILE *fp = fopen ("frequencies.txt", "w");
     struct hashmap newmap;
     hashmap_init(&newmap, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -33,6 +33,7 @@ struct hashmap reduce_map(struct hashmap map){
         free(hashmap_iter_get_data(iter));
     }
     hashmap_destroy(&map);
+    fclose(fp);
     return newmap;
 }
 

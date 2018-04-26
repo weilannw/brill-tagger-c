@@ -10,6 +10,7 @@
 
 void shorten_tag_struct(struct hashmap map);
 HASHMAP_FUNCS_CREATE(tag, const char, struct tagcounts_t);
+HASHMAP_FUNCS_CREATE(new, const char, int);
 tagcounts_t frequency_count;
 //call in generate dict = malloc (sizeof (struct tagcounts_t));
 int most_common_tag;
@@ -17,33 +18,68 @@ int most_common_tag;
 
 
 struct hashmap generate_dictionary(corpus_t corpus){
-  
-    //Instantiate a new hashmap
-    struct hashmap map;
-    struct tagcounts_t *data;
+
+    FILE* fp = fopen("frequencies.txt", "r");
+    if(fp == NULL){
     
-    hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
+        //Instantiate a new hashmap
+        struct tagcounts_t *data;
+        struct hashmap map;
+
+        hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
-    for(int i = 0; i < corpus.num_lines; i++){
-        //printf("Trying to put in word: %s\n", corpus.words[i]);
-        if(!corpus.info[i].ignore_flag){
+        for(int i = 0; i < corpus.num_lines; i++){
+
+            if(!corpus.info[i].ignore_flag){
             data = tag_hashmap_get(&map, corpus.words[i]);
-            if(data == NULL){
-                struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
-                memset(newtags, 0, sizeof(struct tagcounts_t));
-                update_tags(corpus.words[i], newtags, corpus.human_tags[i]);
-                tag_hashmap_put(&map, corpus.words[i], newtags);
-            }
-            else{
-                update_tags(corpus.words[i], data, corpus.human_tags[i]);
+            
+           
+                if(data == NULL){
+                    struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
+                    memset(newtags, 0, sizeof(struct tagcounts_t));
+                    update_tags(corpus.words[i], newtags, corpus.human_tags[i]);
+                    tag_hashmap_put(&map, corpus.words[i], newtags);
+                }
+            
+                else{
+                    update_tags(corpus.words[i], data, corpus.human_tags[i]);
+                }
             }
         }
+        return reduce_map(map);
+
     }
+    
+    else{
+        struct hashmap newmap;
+        hashmap_init(&newmap, hashmap_hash_string, hashmap_compare_string, 0);
         
+        char* saveptr;
+        char* line = NULL;
+        size_t len = 0;
+        ssize_t read;
+
+        while ((read = getline(&line, &len, fp)) != -1) {
+            char *saveptr;
+            char* word = strtok_r(line, "\t", &saveptr);
+            char* tag = strtok_r(NULL, " ", &saveptr);
+            if(word[strlen(word)-1] == '\n') word[strlen(word)-1] = '\0';
+            if(tag[strlen(tag)-1] == '\n') tag[strlen(tag)-1] = '\0';
+            
+            int* highest = (int *)malloc(sizeof(int));
+            *highest = tag_to_hash(tag);
+            
+            char* key = (char*)malloc(strlen(word) * sizeof(char));
+            strncpy(key, word, strlen(word));
+            new_hashmap_put(&newmap, key, highest);
+        }
+        
+        return newmap;
+        
+    }
    
 
 
-    return reduce_map(map);
 }
 void update_tags(char* word, struct tagcounts_t *val, int tag){
     
