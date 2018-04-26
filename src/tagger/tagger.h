@@ -1,6 +1,8 @@
 #ifndef tagger_h
 #define tagger_h
 
+#include "../lib/hashmap.h"
+
 bool ignore_tag(int);
 int number_type(char*);
 int proper_noun_type(char *, corpus_t, size_t);
