@@ -69,8 +69,9 @@ struct hashmap generate_dictionary(corpus_t corpus){
             int* highest = (int *)malloc(sizeof(int));
             *highest = tag_to_hash(tag);
             
-            char* key = (char*)malloc(strlen(word) * sizeof(char));
+            char* key = (char*)malloc(strlen(word+1) * sizeof(char));
             strncpy(key, word, strlen(word));
+            printf("Value of key: %s\n", key);
             new_hashmap_put(&newmap, key, highest);
         }
         
