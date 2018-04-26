@@ -2,6 +2,7 @@
 #define learner_h
 #include "../lib/hashmap.h"
 #include "stddef.h"
+#include "../util/dynamic_array.h"
 
 
 typedef struct error_t{
