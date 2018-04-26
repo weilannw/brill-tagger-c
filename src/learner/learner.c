@@ -8,17 +8,18 @@
 #include "../lib/hashmap.h"
 #include "learner.h"
 #include "../rules/rules.h"
+#include "../util/dynamic_array.h"
 
-rules_list_t learned_rules;
+dynamic_array_t learned_rules;
 
-//called once by a single thread
-void allocate_new_rule(rules_list_t rules){
-    //rules.m
+void learner_init(){
+    initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t));
 }
 /*contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
     return
 }*/
-void add_rule(contextual_rule_t rule){
+void add_rule(contextual_rule_t *rule){
+    add_to_dynamic_array(&learned_rules, rule)
     //learned_rules.frequency 
 }
 

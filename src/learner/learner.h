@@ -13,7 +13,6 @@ typedef struct error_t{
 /*errors sorted by their frequency*/
 typedef struct sorted_error_list_t{
     size_t length;
-    size_t current_index;
     error_t *errors;
 }sorted_error_list_t;
 typedef struct pattern_t{
