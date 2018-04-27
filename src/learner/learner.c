@@ -150,6 +150,7 @@ int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t 
 
 sorted_error_list_t* error_frequencies(corpus_t corpus){
   
+    //printf("we are currently in this method\n");
     struct hashmap map;
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -157,7 +158,9 @@ sorted_error_list_t* error_frequencies(corpus_t corpus){
         if(corpus.info[i].ignore_flag)
             continue;
         //If there is an error, see if the key exists
+        printf("Here is the comparisons: %d %d\n", corpus.machine_tags[i], corpus.human_tags[i] );
         if(corpus.machine_tags[i] != corpus.human_tags[i]){
+            printf("Checking to see if the key exists\n");
             int* tempkey;
             *tempkey = corpus.human_tags[i] + corpus.machine_tags[i];
             error_t *er = error_hashmap_get(&map, tempkey);
@@ -171,9 +174,11 @@ sorted_error_list_t* error_frequencies(corpus_t corpus){
                 error_t *error = malloc (sizeof (struct error_t));
                 int *key = malloc(sizeof(int*));
                 *key =corpus.human_tags[i] + corpus.machine_tags[i];
+                printf("Key value for this iteration is: %d\n", *key);
                 error->number+=1;
                 initialize_dynamic_array(&(error->indices), ERROR_STARTING_LENGTH, sizeof(size_t*));
                 *sizetptr = i;
+                printf("Index of this error is: %zu\n", i);
                 add_to_dynamic_array(&(error->indices), sizetptr);
                 //error->indices[error->number-1] = i;
                 error->human_tag = corpus.human_tags[i];
