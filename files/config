@@ -1,0 +1,14 @@
+max_line_length=100
+tag_buffer_length=5
+training_corpus_path=small_corpus.txt
+training_corpus_lines=100000
+training_corpus_chars=1141878
+testing_corpus_path=small_corpus.txt
+testing_corpus_lines=100000
+testing_corpus_chars=1141878
+frequency_count_path=frequencies.txt
+input_file_path=input.txt
+learning_mode=false
+nthreads=8
+iterations=100000
+threshold=80

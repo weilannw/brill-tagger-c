@@ -2,7 +2,7 @@
 #define rules_h
 #include <stdbool.h>
 #include "../tagger/tags.h"
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 extern bool (*contextual_rules[13])(corpus_t, size_t, int, int);
 /*
 Trigger function numbers: 

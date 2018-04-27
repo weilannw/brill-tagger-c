@@ -4,7 +4,7 @@
 #include <strings.h>
 #include "../dictionary/dictionary_generator.h"
 #include "../lib/hashmap.h"
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #include "../rules/rules.h"
 #include "tags.h"
 #include "tagger.h"
@@ -122,10 +122,7 @@ void apply_rules_to_corpus(rules_list_t rules, corpus_t corpus){
     for(int i = 0; i < rules.length; i++)
         apply_rule_to_corpus(rules.rules[i], corpus);
 }
-void apply_rules_to_indices(rules_list_t rules, corpus_t corpus){
-    for(int i = 0; i < rules.length; i++)
-        apply_rule_to_corpus(rules.rules[i], corpus);
-}
+
 /******** end of the initial tagging methods ********/
 
 /* applies rules from a text file (not part of machine learning) */

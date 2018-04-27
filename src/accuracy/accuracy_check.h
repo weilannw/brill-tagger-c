@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #include "../rules/rules.h"
 #include "../tagger/tagger.h"
 #include "../lib/hashmap.h"

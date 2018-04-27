@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include "../tagger/tags.h"
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #include "rules.h"
 
 /* rules for known words */

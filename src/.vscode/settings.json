@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "tagger.h": "c",
+        "corpus_io.h": "c",
+        "stdlib.h": "c",
+        "config.h": "c"
+    }
+}

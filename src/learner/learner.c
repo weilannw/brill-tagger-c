@@ -3,7 +3,7 @@
 #include <sys/mman.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #include "../tagger/tags.h"
 #include "../lib/hashmap.h"
 #include "learner.h"
@@ -15,24 +15,9 @@ size_t learned_rule_index = 0;
 
 HASHMAP_FUNCS_CREATE(error, int, error_t);
 
-/*void learner_init(){
-    int size = sizeof(learned_rules)/sizeof(rules_list_t);
-    for(int i = 0; i < size; i++){
-        learned_rules
-    }
-    learned_rules
-    //initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
-}*/
-/*contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
-    return
-}*/
-/*void add_rule(contextual_rule_t *rule){
-    add_to_dynamic_array(&learned_rules, rule);
-}*/
 void find_best_rule(corpus_t corpus){
     sorted_error_list_t *errors = error_frequencies(corpus);
     int maximprovement = -1;
-    //contextual_rule_t *best_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
     contextual_rule_t current_rule;
     for(int i = 0; i < errors->length; i++){
         error_t error = errors->errors[i];
@@ -267,6 +252,7 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     int next2[number];
     int next3[number];
     /*go to index of each error and get prev and next tags.*/
+    #pragma omp parallel for
     for(int i = 0; i < number; i++){
         int *prev3i  = ((int *)(error.indices.elems[i])) -3;
         int *prev2i  = ((int *)(error.indices.elems[i])) -2;

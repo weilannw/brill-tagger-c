@@ -1,5 +1,5 @@
 //created by Colton Simmons
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #ifndef dictionary_generator_h
 #define dictionary_generator_h
 /* struct containing counts for each tag, 

@@ -4,7 +4,7 @@
 #include "../util/dynamic_array.h"
 #include <stddef.h>
 #include "../rules/rules.h"
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #define ERROR_STARTING_LENGTH 100
 #define NUMRULES 1000000
 

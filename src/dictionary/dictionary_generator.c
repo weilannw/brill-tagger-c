@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "../tagger/tags.h"
 #include "dictionary_generator.h"
-#include "../io/corpus_io.h"
+#include "../corpus/corpus_io.h"
 #include "../lib/hashmap.h"
 #include "dictionary_reduce.h"
 

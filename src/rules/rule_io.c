@@ -5,8 +5,8 @@
 #include <string.h>
 #include "../rules/rules.h"
 #include "../tagger/tags.h"
-#include "rule_io.h"
-
+#include "../rules/rule_io.h"
+#include  "../util/fileio.h"
 #define MAX_TRIGGER_FN_STR_LEN 34
 char *trigger_fns[13]= {
     "prev_tag_is",
@@ -23,17 +23,6 @@ char *trigger_fns[13]= {
     "next_tag_is_x_and_next_2_tag_is_y",
     "prev_tag_is_x_and_prev_2_tag_is_y"
 };
-static void getfileinfo(FILE *file, size_t *numlines, size_t *numchars){
-    char cur;
-    *numlines = 0;
-    *numchars = 0;
-    while((cur = getc(file))!=EOF){
-        *numchars+=1;
-        if(cur == '\n')
-            *numlines+=1;
-    }
-    fseek(file, 0, SEEK_SET);
-}
 rules_list_t * parse_rules_from_file(char * fp){
     FILE * file = fopen(fp, "r");
     if(file == NULL){
