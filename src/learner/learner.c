@@ -10,56 +10,143 @@
 #include "../rules/rules.h"
 #include "../util/dynamic_array.h"
 #include "../tagger/tagger.h"
-#define ERROR_STARTING_LENGTH 100
-dynamic_array_t learned_rules;
+contextual_rule_t learned_rules[NUMRULES];
+size_t learned_rule_index = 0;
+
 HASHMAP_FUNCS_CREATE(error, int, error_t);
 
-void learner_init(){
-    initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
-}
+/*void learner_init(){
+    int size = sizeof(learned_rules)/sizeof(rules_list_t);
+    for(int i = 0; i < size; i++){
+        learned_rules
+    }
+    learned_rules
+    //initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
+}*/
 /*contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
     return
 }*/
-void add_rule(contextual_rule_t *rule){
+/*void add_rule(contextual_rule_t *rule){
     add_to_dynamic_array(&learned_rules, rule);
-}
+}*/
 void find_best_rule(corpus_t corpus){
     sorted_error_list_t *errors = error_frequencies(corpus);
-    contextual_rule_t *current_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
+    int maximprovement = -1;
+    //contextual_rule_t *best_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
+    contextual_rule_t current_rule;
     for(int i = 0; i < errors->length; i++){
         error_t error = errors->errors[i];
         pattern_t pattern = find_patterns(corpus, error); // finds the most frequent prev and next tags
+        current_rule.tag1 = error.machine_tag;
+        current_rule.tag2 = error.human_tag;
         for(int ii = 0; ii < sizeof(contextual_rules); ii++){
-            
-        
-        int improvement = get_rule_error_improvement(corpus, *current_rule, error);
-        if(i!=errors->errors[i].number-1 && improvement >= errors->errors[i+1].number){
-            break;
+            current_rule.triggerfn = ii;
+            instantiate_rule(pattern, ii, &current_rule);
+            int improvement = get_rule_error_improvement(corpus, current_rule, error);
+            if(improvement>maximprovement){
+                maximprovement = improvement;
+                learned_rules[learned_rule_index].tag1 = current_rule.tag1;
+                learned_rules[learned_rule_index].tag2 = current_rule.tag2;
+                learned_rules[learned_rule_index].arg1 = current_rule.arg1;
+                learned_rules[learned_rule_index].arg2 = current_rule.arg2;
+                learned_rules[learned_rule_index].triggerfn = current_rule.triggerfn;
+            }
         }
+        if(i==errors->errors[i].number-1 || maximprovement >= errors->errors[i+1].number)
+            break;
     }
-    //apply_rule_to_corpus()
-   // add_rule(rule)
+    learned_rule_index++;
+    apply_rule_to_corpus(learned_rules[learned_rule_index], corpus);
 }
+/*rule num is the index in the ruls array*/
+void instantiate_rule(pattern_t pattern, int rule_num, contextual_rule_t *rule){
+    int tmp;
+    switch(rule_num){
+        case PREV_TAG_IS:
+            rule->arg1 = pattern.prevtag1;
+            rule->arg2 = NONE;
+            break;
+        case NEXT_TAG_IS:
+            rule->arg1 = pattern.nexttag1;
+            rule->arg2 = NONE;
+            break;        
+        case PREV_2_TAG_IS:
+            rule->arg1 = pattern.prevtag2;
+            rule->arg2 = NONE;
+            break;
+        case NEXT_2_TAG_IS:
+            rule->arg1 = pattern.nexttag2;
+            rule->arg2 = NONE;
+            break;
+        case PREV_1_OR_2_TAG_IS:
+            rule->arg1 = (pattern.prev1freq >= pattern.prev2freq)?pattern.prevtag1:pattern.prevtag2;
+            rule->arg2 = NONE;
+            break;
+        case NEXT_1_OR_2_TAG_IS:
+            rule->arg1 = (pattern.next1freq >= pattern.next2freq)?pattern.nexttag1:pattern.nexttag2;
+            rule->arg2 = NONE;
+            break;
+        case PREV_1_OR_2_OR_3_TAG_IS:
+            rule->arg1 = (
+                    (tmp = ((pattern.prev1freq >= pattern.prev2freq)?
+                        pattern.prevtag1
+                        :pattern.prevtag2))
+                        >pattern.prev3freq)
+                            ?tmp
+                            :pattern.prev3freq;
+            rule->arg2 = NONE;
+            break;
+        case NEXT_1_OR_2_OR_3_TAG_IS:
+            rule->arg1 = (
+                    (tmp = ((pattern.next1freq >= pattern.next2freq)?
+                        pattern.nexttag1
+                        :pattern.nexttag2))
+                        >pattern.next3freq)
+                            ?tmp
+                            :pattern.next3freq;
+            rule->arg2 = NONE;
+            break;
+        case PREV_TAG_IS_X_AND_NEXT_TAG_IS_Y:
+            rule->arg1 = pattern.prevtag1;
+            rule->arg2 = pattern.nexttag1;
+            break;
+        case PREV_TAG_IS_X_AND_NEXT_2_TAG_IS_Y:
+            rule->arg1 = pattern.prevtag1;
+            rule->arg2 = pattern.nexttag2;
+            break;
+        case NEXT_TAG_IS_X_AND_PREV_2_TAG_IS_Y:
+            rule->arg1 = pattern.nexttag1;
+            rule->arg2 = pattern.prevtag2;
+            break;
+        case NEXT_TAG_IS_X_AND_NEXT_2_TAG_IS_Y:
+            rule->arg1 = pattern.nexttag1;
+            rule->arg2 = pattern.nexttag2;
+            break;
+        case PREV_TAG_IS_X_AND_PREV_2_TAG_IS_Y:
+            rule->arg1 = pattern.prevtag1;
+            rule->arg2 = pattern.prevtag2;
+            break;
+        default:
+            break;
+    }
 }
 /* calculates the error improved by a rule */
 int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t error){
     int improvement = 0;
     int errors_created = 0;
     for(size_t i = 0; i < error.number; i++){
-        int* x = (int *)error.indices.elems[i];
-        if(check_contextual_rule(rule, *x, corpus))
+        int *intptr = (int*)error.indices.elems[i];
+        if(check_contextual_rule(rule, *intptr, corpus))
             improvement++;
     }
     for(size_t i = 0; i < corpus.num_lines; i++){
         if(corpus.machine_tags[i] == corpus.human_tags[i] &&
            check_contextual_rule(rule, i, corpus)){
                 errors_created++;
-    }
-   
+        }
+    }    
+    return improvement - errors_created;
 }
-     return improvement - errors_created;
-}
-
 
 sorted_error_list_t* error_frequencies(corpus_t corpus){
   
@@ -174,15 +261,14 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
     int next1[number];
     int next2[number];
     int next3[number];
-
+    /*go to index of each error and get prev and next tags.*/
     for(int i = 0; i < number; i++){
-        int *prev3i  = ((int *)(error.indices.elems[number])) -3;
-        int *prev2i  = ((int *)(error.indices.elems[number])) -2;
-        int *prev1i  = ((int *)(error.indices.elems[number])) -1;
-        int *next1i  = ((int *)(error.indices.elems[number])) +1;
-        int *next2i  = ((int *)(error.indices.elems[number])) +2;
-        int *next3i  = ((int *)(error.indices.elems[number])) +3;
-
+        int *prev3i  = ((int *)(error.indices.elems[i])) -3;
+        int *prev2i  = ((int *)(error.indices.elems[i])) -2;
+        int *prev1i  = ((int *)(error.indices.elems[i])) -1;
+        int *next1i  = ((int *)(error.indices.elems[i])) +1;
+        int *next2i  = ((int *)(error.indices.elems[i])) +2;
+        int *next3i  = ((int *)(error.indices.elems[i])) +3;
         prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*prev3i]:0;
         prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[*prev2i]:0;
         prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[*prev1i]:0;
@@ -190,15 +276,20 @@ pattern_t find_patterns(corpus_t corpus, error_t error){
         next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[*next2i]:0;
         next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[*next3i]:0;
     }
-    
     pattern_t pattern;
-    pattern.prevtag3 = find_most_frequent(prev3, number);
-    pattern.prevtag2 = find_most_frequent(prev2, number);
-    pattern.prevtag1 = find_most_frequent(prev1, number);
-    pattern.nexttag1 = find_most_frequent(next1, number);
-    pattern.nexttag2 = find_most_frequent(next2, number);
-    pattern.nexttag3 = find_most_frequent(next3, number);
-    
+    size_t frequency;
+    pattern.prevtag3 = find_most_frequent(prev3, &frequency, number);
+    pattern.prev3freq = frequency;
+    pattern.prevtag2 = find_most_frequent(prev2, &frequency, number);
+    pattern.prev2freq= frequency;
+    pattern.prevtag1 = find_most_frequent(prev1, &frequency, number);
+    pattern.prev1freq= frequency;
+    pattern.nexttag1 = find_most_frequent(next1, &frequency, number);
+    pattern.next1freq= frequency;
+    pattern.nexttag2 = find_most_frequent(next2, &frequency, number);
+    pattern.next2freq= frequency;
+    pattern.nexttag3 = find_most_frequent(next3, &frequency, number);
+    pattern.next3freq= frequency;
     return pattern;
 }
 
@@ -209,22 +300,27 @@ int cmpfunc (const void * a, const void * b) {
     return ( *(int*)b - *(int*)a );
 }
 
-//Helper method for finding most frequent tag in an array
-int find_most_frequent(int* values, size_t size){
+//Helper method for finding most frequent tag in the surround tags
+int find_most_frequent(int* values, size_t *frequency, size_t size){
     int highest = -1;
-    int temp_highest = 0;
-    int temp_freq;
-    int freq;
+    int count = 0; // count of an individual tag
+    int tag; // stores tag
+    int most_frequent;
     for(size_t i = 0; i < size; i++){
-        temp_freq = values[i];
+        count = 0;
+        tag = values[i];
         for(size_t j = 0; j < size; j++){
-            if(i != j){
-                if(values[j] == temp_freq) temp_highest++;
-            }
+            if(j != i) // no point checking against itself.
+                if(values[j] == tag) count++;
         }
-        if(temp_highest > highest) freq = temp_freq;
+        if(count > highest)
+        {
+            highest = count;
+            most_frequent = tag;
+        }
+
     }
-    
-    return freq;
+    *frequency = highest; 
+    return most_frequent;
 }
 

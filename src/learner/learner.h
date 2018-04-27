@@ -5,8 +5,11 @@
 #include <stddef.h>
 #include "../rules/rules.h"
 #include "../io/corpus_io.h"
+#define ERROR_STARTING_LENGTH 100
+#define NUMRULES 1000000
 
-
+extern contextual_rule_t learned_rules[NUMRULES];
+extern size_t learned_rule_index;
 
 typedef struct error_t{
     size_t number;
@@ -22,11 +25,17 @@ typedef struct sorted_error_list_t{
 
 typedef struct pattern_t{
     int prevtag3;
+    size_t prev3freq;
     int prevtag2;
+    size_t prev2freq;
     int prevtag1;
+    size_t prev1freq;
     int nexttag1;
+    size_t next1freq;
     int nexttag2;
+    size_t next2freq;
     int nexttag3;
+    size_t next3freq;
 }pattern_t;
 
 /* 
@@ -40,8 +49,8 @@ typedef struct pattern_t{
  and add to list of learned rules 
 */
 int cmpfunc (const void *, const void *);
-
-int find_most_frequent(int*, size_t);
+void instantiate_rule(pattern_t, int, contextual_rule_t *);
+int find_most_frequent(int*, size_t*, size_t);
 int get_rule_error_improvement(corpus_t, contextual_rule_t, error_t);
 sorted_error_list_t* error_frequencies(corpus_t);
 
