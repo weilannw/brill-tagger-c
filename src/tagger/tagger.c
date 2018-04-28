@@ -10,7 +10,7 @@
 #include "tagger.h"
 
 void apply_initial_tags(corpus_t corpus, hashmap_t map){
-    #pragma omp parallel for num_threads(2)
+    #pragma omp parallel for num_threads(4)
     for(size_t i = 0; i < corpus.num_lines; i++){
         apply_initial_tag(corpus.words[i], map, i, corpus);
     }
