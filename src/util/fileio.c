@@ -15,8 +15,9 @@ bool file_exists(char *fp){
     bool exists = false;
     FILE* file;
     file = fopen(fp, "r");
-    if(file)
+    if(file){
         exists = true;
     fclose(file);
+    }
     return exists; 
 }

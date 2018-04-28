@@ -2,7 +2,7 @@ TARGET_EXEC ?= brill_tagger
 CFLAGS=-std=gnu99 -g
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
-
+LDFLAGS=-fopenmp
 SRCS := $(shell find $(SRC_DIRS) -name *.c)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
@@ -16,7 +16,7 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
 .PHONY:
 	sync
@@ -31,4 +31,3 @@ sync:
 -include $(DEPS)
 
 MKDIR_P ?= mkdir -p
-

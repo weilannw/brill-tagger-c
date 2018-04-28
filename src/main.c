@@ -1,8 +1,9 @@
-#ifdef _OPENMP
+//#ifdef _OPENMP
 #include <omp.h>
-#endif
+//#endif
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 #include "corpus/corpus_io.h"
 #include "learner/learner.h"
 #include "lib/hashmap.h"
@@ -16,6 +17,7 @@
 #include "accuracy/accuracy_check.h"
 #define CONF_FILE "config"
 #define DEFAULT_LEARNER_ITER 1000
+#define OMP_NUM_THREADS 4
 int parse_options (int, char **, bool *, size_t *, int*);
 void prompt_for_print(corpus_t corpus){
     char scan;

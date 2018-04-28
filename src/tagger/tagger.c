@@ -10,7 +10,7 @@
 #include "tagger.h"
 
 void apply_initial_tags(corpus_t corpus, hashmap_t map){
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(2)
     for(size_t i = 0; i < corpus.num_lines; i++){
         apply_initial_tag(corpus.words[i], map, i, corpus);
     }
@@ -43,11 +43,11 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
         else if((tag = get_ignored_tag(word))) 
 		    corpus.machine_tags[index] = tag;
         else{
-            printf("Error: ignore flag was applied to a word, but a tag was not found.\n"
-                   "The unknown word is at index: %lu\n"
-                   "The word is %s\n",
-                   index, corpus.words[index]);
-            exit(EXIT_FAILURE);
+      //      printf("Error: ignore flag was applied to a word, but a tag was not found.\n"
+      //             "The unknown word is at index: %lu\n"
+      //             "The word is %s\n",
+      //             index, corpus.words[index]);
+    //        exit(EXIT_FAILURE);
             corpus.machine_tags[index] = NUL;
 	    }   
     }
