@@ -149,7 +149,7 @@ void load_configuration(char * fp){
         exit(EXIT_FAILURE);
     }
     printf("Reading config file '%s'\n", fp);
-    ssize_t read;
+    size_t read;
     size_t numlines = 0;
     size_t numchars = 0;
     getfileinfo(file, &numlines, &numchars);

@@ -34,13 +34,10 @@ struct hashmap global_hashmap;
 void find_best_rule(corpus_t corpus){
     sorted_error_list_t *errors = error_frequencies(corpus);
     int maximprovement = -1;
-    //contextual_rule_t *best_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
     contextual_rule_t current_rule;
     printf("Here is the length: %zu\n", errors->length);
     for(int i = 0; i < errors->length; i++){
         error_t error = errors->errors[i];
-    	printf("Trying to find patterns with error of size: %zu\n", error.number);
-    //   print_dynamic_array(&error.indices);
        pattern_t pattern = find_patterns(corpus, error); // finds the most frequent prev and next tags
     	printf("prev3: %d prev2: %d prev1: %d next1: %d next2: %d next3: %d\n", pattern.prevtag3,pattern.prevtag2, pattern.prevtag1, pattern.nexttag1, pattern.nexttag2, pattern.nexttag3);
         current_rule.tag1 = error.machine_tag;
@@ -339,6 +336,7 @@ int find_most_frequent(int* values, size_t *frequency, size_t size){
     int count = 0; // count of an individual tag
     int tag; // stores tag
     int most_frequent;
+    #pragma omp parallel for num_threads(4)
     for(size_t i = 0; i < size; i++){
         if(i%10000 == 0) printf("Currently at index: %zu\n", i);
 	count = 0;

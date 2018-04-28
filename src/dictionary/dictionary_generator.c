@@ -27,7 +27,8 @@ struct hashmap generate_dictionary(corpus_t corpus){
         struct hashmap map;
 
         hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
-    
+
+        #pragma omp parallel for num_threads(2)    
         for(int i = 0; i < corpus.num_lines; i++){
 
             if(!corpus.info[i].ignore_flag){
@@ -58,7 +59,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
         char* saveptr;
         char* line = NULL;
         size_t len = 0;
-        ssize_t read;
+        size_t read;
 
         while ((read = getline(&line, &len, fp)) != -1) {
             char *saveptr;
