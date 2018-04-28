@@ -6,6 +6,7 @@
 #include "corpus_io.h"
 #include "../tagger/tags.h"
 // tags with these types are never altered.
+void fix_newline(char*);
 bool ignore_tag(int hash){
     //should be slightly faster than if statement
     switch(hash){
@@ -16,7 +17,9 @@ bool ignore_tag(int hash){
         case LPAR:
             return true;            
         case RPAR:
-            return true;            
+            return true;     
+        case DQ:
+            return true;       
         case PER:
             return true;            
         case COM:
@@ -47,8 +50,10 @@ void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *
         parse_line(&corpus_text[byte_index], &byte_index, corpus, linenum);
         linenum++;
     }
+    int testing = 0;
     for(size_t linenum = 0; linenum < num_lines; linenum++){
         if(ignore_tag(corpus->human_tags[linenum])){
+//            if(testing < 50){testing++; printf("Should be ignoring tag: %s at index: %zu\n", corpus->words[linenum], linenum);}
             corpus->info[linenum].ignore_flag = true;
             corpus->info[linenum].next_bound = 0;
             corpus->info[linenum].prev_bound = 0;
@@ -63,16 +68,43 @@ void parse_corpus(char *filename, size_t num_bytes, size_t num_lines, corpus_t *
 //todo: add tag error checking
 //returns the end index of the line
 void parse_line(char *line, size_t *offset, corpus_t *corpus, size_t index){
+    
     int word_len = word_length(line);
+    //if(index%1000 == 0) printf("currently trying to parse %s\n", line);
     if(word_len == -1){
         printf("Error: Word length is greater than maximum\n");
         exit(0);
     }
+    char one_per[2];
+    one_per[0] = line[2];
+    one_per[1] = '\0';
+    //if(index == 20942) printf("value of line2 vs one_per: %c vs %s\n", line[2], one_per);   
+    int one_hash = tag_to_hash(one_per);
+    if(ignore_tag(one_hash)){
+//	   printf("Here is the char being saved: %c\n", line[2]);
+           corpus->words[index] = (char*)malloc(sizeof(char)*2);
+	   corpus->words[index][1]='\0';
+	   corpus->words[index][0] = line[2];
+    }
+    else{
     corpus->words[index] = (char*)malloc(sizeof(char)*word_len);
     corpus->words[index][word_len-1]='\0';
+//    fix_newline(line);
+    int len = -1;
+    
     strncpy(corpus->words[index], line, word_len-1);
+    //if(corpus->words[index][0]=='\n') corpus->words[index][0]='\0';//printf("newline was found\n"); //corpus->words[index][0] = '\0';
+    //if(corpus->words[index][0] == '\n'){corpus->words[index][0] = corpus->words[index][1]; corpus->words[index][1] = '\0';}    
+    }
+    corpus->words[index][strcspn(corpus->words[index], "\n")] = '\0';
+    //if(len != -1){ printf("Line %s has newline at: %d\n", corpus->words[index], len);}
     *offset+=word_len-1+TAG_BUFFER_LENGTH+1; //points to beginning of next line
+    //int f = -1;
+    //f = tag_to_hash(&line[word_len]);
+    //if(f == -1) printf("currently trying to parse%s\n", line);
+    if(!(&line[word_len])){ printf("word that is wrong: %s\n", &line[word_len]);}
     corpus->human_tags[index] = tag_to_hash(&line[word_len]);
+    //}
 }
 void print_corpus(corpus_t corpus){
     char tag_buffer[TAG_BUFFER_LENGTH];
@@ -182,4 +214,20 @@ int word_length(char * line){
         i++;
     }
     return i+1; //includes null byte
+}
+void fix_newline(char* line){
+int size = word_length(line);
+int move = 0;
+for(int i = 0; i < size; i++){
+	if(line[i] == '\n' || line[i]== ' ') move++;
+}
+int stop = strlen(line);
+for(int j = 0; j < size; j++){
+	if(j == stop) break;
+	line[j] = line[move+j];
+}
+
+for(int x = size-move; x < size; x++){
+   line[x] = '\0';
+}
 }

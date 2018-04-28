@@ -7,4 +7,4 @@
 #include "../tagger/tagger.h"
 #include "../lib/hashmap.h"
 
-float accuracy(rules_list_t rules, corpus_t corpus);
+float accuracy(corpus_t corpus);

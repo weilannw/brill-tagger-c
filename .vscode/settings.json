@@ -13,6 +13,7 @@
         "rules.h": "c",
         "learner.h": "c",
         "rule_io.h": "c",
-        "mman.h": "c"
+        "mman.h": "c",
+        "tagger.h": "c"
     }
 }

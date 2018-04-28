@@ -15,6 +15,7 @@ typedef struct config_t{
     int nthreads;
     size_t iterations;
     size_t threshold;
+    char rules[MAXFNLEN];
 }config_t;
 extern config_t config;
 void load_configuration(char * fp);

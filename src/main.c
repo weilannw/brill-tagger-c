@@ -1,3 +1,6 @@
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include "corpus/corpus_io.h"
@@ -9,65 +12,71 @@
 #include "dictionary/dictionary_reduce.h"
 #include "util/dynamic_array.h"
 #include "util/config.h"
+#include "util/fileio.h"
+#include "accuracy/accuracy_check.h"
 #define CONF_FILE "config"
 #define DEFAULT_LEARNER_ITER 1000
-int parse_options (int, char **, bool *, size_t *);
-
-/*int learning (corpus_t corpus){
-
+int parse_options (int, char **, bool *, size_t *, int*);
+void prompt_for_print(corpus_t corpus){
+    char scan;
+    printf("Print corpus?(Y/N):");
+    scanf("%c", &scan);
+    if(scan=='y' || scan=='Y')
+        print_corpus(corpus);
 }
-int tagging (corpus_t corpus){
-    rules_list_t *rules = parse_rules_from_file(RULES_LIST_PATH);
-
-}*/
 int main(int argc, char* argv[]){
     config.threshold = 0; 
     config.iterations = DEFAULT_LEARNER_ITER;
+    bool learning_mode = false;
+    size_t threshold = 0;
+    int threads = 0;
+    int exists = 0;
+    hashmap_t hashmap;
     corpus_t corpus;
+    parse_options(argc, argv, &learning_mode, &threshold, &threads);
     load_configuration(CONF_FILE);
-    parse_options(argc, argv, &config.learning_mode, &config.threshold);
+    config.learning_mode = learning_mode;
+    config.threshold = threshold;
+    config.nthreads = threads;
+    #ifdef _OPENMP
+        omp_set_dynamic(0);     // Explicitly disable dynamic teams
+        omp_set_num_threads(config.nthreads); 
+    #endif
+    if(file_exists(config.frequency_count_path))
+        exists = 1;
+    print_config();
     if(config.threshold)
         config.iterations = 0;
     if(config.learning_mode){
         parse_corpus(config.testing_corpus_path, config.testing_corpus_chars, config.testing_corpus_lines, &corpus);
+        hashmap = generate_dictionary(corpus);
+        apply_initial_tags(corpus, hashmap);
     }
-    print_corpus(corpus);
-    print_config();
-   /* char* file = NULL; 
-    bool learning = false;
-    int exists = 0;
-    if(frequency_map_file_exists()){
-        exists = 1;
+    else if(!exists){
+        printf("Error: your '%s' file must be generated "
+               "in learning mode before running tagging mode.\n",
+                config.frequency_count_path);
+        exit(EXIT_FAILURE);
     }
-    parse_options(argc, argv, &learning);
-    corpus_t corpus; 
-    parse_corpus(TESTING_CORPUS_PATH, TESTING_CORPUS_LENGTH, TESTING_CORPUS_LINES, &corpus);
-    hashmap_t dict_hashmap = generate_dictionary(corpus);
-    apply_initial_tags(corpus, dict_hashmap);
-    if(learning){
-        printf("Learning using corpus file %s\n", TRAINING_CORPUS_PATH);
-        learning();
+    else{// tagging mode -- no machine learning
+        /*if we had more time, this would use the input file and its length and line number */
+        rules_list_t *rules = parse_rules_from_file(config.rules);
+        //mprintf("l\n");
+        parse_corpus(config.testing_corpus_path, config.testing_corpus_chars, config.testing_corpus_lines, &corpus);
+        apply_rules_to_corpus(*rules, corpus);
+        hashmap = generate_dictionary(corpus);
     }
-    else{
-        printf("Applying tagging rules to formatted text file\n");
-        tagging();
-    }
-    for(int i = 0; i < 1000; i++)
-        find_best_rule(corpus);
-    rules_list_t rules;
-    rules.length = learned_rule_index;
-    rules.rules = learned_rules;
-    print_rules_list(&rules);
-    destroy_reduced(dict_hashmap, exists);
-    free_corpus(corpus);*/
+    destroy_reduced(hashmap, exists);
+    printf("Final accuracy %.2f%%\n", accuracy(corpus));
+    prompt_for_print(corpus);
     return 1;
 }
 
-int parse_options (int argc, char **argv, bool * learning, size_t * threshold)
+int parse_options (int argc, char **argv, bool * learning, size_t * threshold, int *threads)
 {
   int index;
   int c;
-  while ((c = getopt (argc, argv, "lht:")) != -1)
+  while ((c = getopt (argc, argv, "lht:p:")) != -1)
     switch (c)
       {
       case 'l':
@@ -76,21 +85,28 @@ int parse_options (int argc, char **argv, bool * learning, size_t * threshold)
       case 'h':
         printf("Help:\n"
         "\t-l: learning mode\n"
-        "\t-t: error threshold for completing training\n"
+        "\t-t: <threshold> error threshold for completing training\n"
         "\t-h: print help\n");
         exit(EXIT_SUCCESS);
         break;
-      case 't':
+      case 'p':
         *threshold = atoi(optarg);
         if(!(*threshold > 0 && *threshold < 100)){
-            printf("Error: learner_threshold must be a valid number > 0 and < 100\n");
+            printf("Error: threshold '%s' must be a valid number > 0 and < 100\n", optarg);
+            exit(EXIT_FAILURE);
+        }
+        break;
+      case 't':
+        *threads = atoi(optarg);
+        if(!*threads){
+            printf("Error: threads '%s' must be a valid number > 0\n", optarg);
             exit(EXIT_FAILURE);
         }
         break;
       case '?':
         printf("Help:\n"
         "\t-l: learning mode\n"
-        "\t-t: error threshold for completing training\n"
+        "\t-t: <threshold> error threshold for completing training\n"
         "\t-h: print help\n");
         exit(EXIT_FAILURE);
         return 1;

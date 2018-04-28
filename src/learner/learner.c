@@ -10,18 +10,39 @@
 #include "../rules/rules.h"
 #include "../util/dynamic_array.h"
 #include "../tagger/tagger.h"
+#include "../dictionary/dictionary_reduce.h"
 contextual_rule_t learned_rules[NUMRULES];
 size_t learned_rule_index = 0;
 
 HASHMAP_FUNCS_CREATE(error, int, error_t);
 
+struct hashmap global_hashmap;
+/*void learner_init(){
+    int size = sizeof(learned_rules)/sizeof(rules_list_t);
+    for(int i = 0; i < size; i++){
+        learned_rules
+    }
+    learned_rules
+    //initialize_dynamic_array(&learned_rules, 2, sizeof(contextual_rule_t*));
+}*/
+/*contextual_rule_t instantiate_rule(int fn, int tag1, int tag2){
+    return
+}*/
+/*void add_rule(contextual_rule_t *rule){
+    add_to_dynamic_array(&learned_rules, rule);
+}*/
 void find_best_rule(corpus_t corpus){
     sorted_error_list_t *errors = error_frequencies(corpus);
     int maximprovement = -1;
+    //contextual_rule_t *best_rule = (contextual_rule_t*)malloc(sizeof(contextual_rule_t));
     contextual_rule_t current_rule;
+    printf("Here is the length: %zu\n", errors->length);
     for(int i = 0; i < errors->length; i++){
         error_t error = errors->errors[i];
-        pattern_t pattern = find_patterns(corpus, error); // finds the most frequent prev and next tags
+    	printf("Trying to find patterns with error of size: %zu\n", error.number);
+    //   print_dynamic_array(&error.indices);
+       pattern_t pattern = find_patterns(corpus, error); // finds the most frequent prev and next tags
+    	printf("prev3: %d prev2: %d prev1: %d next1: %d next2: %d next3: %d\n", pattern.prevtag3,pattern.prevtag2, pattern.prevtag1, pattern.nexttag1, pattern.nexttag2, pattern.nexttag3);
         current_rule.tag1 = error.machine_tag;
         current_rule.tag2 = error.human_tag;
         for(int ii = 0; ii < sizeof(contextual_rules); ii++){
@@ -135,7 +156,7 @@ int get_rule_error_improvement(corpus_t corpus, contextual_rule_t rule, error_t 
 
 sorted_error_list_t* error_frequencies(corpus_t corpus){
   
-    //printf("we are currently in this method\n");
+    printf("we are currently in this method\n");
     struct hashmap map;
     hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
@@ -143,9 +164,9 @@ sorted_error_list_t* error_frequencies(corpus_t corpus){
         if(corpus.info[i].ignore_flag)
             continue;
         //If there is an error, see if the key exists
-        printf("Here is the comparisons: %d %d\n", corpus.machine_tags[i], corpus.human_tags[i] );
+      //  printf("Here is the comparisons for word %s\t %d %d\n", corpus.words[i], corpus.machine_tags[i], corpus.human_tags[i] );
         if(corpus.machine_tags[i] != corpus.human_tags[i]){
-            printf("Checking to see if the key exists\n");
+    //        printf("Checking to see if the key exists\n");
             int* tempkey;
             *tempkey = corpus.human_tags[i] + corpus.machine_tags[i];
             error_t *er = error_hashmap_get(&map, tempkey);
@@ -158,12 +179,14 @@ sorted_error_list_t* error_frequencies(corpus_t corpus){
             if(er == NULL){
                 error_t *error = malloc (sizeof (struct error_t));
                 int *key = malloc(sizeof(int*));
+  		//int *number = malloc(sizeof(int*));
+		//*number = 1;
                 *key =corpus.human_tags[i] + corpus.machine_tags[i];
-                printf("Key value for this iteration is: %d\n", *key);
-                error->number+=1;
+     //           printf("Key value for this iteration is: %d\n", *key);
+                error->number=1;
                 initialize_dynamic_array(&(error->indices), ERROR_STARTING_LENGTH, sizeof(size_t*));
                 *sizetptr = i;
-                printf("Index of this error is: %zu\n", i);
+     //           printf("Index of this error is: %zu\n", i);
                 add_to_dynamic_array(&(error->indices), sizetptr);
                 //error->indices[error->number-1] = i;
                 error->human_tag = corpus.human_tags[i];
@@ -174,6 +197,7 @@ sorted_error_list_t* error_frequencies(corpus_t corpus){
             
             //If the hashmap entry did exist, increase the frequency by 1 and keep track of the index
             else{
+	//	printf("Should be incrementing the number by 1\n");
                 *sizetptr = i;
                 er->number+=1;
                 add_to_dynamic_array(&(er->indices), sizetptr);
@@ -204,7 +228,9 @@ sorted_error_list_t* errors_sorted_by_frequency(hashmap_t map){
     //Iterate through the data. Get the pointer to the error_t struct and put its frequency in the array
     for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
         error_t *er = hashmap_iter_get_data(iter);
-        initial_order[index] = er->number;
+        //printf("human tag %d vs machine tag %d\n", er->human_tag, er->machine_tag);
+        //printf("number = %zu\n", er->number);
+	initial_order[index] = er->number;
         index++;
     }
     
@@ -214,7 +240,12 @@ sorted_error_list_t* errors_sorted_by_frequency(hashmap_t map){
     //Iterate back through the hashmap. This time, corresponding spots in the errors_ordered will be populated with
     //The correct struct. For example, if initial order has frequencies {5, 7, 9}
     //Then errors_ordered will have {error_t struct with 5 freq, error_t struct with 7 freq, error_t struct with 9 freq}
-    
+   // printf("We have made it past qsort\n");
+    //if(index == 20942)
+    //for(int i = 0; i < count; i++){
+//	printf("initial_order[%d] = %d\n", i, initial_order[i]);
+//    }
+
     for (iter = hashmap_iter(&map); iter; iter = hashmap_iter_next(&map, iter)) {
         error_t *er = (error_t *)hashmap_iter_get_data(iter);
         
@@ -223,19 +254,24 @@ sorted_error_list_t* errors_sorted_by_frequency(hashmap_t map){
         //at the correct index. errors_ordered[i] is checked for null to avoid overwriting another struct.
         //Tiebreakers are unnecesary since error_t's with the same frequency value don't have a specific order.
         for(int i = 0; i < count; i++){
-            error_t temp = errors_ordered[i];
-            error_t * temppoint = &temp;
-            if(er->number == initial_order[i] && !temppoint){
-                errors_ordered[i] = *er;
+            //error_t temp = errors_ordered[i];
+            //printf("Number: %d\n", temp.number);
+	    error_t * temppoint = &errors_ordered[i];
+	    //printf("temppoint numver = %zu\n", temppoint->number);
+            //if(i!=0){ error_t*  temppoint = &errors_ordered[i]};
+	    if(er->number == initial_order[i] && temppoint->number == 0){
+    //            printf("Putting error with size: %zu into index %d\n", er->number, i);
+		errors_ordered[i] = *er;
                 break;
             }
         }
     }
+    
     errors->length = count;
     errors->errors = errors_ordered;
-    
+    global_hashmap = map;
+    printf("Value of length is %zu\n", errors->length); 
     free(initial_order);
-
     return errors;
     
     //Reminder, free this pointer as well as the hashmap. This array of error_t
@@ -244,47 +280,53 @@ sorted_error_list_t* errors_sorted_by_frequency(hashmap_t map){
 }
 
 pattern_t find_patterns(corpus_t corpus, error_t error){
-    int number = error.number;
-    int prev3[number];
-    int prev2[number];
-    int prev1[number];
-    int next1[number];
-    int next2[number];
-    int next3[number];
+    size_t number = error.number;
+    int* prev3 = malloc(sizeof(int *) * number);
+    int* prev2 = malloc(sizeof(int *) * number);
+    int* prev1 = malloc(sizeof(int *) * number);
+    int* next1 = malloc(sizeof(int *) * number);
+    int* next2 = malloc(sizeof(int *) * number);
+    int* next3 = malloc(sizeof(int *) * number);
     /*go to index of each error and get prev and next tags.*/
-    #pragma omp parallel for
     for(int i = 0; i < number; i++){
-        int *prev3i  = ((int *)(error.indices.elems[i])) -3;
-        int *prev2i  = ((int *)(error.indices.elems[i])) -2;
-        int *prev1i  = ((int *)(error.indices.elems[i])) -1;
-        int *next1i  = ((int *)(error.indices.elems[i])) +1;
-        int *next2i  = ((int *)(error.indices.elems[i])) +2;
-        int *next3i  = ((int *)(error.indices.elems[i])) +3;
-        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[*prev3i]:0;
-        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[*prev2i]:0;
-        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[*prev1i]:0;
-        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[*next1i]:0;
-        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[*next2i]:0;
-        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[*next3i]:0;
+        int prev3i  = *((int *)(error.indices.elems[i])) -3;
+        int prev2i  = *((int *)(error.indices.elems[i])) -2;
+        int prev1i  = *((int *)(error.indices.elems[i])) -1;
+        int next1i  = *((int *)(error.indices.elems[i])) +1;
+        int next2i  = *((int *)(error.indices.elems[i])) +2;
+        int next3i  = *((int *)(error.indices.elems[i])) +3;
+        prev3[i] = (corpus.info[i].prev_bound<=-3)?corpus.machine_tags[prev3i]:0;
+        prev2[i] = (corpus.info[i].prev_bound<=-2)?corpus.machine_tags[prev2i]:0;
+        prev1[i] = (corpus.info[i].prev_bound<=-1)?corpus.machine_tags[prev1i]:0;
+        next1[i] = (corpus.info[i].next_bound>=1)?corpus.machine_tags[next1i]:0;
+        next2[i] = (corpus.info[i].next_bound>=2)?corpus.machine_tags[next2i]:0;
+        next3[i] = (corpus.info[i].next_bound>=3)?corpus.machine_tags[next3i]:0;
     }
-    pattern_t pattern;
+    pattern_t *pattern = malloc(sizeof(pattern_t));
     size_t frequency;
-    pattern.prevtag3 = find_most_frequent(prev3, &frequency, number);
-    pattern.prev3freq = frequency;
-    pattern.prevtag2 = find_most_frequent(prev2, &frequency, number);
-    pattern.prev2freq= frequency;
-    pattern.prevtag1 = find_most_frequent(prev1, &frequency, number);
-    pattern.prev1freq= frequency;
-    pattern.nexttag1 = find_most_frequent(next1, &frequency, number);
-    pattern.next1freq= frequency;
-    pattern.nexttag2 = find_most_frequent(next2, &frequency, number);
-    pattern.next2freq= frequency;
-    pattern.nexttag3 = find_most_frequent(next3, &frequency, number);
-    pattern.next3freq= frequency;
-    return pattern;
-}
+    pattern->prevtag3 = find_most_frequent(prev3, &frequency, number);
+    pattern->prev3freq = frequency;
+    pattern->prevtag2 = find_most_frequent(prev2, &frequency, number);
+    pattern->prev2freq= frequency;
+    pattern->prevtag1 = find_most_frequent(prev1, &frequency, number);
+    pattern->prev1freq= frequency;
+    pattern->nexttag1 = find_most_frequent(next1, &frequency, number);
+    pattern->next1freq= frequency;
+    pattern->nexttag2 = find_most_frequent(next2, &frequency, number);
+    pattern->next2freq= frequency;
+    pattern->nexttag3 = find_most_frequent(next3, &frequency, number);
+    pattern->next3freq= frequency;
 
-   
+    free(prev3);
+    free(prev2);
+    free(prev1);
+    free(next1);
+    free(next2);
+    free(next3);
+
+    printf("Done parsing pattern\n");
+    return *pattern;
+}
 
 //Helper method for qsort
 int cmpfunc (const void * a, const void * b) {
@@ -298,7 +340,8 @@ int find_most_frequent(int* values, size_t *frequency, size_t size){
     int tag; // stores tag
     int most_frequent;
     for(size_t i = 0; i < size; i++){
-        count = 0;
+        if(i%10000 == 0) printf("Currently at index: %zu\n", i);
+	count = 0;
         tag = values[i];
         for(size_t j = 0; j < size; j++){
             if(j != i) // no point checking against itself.
@@ -309,9 +352,13 @@ int find_most_frequent(int* values, size_t *frequency, size_t size){
             highest = count;
             most_frequent = tag;
         }
-
+	
     }
     *frequency = highest; 
+    printf("returning most frequent: %d\n", most_frequent);
     return most_frequent;
 }
 
+hashmap_t return_map(){
+	return global_hashmap;
+}

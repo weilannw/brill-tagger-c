@@ -18,6 +18,8 @@ int tag_to_hash(char *tag){
     return hashval;
 }
 int hash(char *str){
+    if(!str)
+        return 0;
     int hash = 5381;
     int c;
     while ((c = *str++))
@@ -177,6 +179,6 @@ void hash_to_tag(int hash, char * tag){
         case QUE: strcpy(tag, "?"); break;
         case ZZ: strcpy(tag, "zz"); break;
         case NUL: strcpy(tag, "null"); break;
-        default: strcpy(tag, "fu"); break; // change to \0 for error checks
+        default: strcpy(tag, "fu"); break; 
     }
 }

@@ -6,7 +6,7 @@
 #include "../util/fileio.h"
 #include "../util/config.h"
 config_t config;
-char *options[14] = {
+char *options[15] = {
     "max_line_length",
     "tag_buffer_length",
     "training_corpus_path",
@@ -20,10 +20,10 @@ char *options[14] = {
     "learning_mode", //1 or 0, 0 indicates tagging mode
     "nthreads", // 1 for serial
     "iterations",
-    "threshold"
+    "threshold",
+    "rules"
 };
 static int option_number(char * option){
-   // printf("%s\n", option);
     if(!option || !*option)
         return -1;
     for(int i = 0; i < sizeof(options); i++){
@@ -129,6 +129,13 @@ static void parse_option(char * line, config_t * config){
                 exit(EXIT_FAILURE);
             }
             break;
+        case 14:
+            strcpy(config->rules, optarg);
+            if(!config->learning_mode && !file_exists(optarg)){
+                printf("Error: Rules path '%s' must be relative to directory of the executable.\n", optarg);
+                exit(EXIT_FAILURE);
+            }
+            break;
         default:
             printf("Error: config option '%s' is not a valid option.\n", optarg);
             exit(EXIT_FAILURE);
@@ -193,11 +200,15 @@ void print_config(){
                "    max_line_length:       %d\n"
                "    tag_buffer_length:     %d\n"
                "    frequency_count_path:  %s\n"
-               "    input_file_path:       %s\n",
+               "    input_file_path:       %s\n"
+               "    rules:                 %s\n"
+               "    nthreads:              %d\n",
             config.max_line_length,
             config.tag_buffer_length,
             config.frequency_count_path,
-            config.input_file_path);
+            config.input_file_path,
+            config.rules,
+            config.nthreads);
     }
     
 }
