@@ -44,7 +44,7 @@ void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
 		    corpus.machine_tags[index] = tag;
         else{
             printf("Error: ignore flag was applied to a word, but a tag was not found.\n"
-                   "The unknown word is at index: %lu\n"
+                   "The unknown word is at index: %zu\n"
                    "The word is %s\n",
                    index, corpus.words[index]);
             exit(EXIT_FAILURE);
