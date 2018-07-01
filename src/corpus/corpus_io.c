@@ -192,11 +192,11 @@ char * mmap_corpus(size_t numchars, char *filename){
     char *mem_map;
     int fd = open(filename, O_RDONLY);
     if(fd == -1){
-        printf("Failed to open corpus file\n");
+        printf("Failed to open corpus file \"%s\"\n", filename);
         exit(0);
     }
     if((mem_map = (char*)mmap(NULL, numchars, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED){
-        printf("Failed to map corpus file\n");
+        printf("Failed to map corpus file \"%s\"\n", filename);
         exit(0);
     }
     return mem_map;
@@ -216,18 +216,18 @@ int word_length(char * line){
     return i+1; //includes null byte
 }
 void fix_newline(char* line){
-int size = word_length(line);
-int move = 0;
-for(int i = 0; i < size; i++){
-	if(line[i] == '\n' || line[i]== ' ') move++;
-}
-int stop = strlen(line);
-for(int j = 0; j < size; j++){
-	if(j == stop) break;
-	line[j] = line[move+j];
-}
+    int size = word_length(line);
+    int move = 0;
+    for(int i = 0; i < size; i++){
+        if(line[i] == '\n' || line[i]== ' ') move++;
+    }
+    int stop = strlen(line);
+    for(int j = 0; j < size; j++){
+        if(j == stop) break;
+        line[j] = line[move+j];
+    }
 
-for(int x = size-move; x < size; x++){
-   line[x] = '\0';
-}
+    for(int x = size-move; x < size; x++){
+    line[x] = '\0';
+    }
 }

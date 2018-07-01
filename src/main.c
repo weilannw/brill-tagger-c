@@ -1,9 +1,8 @@
-//#ifdef _OPENMP
+#ifdef _OPENMP
 #include <omp.h>
-//#endif
+#endif
 #include <stdio.h>
 #include <unistd.h>
-#include <getopt.h>
 #include "corpus/corpus_io.h"
 #include "learner/learner.h"
 #include "lib/hashmap.h"
@@ -17,7 +16,6 @@
 #include "accuracy/accuracy_check.h"
 #define CONF_FILE "config"
 #define DEFAULT_LEARNER_ITER 1000
-#define OMP_NUM_THREADS 4
 int parse_options (int, char **, bool *, size_t *, int*);
 void prompt_for_print(corpus_t corpus){
     char scan;
@@ -34,15 +32,17 @@ int main(int argc, char* argv[]){
     int threads = 0;
     int exists = 0;
     hashmap_t hashmap;
+    corpus_t testing_corpus;
     corpus_t corpus;
     parse_options(argc, argv, &learning_mode, &threshold, &threads);
     load_configuration(CONF_FILE);
     config.learning_mode = learning_mode;
     config.threshold = threshold;
     config.nthreads = threads;
+    parse_corpus(config.testing_corpus_path, config.testing_corpus_chars, config.testing_corpus_lines, &testing_corpus);
     #ifdef _OPENMP
         omp_set_dynamic(0);     // Explicitly disable dynamic teams
-        omp_set_num_threads(config.nthreads); 
+        omp_set_num_threads(4); 
     #endif
     if(file_exists(config.frequency_count_path))
         exists = 1;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     if(config.threshold)
         config.iterations = 0;
     if(config.learning_mode){
-        parse_corpus(config.testing_corpus_path, config.testing_corpus_chars, config.testing_corpus_lines, &corpus);
+        parse_corpus(config.training_corpus_path, config.training_corpus_chars, config.training_corpus_lines, &corpus);
         hashmap = generate_dictionary(corpus);
         apply_initial_tags(corpus, hashmap);
     }
@@ -61,16 +61,15 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     else{// tagging mode -- no machine learning
-        /*if we had more time, this would use the input file and its length and line number */
+        /*if we had more time, this would use a plaintext input file and its length and line number */
         rules_list_t *rules = parse_rules_from_file(config.rules);
-        //mprintf("l\n");
         parse_corpus(config.testing_corpus_path, config.testing_corpus_chars, config.testing_corpus_lines, &corpus);
         apply_rules_to_corpus(*rules, corpus);
         hashmap = generate_dictionary(corpus);
     }
     destroy_reduced(hashmap, exists);
     printf("Final accuracy %.2f%%\n", accuracy(corpus));
-    prompt_for_print(corpus);
+    prompt_for_print(testing_corpus);
     return 1;
 }
 
