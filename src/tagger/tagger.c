@@ -26,27 +26,38 @@ void apply_initial_tags(corpus_t corpus, hashmap_t map){
  */
 void apply_initial_tag(char *word, hashmap_t hash_map, size_t index, corpus_t corpus){
     int* hashed_value = (int *)hashmap_get(&hash_map, word);
-    if(!hashed_value)
-        apply_initial_unknown_word_tag(word, index, corpus);
-    else{
+    if(index == 41 || index == 43){ printf("Word: %s Hashed Value: %d\n", corpus.words[index], *hashed_value);}
+      if(ignore_tag(corpus.human_tags[index])){
+		apply_initial_unknown_word_tag(word, index, corpus);
+      }
+    else if(hashed_value){
         corpus.machine_tags[index] = *hashed_value;
     }
 }
 /* called if the word cannot be found in the hashmap (unknown). 
    This runs basic checks for a small number of common tags before giving up */
 void apply_initial_unknown_word_tag(char *word, size_t index, corpus_t corpus){
+    //if(!word) return;
+    //if(index == 41){
     int num_type;
     int tag;
     if(corpus.info[index].ignore_flag){
+//       printf("Ignored tag at index: %zu words is: %s\n", index, corpus.words[index]);
         if(corpus.human_tags[index] == NUL)
             corpus.machine_tags[index] = NUL;
-        else if((tag = get_ignored_tag(word)))
-            corpus.machine_tags[index] = tag;
+        else if((tag = get_ignored_tag(word))){
+            	//printf("should be tagging: %s\n", corpus.words[index]);
+		corpus.machine_tags[index] = tag;
+		}
         else{
+	    printf("Unknown word is at index: %d\n", index);
+    	    printf("The word is %s\n", corpus.words[index]);
             printf("ERROR: ignore flag was applied to word, but a tag was not found.\n");
             //ignore flag is only applied to punctuation and null, tagging should be straightforward
-            exit(EXIT_FAILURE);
-        }   
+            //exit(EXIT_FAILURE);
+             corpus.machine_tags[index] = NUL;
+
+	}   
     }
     else if((tag = number_type(word))!=0)
         corpus.machine_tags[index] = tag;
@@ -107,6 +118,7 @@ int get_ignored_tag(char *word){
         case ')':
             return RPAR;
         case '.':
+	    //printf("should be returning period\n");
             return PER;
         case ',':
             return COM;

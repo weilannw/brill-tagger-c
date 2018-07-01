@@ -43,7 +43,6 @@ void free_corpus(corpus_t);
 char * mmap_corpus(size_t, char *);
 void parse_line(char *, size_t *, corpus_t*, size_t);
 void set_boundaries(size_t, corpus_t *);
-
 /* applies the tag to the place in memory where the tag starts */
 //int get_next_tag_hash(size_t *, char *, size_t, bool);
 //void store_contextual_info(contextual_info_t *, size_t, char *, size_t);

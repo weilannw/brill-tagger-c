@@ -18,8 +18,10 @@ int tag_to_hash(char *tag){
     return hashval;
 }
 int hash(char *str){
+    if(!str) return 0;
     int hash = 5381;
     int c;
+
     while ((c = *str++))
         hash = ((hash << 6) + hash) + c;
     return hash;

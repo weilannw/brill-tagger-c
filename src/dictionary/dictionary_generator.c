@@ -25,14 +25,17 @@ struct hashmap generate_dictionary(corpus_t corpus){
         //Instantiate a new hashmap
         struct tagcounts_t *data;
         struct hashmap map;
-
+	
         hashmap_init(&map, hashmap_hash_string, hashmap_compare_string, 0);
     
-        for(int i = 0; i < corpus.num_lines; i++){
-
-            if(!corpus.info[i].ignore_flag){
-            data = tag_hashmap_get(&map, corpus.words[i]);
-            
+        for(size_t i = 0; i < corpus.num_lines; i++){
+	//if(i == 41){ printf("Index 41: %s ignore flag: %d\n", corpus.words[i], corpus.info[i].ignore_flag);} 
+        //if(i == 43){ printf("Index 43: %s ignore flag: %d\n", corpus.words[i], corpus.info[i].ignore_flag);}
+    
+	    if(!corpus.info[i].ignore_flag){
+             if(i == 41 || i == 43)printf("putting it in anyways\n");
+             data = tag_hashmap_get(&map, corpus.words[i]);
+        	    
            
                 if(data == NULL){
                     struct tagcounts_t *newtags = malloc (sizeof (struct tagcounts_t));
@@ -45,6 +48,7 @@ struct hashmap generate_dictionary(corpus_t corpus){
                     update_tags(corpus.words[i], data, corpus.human_tags[i]);
                 }
             }
+
         }
         return reduce_map(map);
 

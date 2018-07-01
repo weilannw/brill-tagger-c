@@ -59,4 +59,5 @@ pattern_t find_patterns(corpus_t corpus, error_t error);
 void find_best_rule(corpus_t corpus);
 void add_rule(contextual_rule_t *rule);
 void learner_init();
+hashmap_t return_map();
 #endif
